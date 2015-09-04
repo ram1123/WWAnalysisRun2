@@ -15,6 +15,7 @@ void setOutputTree::initializeVariables()
   event=-999;
   lumi=-999;
   njets=-999;
+  njetsAK4=-999;
   nPV=-999;
   issignal=-999;
   wSampleWeight=-999;
@@ -121,6 +122,7 @@ void setOutputTree::setBranches()
   fTree->Branch("event",&event,"event/I");
   fTree->Branch("lumi",&lumi,"lumi/I");
   fTree->Branch("njets",&njets,"njets/I");
+  fTree->Branch("njetsAK4",&njetsAK4,"njetsAK4/I");
   fTree->Branch("nPV",&nPV,"nPV/I");
   fTree->Branch("issignal",&issignal,"issignal/I");
   fTree->Branch("wSampleWeight",&wSampleWeight,"wSampleWeight/F");
@@ -219,5 +221,36 @@ void setOutputTree::setBranches()
   fTree->Branch("jet2_btag",&jet2_btag,"jet2_btag/F");
   fTree->Branch("jet3_pt",&jet3_pt,"jet3_pt/F");
   fTree->Branch("jet3_btag",&jet3_btag,"jet3_btag/F");
-}
 
+  fTree->Branch("vbf_AK4_j1_pt",&vbf_AK4_j1_pt,"vbf_AK4_j1_pt/F");
+  fTree->Branch("vbf_AK4_j1_eta",&vbf_AK4_j1_eta,"vbf_AK4_j1_eta/F");
+  fTree->Branch("vbf_AK4_j1_phi",&vbf_AK4_j1_phi,"vbf_AK4_j1_phi/F");
+  fTree->Branch("vbf_AK4_j1_e",&vbf_AK4_j1_e,"vbf_AK4_j1_e/F");
+  fTree->Branch("vbf_AK4_j1_bDiscriminatorCSV",&vbf_AK4_j1_bDiscriminatorCSV,"vbf_AK4_j1_bDiscriminatorCSV/F");
+  fTree->Branch("vbf_AK4_j2_pt",&vbf_AK4_j2_pt,"vbf_AK4_j2_pt/F");
+  fTree->Branch("vbf_AK4_j2_eta",&vbf_AK4_j2_eta,"vbf_AK4_j2_eta/F");
+  fTree->Branch("vbf_AK4_j2_phi",&vbf_AK4_j2_phi,"vbf_AK4_j2_phi/F");
+  fTree->Branch("vbf_AK4_j2_e",&vbf_AK4_j2_e,"vbf_AK4_j2_e/F");
+  fTree->Branch("vbf_AK4_j2_bDiscriminatorCSV",&vbf_AK4_j2_bDiscriminatorCSV,"vbf_AK4_j2_bDiscriminatorCSV/F");
+  fTree->Branch("vbf_AK4_jj_pt",&vbf_AK4_jj_pt,"vbf_AK4_jj_pt/F");
+  fTree->Branch("vbf_AK4_jj_eta",&vbf_AK4_jj_eta,"vbf_AK4_jj_eta/F");
+  fTree->Branch("vbf_AK4_jj_phi",&vbf_AK4_jj_phi,"vbf_AK4_jj_phi/F");
+  fTree->Branch("vbf_AK4_jj_m",&vbf_AK4_jj_m,"vbf_AK4_jj_m/F");
+
+  fTree->Branch("Wjets_AK4_j1_pt",&Wjets_AK4_j1_pt,"Wjets_AK4_j1_pt/F");
+  fTree->Branch("Wjets_AK4_j1_eta",&Wjets_AK4_j1_eta,"Wjets_AK4_j1_eta/F");
+  fTree->Branch("Wjets_AK4_j1_phi",&Wjets_AK4_j1_phi,"Wjets_AK4_j1_phi/F");
+  fTree->Branch("Wjets_AK4_j1_e",&Wjets_AK4_j1_e,"Wjets_AK4_j1_e/F");
+  fTree->Branch("Wjets_AK4_j1_bDiscriminatorCSV",&Wjets_AK4_j1_bDiscriminatorCSV,"Wjets_AK4_j1_bDiscriminatorCSV/F");
+  fTree->Branch("Wjets_AK4_j2_pt",&Wjets_AK4_j2_pt,"Wjets_AK4_j2_pt/F");
+  fTree->Branch("Wjets_AK4_j2_eta",&Wjets_AK4_j2_eta,"Wjets_AK4_j2_eta/F");
+  fTree->Branch("Wjets_AK4_j2_phi",&Wjets_AK4_j2_phi,"Wjets_AK4_j2_phi/F");
+  fTree->Branch("Wjets_AK4_j2_e",&Wjets_AK4_j2_e,"Wjets_AK4_j2_e/F");
+  fTree->Branch("Wjets_AK4_j2_bDiscriminatorCSV",&Wjets_AK4_j2_bDiscriminatorCSV,"Wjets_AK4_j2_bDiscriminatorCSV/F");
+  fTree->Branch("Wjets_AK4_jj_pt",&Wjets_AK4_jj_pt,"Wjets_AK4_jj_pt/F");
+  fTree->Branch("Wjets_AK4_jj_eta",&Wjets_AK4_jj_eta,"Wjets_AK4_jj_eta/F");
+  fTree->Branch("Wjets_AK4_jj_phi",&Wjets_AK4_jj_phi,"Wjets_AK4_jj_phi/F");
+  fTree->Branch("Wjets_AK4_jj_m",&Wjets_AK4_jj_m,"Wjets_AK4_jj_m/F");
+  fTree->Branch("Wjets_AK4_jj_e",&Wjets_AK4_jj_e,"Wjets_AK4_jj_e/F");
+
+}

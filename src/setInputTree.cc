@@ -206,6 +206,7 @@ void setInputTree::Init()
    fChain->SetBranchAddress("Electrons_chargedHadIso", Electrons_chargedHadIso, &b_Electrons_chargedHadIso);
    fChain->SetBranchAddress("Electrons_trackIso", Electrons_trackIso, &b_Electrons_trackIso);
    fChain->SetBranchAddress("Electrons_isLoose", Electrons_isLoose, &b_Electrons_isLoose);
+   fChain->SetBranchAddress("Electrons_isMedium", Electrons_isMedium, &b_Electrons_isMedium);
    fChain->SetBranchAddress("MuonsNum", &MuonsNum, &b_MuonsNum);
    fChain->SetBranchAddress("MuonsPt", MuonsPt, &b_MuonsPt);
    fChain->SetBranchAddress("MuonsEta", MuonsEta, &b_MuonsEta);
@@ -223,6 +224,7 @@ void setInputTree::Init()
    fChain->SetBranchAddress("Muons_chargedHadIso", Muons_chargedHadIso, &b_Muons_chargedHadIso);
    fChain->SetBranchAddress("Muons_trackIso", Muons_trackIso, &b_Muons_trackIso);
    fChain->SetBranchAddress("Muons_isLoose", Muons_isLoose, &b_Muons_isLoose);
+   fChain->SetBranchAddress("Muons_isTight", Muons_isTight, &b_Muons_isTight);
    fChain->SetBranchAddress("Muons_isPFMuon", Muons_isPFMuon, &b_Muons_isPFMuon);
    fChain->SetBranchAddress("TriggerProducerTriggerPrescales", &TriggerProducerTriggerPrescales, &b_TriggerProducerTriggerPrescales);
    fChain->SetBranchAddress("TriggerProducerTriggerPass", &TriggerProducerTriggerPass, &b_TriggerProducerTriggerPass);

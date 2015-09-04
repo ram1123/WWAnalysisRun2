@@ -147,10 +147,11 @@ int main (int argc, char** argv)
   //applyTrigger=false;
   std::cout<<"apply trigger: "<<applyTrigger<<std::endl;
 
+bool verbose = 0;
   TLorentzVector W,MET,LEP;
   TLorentzVector NU0,NU1,NU2;
-  TLorentzVector JET, HADW, AK4;
-  TLorentzVector VBF1,VBF2,TOT;
+  TLorentzVector JET, HADW, AK4, AK4_new;
+  TLorentzVector VBF1,VBF2,TOT, VBF1_AK4, VBF2_AK4, Wjet1_AK4, Wjet2_AK4, TOT_Wjet;
   TLorentzVector ELE,MU;
 
   std::vector<TLorentzVector> tightMuon;
@@ -167,7 +168,8 @@ int main (int argc, char** argv)
 
 
   char command1[3000];
-  sprintf(command1, "xrd eoscms dirlist %s/%s/  | awk '{print \"root://eoscms.cern.ch/\"$5}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());
+  sprintf(command1, "ls  %s/%s/  | awk '{print \"/eos/uscms/store/user/rasharma/WWScattering/26August15/ReducedTrees/%s/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), (inputFile).c_str(), outputFile.c_str());
+  //sprintf(command1, "xrd eoscms dirlist %s/%s/  | awk '{print \"root://eoscms.cern.ch/\"$5}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());
   std::cout<<command1<<std::endl;
   system(command1);
   char list1[2000];
@@ -207,7 +209,7 @@ int main (int argc, char** argv)
   pileupFile->Close();
 
   //---------output tree----------------
-  TFile* outROOT = TFile::Open((std::string("output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");
+  TFile* outROOT = TFile::Open((std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");
   outROOT->cd();
   TTree* outTree = new TTree("otree", "otree");
   outTree->SetDirectory(0);
@@ -217,6 +219,8 @@ int main (int argc, char** argv)
   //---------start loop on events------------
   Long64_t jentry2=0;
   for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
+  //for (Long64_t jentry=0; jentry<50000;jentry++,jentry2++) {
+
 
     Long64_t iEntry = ReducedTree->LoadTree(jentry);
     if (iEntry < 0) break;
@@ -270,15 +274,22 @@ int main (int argc, char** argv)
 
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
 
+    if (verbose)
+    	cout<<"==================> debug 1 "<<endl;
+
     /////////////////THE SELECTED LEPTON
     int nTightLepton=0;
     if (strcmp(leptonName.c_str(),"el")==0) {
+    	if (verbose)
+    	cout<<"==================> debug 2 "<<endl;
       float tempPt=0.;
       for (int i=0; i<ReducedTree->ElectronsNum; i++) {
 	if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
-	if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
-        if (ReducedTree->ElectronsPt[i]<=90) continue;
+	//if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
+	if (ReducedTree->Electrons_isMedium[i]==false) continue;       
+        if (ReducedTree->ElectronsPt[i]<=35) continue;
+        if (fabs(ReducedTree->ElectronsEta[i])>=2.5) continue;
 	if (ReducedTree->ElectronsPt[i]<tempPt) continue;
 	ELE.SetPtEtaPhiE(ReducedTree->ElectronsPt[i],ReducedTree->ElectronsEta[i],ReducedTree->ElectronsPhi[i],ReducedTree->ElectronsE[i]);
 	tightEle.push_back(ELE);
@@ -291,15 +302,18 @@ int main (int argc, char** argv)
       }
     }
     else if (strcmp(leptonName.c_str(),"mu")==0) {
+    	if (verbose)
+    	cout<<"==================> debug 3 "<<endl;
       float tempPt=0.;
       for (int i=0; i<ReducedTree->MuonsNum; i++) {
-	if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(1)==0) continue; //trigger
+	if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->TriggerProducerTriggerPass->at(1)==0) continue; //trigger
-	if (ReducedTree->Muons_isHighPt[i]==false) continue;
+	if (ReducedTree->Muons_isTight[i]==false) continue;
+	//if (ReducedTree->Muons_isHighPt[i]==false) continue;
 	//	if (ReducedTree->Muons_isPFMuon[i]==false) continue; //not in the synch ntuple!!
         if ((ReducedTree->Muons_trackIso[i]/ReducedTree->MuonsPt[i])>=0.1) continue;
-        if (ReducedTree->MuonsPt[i]<50) continue;
-        if (fabs(ReducedTree->MuonsEta[i])>=2.1) continue;
+        if (ReducedTree->MuonsPt[i]<35) continue;
+        if (fabs(ReducedTree->MuonsEta[i])>=2.4) continue;
 	MU.SetPtEtaPhiE(ReducedTree->MuonsPt[i],ReducedTree->MuonsEta[i],ReducedTree->MuonsPhi[i],ReducedTree->MuonsE[i]);
 	tightMuon.push_back(MU);
 	if (ReducedTree->MuonsPt[i]<tempPt) continue;
@@ -310,6 +324,8 @@ int main (int argc, char** argv)
 	tempPt = WWTree->l_pt;
 	nTightLepton++;
       }
+    	if (verbose)
+    	cout<<"==================> debug 9 "<<endl;
     }
     if (nTightLepton==0) continue; //no leptons with required ID
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
@@ -318,9 +334,11 @@ int main (int argc, char** argv)
     int nLooseLepton=0;
     for (int i=0; i<ReducedTree->ElectronsNum; i++) {
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
-      if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
+      if (ReducedTree->Electrons_isLoose[i]==false) continue;       
+      //if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
-      if (ReducedTree->ElectronsPt[i]<35) continue;       
+      if (ReducedTree->ElectronsPt[i]<25) continue;       
+      if (fabs(ReducedTree->ElectronsEta[i])>=2.5) continue;       
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
       ELE.SetPtEtaPhiE(ReducedTree->ElectronsPt[i],ReducedTree->ElectronsEta[i],ReducedTree->ElectronsPhi[i],ReducedTree->ElectronsE[i]);
       looseEle.push_back(ELE);      
@@ -328,13 +346,14 @@ int main (int argc, char** argv)
     }
     for (int i=0; i<ReducedTree->MuonsNum; i++) {
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
-      if (ReducedTree->Muons_isHighPt[i]==false) continue;
+      if (ReducedTree->Muons_isLoose[i]==false) continue;
+      //if (ReducedTree->Muons_isHighPt[i]==false) continue;
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
       if ((ReducedTree->Muons_trackIso[i]/ReducedTree->MuonsPt[i])>=0.1) continue;
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
       if (fabs(ReducedTree->MuonsEta[i])>=2.4) continue;
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
-      if (ReducedTree->MuonsPt[i]<20) continue;
+      if (ReducedTree->MuonsPt[i]<25) continue;
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
       MU.SetPtEtaPhiE(ReducedTree->MuonsPt[i],ReducedTree->MuonsEta[i],ReducedTree->MuonsPhi[i],ReducedTree->MuonsE[i]);
       looseMuon.push_back(MU);
@@ -496,7 +515,7 @@ int main (int argc, char** argv)
     //    W = NU2+LEP; 
     ////
 
-    if (W.Pt()<100) continue;
+    if (W.Pt()<50) continue;
     cutEff[2]++;
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
 
@@ -504,6 +523,7 @@ int main (int argc, char** argv)
     //    if (WWTree->v_pt < 150) continue;
 //    if (WWTree->deltaR_lak8jet < (TMath::Pi()/2.0))   continue;
 
+#if 0
     ///////////THE FAT JET
     float tempPt=0., tempMass=0.;
     int nGoodAK8jets=0;
@@ -757,6 +777,189 @@ int main (int argc, char** argv)
 	  }
 	
       }
+#endif
+
+//===================================== START::AK4 W-Jets Selection ============================================
+//
+    std::vector<int> indexGoodJets;
+    indexGoodJets.clear();
+    WWTree->njets=0;
+    //WWTree->nBTagJet_loose=0;
+    //WWTree->nBTagJet_medium=0;
+    //WWTree->nBTagJet_tight=0;
+
+    float oldDeltaR = 1000.;
+    float oldDeltaRLep = 1000.;
+    int indexCloserJet = -1;
+    int indexCloserJetLep = -1;
+    for (unsigned int i=0; i<ReducedTree->JetsNum; i++) //loop on AK4 jet
+      {
+	bool isCleanedJet = true;
+	if (ReducedTree->Jets_PtCorr[i]<=30 || fabs(ReducedTree->JetsEta[i])>=3.0)  continue;
+	//if (ReducedTree->Jets_PtCorr[i]<=30 || ReducedTree->JetsPt[i]<=20 || fabs(ReducedTree->JetsEta[i])>=2.4)  continue;
+	if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
+
+
+	//CLEANING FROM LEPTONS
+	for (int j=0; j<tightEle.size(); j++) {
+	  if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
+		     ReducedTree->JetsEta[i],   ReducedTree->JetsPhi[i]) <0.3) {
+	    isCleanedJet = false;
+	  }
+	}
+	for (int j=0; j<tightMuon.size(); j++) {
+	  if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
+		     ReducedTree->JetsEta[i],   ReducedTree->JetsPhi[i]) <0.3) {
+	    isCleanedJet = false;
+	  }
+	}
+
+	if (isCleanedJet==false) continue;
+
+
+	WWTree->njetsAK4++;
+
+	AK4_new.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[i],ReducedTree->JetsEta[i],ReducedTree->JetsPhi[i],ReducedTree->Jets_ECorr[i]);
+
+	float deltaRlep = W.DeltaR(AK4_new);
+	if (deltaRlep<oldDeltaRLep) indexCloserJetLep = i;
+
+	indexGoodJets.push_back(i); //save index of the "good" vbf jets candidate
+//	cout<<"yes there is jet"<<endl;
+      }
+//      cout<<"=========================================================="<<endl;
+
+	
+      if (indexGoodJets.size()<4)  continue;
+
+      // Assign first two highest Pt jet as VBF tagged jets, and
+      // Next two jets as W-jets
+
+
+	float DeltaEta = 0.;
+	int nVBF1=-1, nVBF2=-1; //position of the two vbf jets
+
+	int nGoodAK4VBFjets = 0;
+	if(verbose)
+	for(int i=0; i<indexGoodJets.size();i++)
+	{
+	cout<<"Event = "<<jentry<<"\tpt [ "<<i<<" ] = "<<ReducedTree->Jets_PtCorr[indexGoodJets.at(i)]<<endl;
+	}
+
+	for(int i=0; i<indexGoodJets.size()-1;i++)
+	{
+		for(int j=i+1; j<indexGoodJets.size();j++)
+		{
+			VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
+			VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(j)],ReducedTree->JetsEta[indexGoodJets.at(j)],ReducedTree->JetsPhi[indexGoodJets.at(j)],ReducedTree->Jets_ECorr[indexGoodJets.at(j)]);
+			//cout<<"Found Before Check!!!!"<<endl;
+	if(verbose)
+			cout<<"Before if loop::DeltaEta = "<<abs(VBF1.Eta()-VBF2.Eta())<<"opp hemi = "<< VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) <<"\t mass of dijet = "<<(VBF1+VBF2).M()<<endl;
+			if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 || (VBF1+VBF2).M()<200) continue;
+			//if (DeltaEta < abs(VBF1.Eta()-VBF2.Eta()) &&  VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 && (VBF1+VBF2).M()<300) continue;
+			//if (DeltaEta < abs(VBF1.Eta()-VBF2.Eta())) continue;
+			//if (VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 ) continue;
+			//if ((VBF1+VBF2).M()<300) continue;
+	if(verbose)
+			cout<<"Found!!!!"<<endl;
+			DeltaEta = abs(VBF1.Eta()-VBF2.Eta()); //take the jet pair with largest DeltaEta
+			nVBF1 = indexGoodJets.at(i); //save position of the 1st vbf jet
+			nVBF2 = indexGoodJets.at(j); //save position of the 2nd vbf jet
+	if(verbose)
+			cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<"\tDeltaEta = "<<DeltaEta<<"\tEta1*Eta2 = "<<VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta())<<"\tMass = "<<(VBF1+VBF2).M()<<endl;
+		}
+	nGoodAK4VBFjets++;
+	}
+
+	if (nGoodAK4VBFjets == 0) continue;
+	cutEff[3]++;
+
+	if (nVBF1!=-1 && nVBF2!=-1) //save infos for vbf jet pair
+	{
+		VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF1],ReducedTree->JetsEta[nVBF1],ReducedTree->JetsPhi[nVBF1],ReducedTree->Jets_ECorr[nVBF1]);
+		VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF2],ReducedTree->JetsEta[nVBF2],ReducedTree->JetsPhi[nVBF2],ReducedTree->Jets_ECorr[nVBF2]);
+		TOT = VBF1 + VBF2 ;
+
+	if(verbose)
+	cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<endl;
+	if(verbose)
+	cout<<"VBF Jet1 = "<<ReducedTree->Jets_PtCorr[nVBF1]<<"\tVBF Jet1 = "<<ReducedTree->Jets_PtCorr[nVBF2]<<endl;
+
+	    WWTree->vbf_AK4_j1_pt = ReducedTree->Jets_PtCorr[nVBF1];
+	    WWTree->vbf_AK4_j1_eta = ReducedTree->JetsEta[nVBF1];
+	    WWTree->vbf_AK4_j1_phi = ReducedTree->JetsPhi[nVBF1];
+	    WWTree->vbf_AK4_j1_e = ReducedTree->Jets_ECorr[nVBF1];
+	    WWTree->vbf_AK4_j1_bDiscriminatorCSV = ReducedTree->Jets_bDiscriminatorICSV[nVBF1];
+	    WWTree->vbf_AK4_j2_pt = ReducedTree->Jets_PtCorr[nVBF2];
+	    WWTree->vbf_AK4_j2_eta = ReducedTree->JetsEta[nVBF2];
+	    WWTree->vbf_AK4_j2_phi = ReducedTree->JetsPhi[nVBF2];
+	    WWTree->vbf_AK4_j2_e = ReducedTree->Jets_ECorr[nVBF2];
+	    WWTree->vbf_AK4_j2_bDiscriminatorCSV = ReducedTree->Jets_bDiscriminatorICSV[nVBF2];
+	    WWTree->vbf_AK4_jj_pt = TOT.Pt();
+	    WWTree->vbf_AK4_jj_eta = TOT.Eta();
+	    WWTree->vbf_AK4_jj_phi = TOT.Phi();
+	    WWTree->vbf_AK4_jj_m = TOT.M();	
+
+	}
+
+	int coutWjets = 0;	
+	int nWjets1 = -1, nWjets2 = -1 ;
+	for(int i=0; i<indexGoodJets.size();i++)
+	{
+	if(indexGoodJets.at(0) == nVBF1 || indexGoodJets.at(0) == nVBF2 ) continue;
+	coutWjets++;
+	if(coutWjets == 1)
+	{
+	Wjet1_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
+	nWjets1 = indexGoodJets.at(i);	// Save position of first w-jets
+	}
+        if(coutWjets == 2)
+	{
+	Wjet2_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
+	nWjets2 = indexGoodJets.at(i);  // Save position of second w-jets
+	}
+	if ( nWjets1 == -1 && nWjets2 == -1 ) continue;
+	cutEff[4]++;
+	TOT_Wjet = Wjet1_AK4 + Wjet1_AK4 ;
+
+	    WWTree->Wjets_AK4_j1_pt = ReducedTree->Jets_PtCorr[nWjets1];
+	    WWTree->Wjets_AK4_j1_eta = ReducedTree->JetsEta[nWjets1];
+	    WWTree->Wjets_AK4_j1_phi = ReducedTree->JetsPhi[nWjets1];
+	    WWTree->Wjets_AK4_j1_e = ReducedTree->Jets_ECorr[nWjets1];
+	    WWTree->Wjets_AK4_j1_bDiscriminatorCSV = ReducedTree->Jets_bDiscriminatorICSV[nWjets1];
+	    WWTree->Wjets_AK4_j2_pt = ReducedTree->Jets_PtCorr[nWjets2];
+	    WWTree->Wjets_AK4_j2_eta = ReducedTree->JetsEta[nWjets2];
+	    WWTree->Wjets_AK4_j2_phi = ReducedTree->JetsPhi[nWjets2];
+	    WWTree->Wjets_AK4_j2_e = ReducedTree->Jets_ECorr[nWjets2];
+	    WWTree->Wjets_AK4_j2_bDiscriminatorCSV = ReducedTree->Jets_bDiscriminatorICSV[nWjets2];
+	    WWTree->Wjets_AK4_jj_pt =  TOT_Wjet.Pt();
+	    WWTree->Wjets_AK4_jj_eta = TOT_Wjet.Eta();
+	    WWTree->Wjets_AK4_jj_phi = TOT_Wjet.Phi();
+	    WWTree->Wjets_AK4_jj_m =   TOT_Wjet.M();	
+	    WWTree->Wjets_AK4_jj_e =   TOT_Wjet.E();	
+
+	    }
+	
+	
+
+	
+	
+
+//
+//===================================== END::AK4 W-Jets Selection ============================================
+
+    //////////////////ANGULAR VARIABLES
+    JET.SetPtEtaPhiE(WWTree->ungroomed_jet_pt,WWTree->ungroomed_jet_eta,WWTree->ungroomed_jet_phi,WWTree->ungroomed_jet_e);
+    WWTree->deltaR_lak8jet = JET.DeltaR(LEP);
+    WWTree->deltaphi_METak8jet = JET.DeltaPhi(NU2);
+    WWTree->deltaphi_Vak8jet = JET.DeltaPhi(W);
+    if (WWTree->deltaR_lak8jet>(TMath::Pi()/2.0) && fabs(WWTree->deltaphi_METak8jet)>2.0 && fabs(WWTree->deltaphi_Vak8jet)>2.0)
+      WWTree->issignal=1;
+
+    //FOUR-BODY INVARIANT MASS
+    WWTree->mass_lvj_type0 = (LEP + NU0 + JET).M();
+    WWTree->mass_lvj_type2 = (LEP + NU2 + JET).M();
+    WWTree->mass_lvj_run2  = (LEP + NU1 + JET).M();
 
     /////////////////MC Infos
     if (isMC)

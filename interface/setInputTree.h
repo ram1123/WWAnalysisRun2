@@ -173,6 +173,7 @@ public :
    Float_t         Electrons_chargedHadIso[7];   //[ElectronsNum]
    Float_t         Electrons_trackIso[7];   //[ElectronsNum]
    UChar_t         Electrons_isLoose[7];   //[ElectronsNum]
+   UChar_t         Electrons_isMedium[7];   //[ElectronsNum]
    UShort_t        MuonsNum;
    Float_t         MuonsPt[33];   //[MuonsNum]
    Float_t         MuonsEta[33];   //[MuonsNum]
@@ -190,6 +191,7 @@ public :
    Float_t         Muons_chargedHadIso[33];   //[MuonsNum]
    Float_t         Muons_trackIso[33];   //[MuonsNum]
    UChar_t         Muons_isLoose[33];   //[MuonsNum]
+   UChar_t         Muons_isTight[33];   //[MuonsNum]
    UChar_t         Muons_isPFMuon[33];   //[MuonsNum]
    std::vector<int>     *TriggerProducerTriggerPrescales;
    std::vector<unsigned int> *TriggerProducerTriggerPass;
@@ -345,6 +347,7 @@ public :
    TBranch        *b_Electrons_chargedHadIso;   //!
    TBranch        *b_Electrons_trackIso;   //!
    TBranch        *b_Electrons_isLoose;   //!
+   TBranch        *b_Electrons_isMedium;   //!
    TBranch        *b_MuonsNum;   //!
    TBranch        *b_MuonsPt;   //!
    TBranch        *b_MuonsEta;   //!
@@ -362,6 +365,7 @@ public :
    TBranch        *b_Muons_chargedHadIso;   //!
    TBranch        *b_Muons_trackIso;   //!
    TBranch        *b_Muons_isLoose;   //!
+   TBranch        *b_Muons_isTight;   //!
    TBranch        *b_Muons_isPFMuon;   //!
    TBranch        *b_TriggerProducerTriggerPrescales;   //!                                                                                                      
    TBranch        *b_TriggerProducerTriggerPass;   //!                                                                                                           

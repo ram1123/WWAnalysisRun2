@@ -14,6 +14,7 @@ class setOutputTree {
   int event;
   int lumi;
   int njets;
+  int njetsAK4;
   int nPV;
   int issignal;
   float wSampleWeight;
@@ -76,8 +77,11 @@ class setOutputTree {
   float AK8_pruned_mass_gen;
   float AK8_softdrop_mass_gen;
   float deltaR_lak8jet;
+  float deltaR_lak4jet;
   float deltaphi_METak8jet;
+  float deltaphi_METak4jet;
   float deltaphi_Vak8jet;
+  float deltaphi_Vak4jet;
   float v_pt;
   float v_eta;
   float v_phi;
@@ -112,6 +116,36 @@ class setOutputTree {
   float jet2_btag;
   float jet3_pt;
   float jet3_btag;
+  float vbf_AK4_j1_pt;
+  float vbf_AK4_j1_eta;
+  float vbf_AK4_j1_phi;
+  float vbf_AK4_j1_e;
+  float vbf_AK4_j1_bDiscriminatorCSV;
+  float vbf_AK4_j2_pt;
+  float vbf_AK4_j2_eta;
+  float vbf_AK4_j2_phi;
+  float vbf_AK4_j2_e;
+  float vbf_AK4_j2_bDiscriminatorCSV;
+  float vbf_AK4_jj_pt;
+  float vbf_AK4_jj_eta;
+  float vbf_AK4_jj_phi;
+  float vbf_AK4_jj_m;
+
+  float Wjets_AK4_j1_pt;
+  float Wjets_AK4_j1_eta;
+  float Wjets_AK4_j1_phi;
+  float Wjets_AK4_j1_e;
+  float Wjets_AK4_j1_bDiscriminatorCSV;
+  float Wjets_AK4_j2_pt;
+  float Wjets_AK4_j2_eta;
+  float Wjets_AK4_j2_phi;
+  float Wjets_AK4_j2_e;
+  float Wjets_AK4_j2_bDiscriminatorCSV;
+  float Wjets_AK4_jj_pt;
+  float Wjets_AK4_jj_eta;
+  float Wjets_AK4_jj_phi;
+  float Wjets_AK4_jj_m;
+  float Wjets_AK4_jj_e;
 
   setOutputTree(TTree* outputTree);
   //  setOutputTree(TTree *outputTree=0);

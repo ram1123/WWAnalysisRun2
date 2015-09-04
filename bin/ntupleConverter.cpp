@@ -111,6 +111,7 @@ int main (int argc, char** argv)
       WWTree->issignal=1;
 
     WWTree->njets=ReducedTree->njets;
+    WWTree->njetsAK4=ReducedTree->njets;
     WWTree->nBTagJet_medium=ReducedTree->nbtag;
     WWTree->mass_lvj_type0 = ReducedTree->m_lvj;
     WWTree->mass_lvj_type2 = ReducedTree->m_lvj;
