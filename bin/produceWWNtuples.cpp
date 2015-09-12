@@ -168,12 +168,16 @@ bool verbose = 0;
 
 
   char command1[3000];
-  sprintf(command1, "ls  %s/%s/  | awk '{print \"/eos/uscms/store/user/rasharma/WWScattering/26August15/ReducedTrees/%s/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), (inputFile).c_str(), outputFile.c_str());
+  //sprintf(command1, "ls  %s/%s/  | awk '{print \"/eos/uscms/store/user/rasharma/WWScattering/26August15/ReducedTrees/%s/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), (inputFile).c_str(), outputFile.c_str());
+  //sprintf(command1, "xrd eoscms dirlist %s/%s/  | awk '{print \"root://xrootd.unl.edu/\"$5}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());
   //sprintf(command1, "xrd eoscms dirlist %s/%s/  | awk '{print \"root://eoscms.cern.ch/\"$5}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());
-  std::cout<<command1<<std::endl;
-  system(command1);
+  //std::cout<<command1<<std::endl;
+  //system(command1);
   char list1[2000];
-  sprintf (list1, "listTemp_%s.txt", outputFile.c_str());
+  sprintf (list1, "InputRootFiles/listTemp_%s.txt", inputFile.c_str());
+  //sprintf (list1, "listTemp_%s.txt", outputFile.c_str());
+  //ifstream rootList ("test.txt");
+  //ifstream rootList ("listFiles_Wjet.txt");
   ifstream rootList (list1);
 
   int fileCounter=0;
@@ -187,13 +191,13 @@ bool verbose = 0;
       fileCounter++;
     }
 
-  std::cout<<"number of files found: "<<fileCounter-2<<std::endl;
+  std::cout<<"number of files found: "<<fileCounter-1<<std::endl;
   std::cout<<"total entries: "<<ReducedTree->fChain->GetEntries()<<std::endl;
   totalEntries=ReducedTree->fChain->GetEntries();
 
   char command3[300];
-  sprintf(command3, "rm listTemp_%s.txt", outputFile.c_str());
-  system(command3);
+  //sprintf(command3, "rm listTemp_%s.txt", outputFile.c_str());
+  //system(command3);
 
   int cutEff[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -209,7 +213,7 @@ bool verbose = 0;
   pileupFile->Close();
 
   //---------output tree----------------
-  TFile* outROOT = TFile::Open((std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");
+  TFile* outROOT = TFile::Open((std::string("output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");
   outROOT->cd();
   TTree* outTree = new TTree("otree", "otree");
   outTree->SetDirectory(0);
