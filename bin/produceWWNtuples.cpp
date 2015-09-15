@@ -222,9 +222,19 @@ bool verbose = 0;
 
   //---------start loop on events------------
   Long64_t jentry2=0;
+
+  int TotalEle= 0, TriggerPassEle = 0, MediumPassEle = 0, PtPassEle = 0, EtaPassEle = 0;
+  int TotalMu= 0, TriggerPassMu = 0, TightPassMu = 0, PtPassMu = 0, EtaPassMu = 0, IsoPassMu = 0;
+  int TotalAK4Jets = 0, TotalAK4Jets_MoreThan4 = 0;
+  int IsJet = 0, JetPtEtaPass = 0, JetLoosePass = 0, JetLepCleanPass = 0;
+
+  int BoolTotalEle = 0, BoolTriggerPassEle = 0, BoolMediumPassEle = 0, BoolPtPassEle = 0, BoolEtaPassEle = 0;
+  int BoolTotalMu = 0, BoolTriggerPassMu = 0, BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
+  int BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
+  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
+
   for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
   //for (Long64_t jentry=0; jentry<50000;jentry++,jentry2++) {
-
 
     Long64_t iEntry = ReducedTree->LoadTree(jentry);
     if (iEntry < 0) break;
@@ -283,17 +293,26 @@ bool verbose = 0;
 
     /////////////////THE SELECTED LEPTON
     int nTightLepton=0;
+   BoolTotalEle = 0, BoolTriggerPassEle = 0, BoolMediumPassEle = 0, BoolPtPassEle = 0, BoolEtaPassEle = 0;
+   BoolTotalMu = 0, BoolTriggerPassMu = 0, BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
+   BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
     if (strcmp(leptonName.c_str(),"el")==0) {
     	if (verbose)
     	cout<<"==================> debug 2 "<<endl;
       float tempPt=0.;
+
+
       for (int i=0; i<ReducedTree->ElectronsNum; i++) {
-	if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
+	//if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
+	BoolTotalEle = 1;
 	if (ReducedTree->Electrons_isMedium[i]==false) continue;       
+	BoolMediumPassEle = 1;
         if (ReducedTree->ElectronsPt[i]<=35) continue;
+	BoolPtPassEle = 1;
         if (fabs(ReducedTree->ElectronsEta[i])>=2.5) continue;
+	BoolEtaPassEle = 1;
 	if (ReducedTree->ElectronsPt[i]<tempPt) continue;
 	ELE.SetPtEtaPhiE(ReducedTree->ElectronsPt[i],ReducedTree->ElectronsEta[i],ReducedTree->ElectronsPhi[i],ReducedTree->ElectronsE[i]);
 	tightEle.push_back(ELE);
@@ -310,14 +329,19 @@ bool verbose = 0;
     	cout<<"==================> debug 3 "<<endl;
       float tempPt=0.;
       for (int i=0; i<ReducedTree->MuonsNum; i++) {
-	if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
+      BoolTotalMu = 1;
+	//if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->TriggerProducerTriggerPass->at(1)==0) continue; //trigger
 	if (ReducedTree->Muons_isTight[i]==false) continue;
+	BoolTightPassMu = 1;
 	//if (ReducedTree->Muons_isHighPt[i]==false) continue;
 	//	if (ReducedTree->Muons_isPFMuon[i]==false) continue; //not in the synch ntuple!!
         if ((ReducedTree->Muons_trackIso[i]/ReducedTree->MuonsPt[i])>=0.1) continue;
+	BoolIsoPassMu = 1;
         if (ReducedTree->MuonsPt[i]<35) continue;
+	BoolPtPassMu = 1;
         if (fabs(ReducedTree->MuonsEta[i])>=2.4) continue;
+	BoolEtaPassMu = 1;
 	MU.SetPtEtaPhiE(ReducedTree->MuonsPt[i],ReducedTree->MuonsEta[i],ReducedTree->MuonsPhi[i],ReducedTree->MuonsE[i]);
 	tightMuon.push_back(MU);
 	if (ReducedTree->MuonsPt[i]<tempPt) continue;
@@ -331,6 +355,33 @@ bool verbose = 0;
     	if (verbose)
     	cout<<"==================> debug 9 "<<endl;
     }
+    //======================= START::Counting events that passed above lep ids	=======================
+
+	
+	if(BoolEtaPassMu)
+	EtaPassMu++;
+	if(BoolPtPassMu)
+	PtPassMu++;
+	if(BoolIsoPassMu)
+	IsoPassMu++;
+	if(BoolTightPassMu)
+	TightPassMu++;
+//	if(BoolTriggerPassMu)
+//	TriggerPassMu++;
+        if(BoolTotalMu)
+        TotalMu++;
+	if(BoolEtaPassEle)
+	EtaPassEle++;
+	if(BoolPtPassEle)
+	PtPassEle++;
+	if(BoolMediumPassEle)
+	MediumPassEle++;
+        if(BoolTotalEle)
+        TotalEle++;
+//	if(BoolTriggerPassEle)
+//	TriggerPassEle++;
+
+    //======================= END::Counting events that passed above lep ids	=======================
     if (nTightLepton==0) continue; //no leptons with required ID
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
 
@@ -796,12 +847,17 @@ bool verbose = 0;
     float oldDeltaRLep = 1000.;
     int indexCloserJet = -1;
     int indexCloserJetLep = -1;
+  //int TotalAK4Jets = 0, TotalAK4Jets_MoreThan4 = 0;
+  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
     for (unsigned int i=0; i<ReducedTree->JetsNum; i++) //loop on AK4 jet
       {
+      BoolIsJet = 1;
 	bool isCleanedJet = true;
 	if (ReducedTree->Jets_PtCorr[i]<=30 || fabs(ReducedTree->JetsEta[i])>=3.0)  continue;
+	BoolJetPtEtaPass = 1;
 	//if (ReducedTree->Jets_PtCorr[i]<=30 || ReducedTree->JetsPt[i]<=20 || fabs(ReducedTree->JetsEta[i])>=2.4)  continue;
 	if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
+	BoolJetLoosePass = 1;
 
 
 	//CLEANING FROM LEPTONS
@@ -819,9 +875,11 @@ bool verbose = 0;
 	}
 
 	if (isCleanedJet==false) continue;
+	BoolJetLepCleanPass = 1;
 
 
 	WWTree->njetsAK4++;
+	TotalAK4Jets++;
 
 	AK4_new.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[i],ReducedTree->JetsEta[i],ReducedTree->JetsPhi[i],ReducedTree->Jets_ECorr[i]);
 
@@ -832,9 +890,18 @@ bool verbose = 0;
 //	cout<<"yes there is jet"<<endl;
       }
 //      cout<<"=========================================================="<<endl;
+  //int BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
+//  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
+
+	if (BoolIsJet)	IsJet++;
+	if (BoolJetPtEtaPass) JetPtEtaPass++;
+	if (BoolJetLoosePass) JetLoosePass++;
+	if (BoolJetLepCleanPass) JetLepCleanPass++;
+  
 
 	
       if (indexGoodJets.size()<4)  continue;
+      TotalAK4Jets_MoreThan4++;
 
       // Assign first two highest Pt jet as VBF tagged jets, and
       // Next two jets as W-jets
@@ -1072,9 +1139,15 @@ bool verbose = 0;
     if(WWTree->event==evento) std::cout<<"fill: "<<count<<std::endl; count++;
     outTree->Fill();
   }
+  cout<<"TotalEle = "<< TotalEle <<"\tTriggerPassEle = "<<  TriggerPassEle <<"\t MediumPassEle = "<<  MediumPassEle <<"\t PtPassEle = "<<  PtPassEle <<"\t EtaPassEle = "<<  EtaPassEle <<endl;
+  cout<<" TotalMu= "<< TotalMu <<"\t TriggerPassMu = "<< TriggerPassMu <<"\t TightPassMu = "<< TightPassMu <<"\t PtPassMu = "<< PtPassMu <<"\t EtaPassMu = "<< EtaPassMu <<"\t IsoPassMu = "<<  IsoPassMu <<endl;;
+
+  cout<<"TotalAK4Jets = "<<TotalAK4Jets<<"\tTotalAK4Jets_MoreThan4 = "<<TotalAK4Jets_MoreThan4<<endl;
+  cout<<"IsJet = "<<IsJet<<"\tJetPtEtaPass = "<<JetPtEtaPass<<"\tJetLoosePass = "<<JetLoosePass<<"\tJetLepCleanPass = "<<JetLepCleanPass<<endl;
 
   std::cout<<"matching: "<<(float)ok/(float)total<<std::endl;
 
+  std::cout<<"total entries: "<<ReducedTree->fChain->GetEntries()<<std::endl;
   std::cout<<"lepton eff: "<<cutEff[0]<<std::endl
 	   <<"met eff:    "<<cutEff[1]<<std::endl
 	   <<"W eff:      "<<cutEff[2]<<std::endl
