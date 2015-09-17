@@ -192,7 +192,8 @@ bool verbose = 0;
       fileCounter++;
     }
 #else
-	ReducedTree->fChain->Add("/afs/cern.ch/user/r/rasharma/work/WW_Scattering/AnalysisFrameWork/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/ReducedSelection.root");
+	//ReducedTree->fChain->Add("/afs/cern.ch/user/r/rasharma/work/WW_Scattering/AnalysisFrameWork/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/ReducedSelection.root");
+	ReducedTree->fChain->Add("/afs/cern.ch/user/r/rasharma/work/public/Temp/W_LW_L_50k.root");
 #endif
   std::cout<<"number of files found: "<<fileCounter-1<<std::endl;
   std::cout<<"total entries: "<<ReducedTree->fChain->GetEntries()<<std::endl;
