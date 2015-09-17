@@ -182,15 +182,18 @@ bool verbose = 0;
 
   int fileCounter=0;
   Long64_t totalEntries=0;
-
+#if 0
   while (!rootList.eof())
     {
       char iRun_tW[700];
       rootList >> iRun_tW;
       ReducedTree->fChain->Add(iRun_tW);
+      cout<<"file counter = "<<fileCounter<<endl;
       fileCounter++;
     }
-
+#else
+	ReducedTree->fChain->Add("/afs/cern.ch/user/r/rasharma/work/WW_Scattering/AnalysisFrameWork/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/ReducedSelection.root");
+#endif
   std::cout<<"number of files found: "<<fileCounter-1<<std::endl;
   std::cout<<"total entries: "<<ReducedTree->fChain->GetEntries()<<std::endl;
   totalEntries=ReducedTree->fChain->GetEntries();
@@ -305,11 +308,13 @@ bool verbose = 0;
       for (int i=0; i<ReducedTree->ElectronsNum; i++) {
 	//if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
-	//if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
 	BoolTotalEle = 1;
+	//if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
 	if (ReducedTree->Electrons_isMedium[i]==false) continue;       
+	//if (ReducedTree->Electrons_isLoose[i]==false) continue;       
+	//if (ReducedTree->Electrons_isTight[i]==false) continue;       
 	BoolMediumPassEle = 1;
-        if (ReducedTree->ElectronsPt[i]<=35) continue;
+        if (ReducedTree->ElectronsPt[i]<=25) continue;
 	BoolPtPassEle = 1;
         if (fabs(ReducedTree->ElectronsEta[i])>=2.5) continue;
 	BoolEtaPassEle = 1;
@@ -332,13 +337,14 @@ bool verbose = 0;
       BoolTotalMu = 1;
 	//if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->TriggerProducerTriggerPass->at(1)==0) continue; //trigger
+	//if (ReducedTree->Muons_isLoose[i]==false) continue;
 	if (ReducedTree->Muons_isTight[i]==false) continue;
 	BoolTightPassMu = 1;
 	//if (ReducedTree->Muons_isHighPt[i]==false) continue;
 	//	if (ReducedTree->Muons_isPFMuon[i]==false) continue; //not in the synch ntuple!!
         if ((ReducedTree->Muons_trackIso[i]/ReducedTree->MuonsPt[i])>=0.1) continue;
 	BoolIsoPassMu = 1;
-        if (ReducedTree->MuonsPt[i]<35) continue;
+        if (ReducedTree->MuonsPt[i]<25) continue;
 	BoolPtPassMu = 1;
         if (fabs(ReducedTree->MuonsEta[i])>=2.4) continue;
 	BoolEtaPassMu = 1;
@@ -392,7 +398,7 @@ bool verbose = 0;
       if (ReducedTree->Electrons_isLoose[i]==false) continue;       
       //if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
-      if (ReducedTree->ElectronsPt[i]<25) continue;       
+      if (ReducedTree->ElectronsPt[i]<15) continue;       
       if (fabs(ReducedTree->ElectronsEta[i])>=2.5) continue;       
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
       ELE.SetPtEtaPhiE(ReducedTree->ElectronsPt[i],ReducedTree->ElectronsEta[i],ReducedTree->ElectronsPhi[i],ReducedTree->ElectronsE[i]);
@@ -408,7 +414,7 @@ bool verbose = 0;
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
       if (fabs(ReducedTree->MuonsEta[i])>=2.4) continue;
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
-      if (ReducedTree->MuonsPt[i]<25) continue;
+      if (ReducedTree->MuonsPt[i]<15) continue;
     if(WWTree->event==evento) std::cout<<"debug: "<<i<<std::endl; count++;
       MU.SetPtEtaPhiE(ReducedTree->MuonsPt[i],ReducedTree->MuonsEta[i],ReducedTree->MuonsPhi[i],ReducedTree->MuonsE[i]);
       looseMuon.push_back(MU);
@@ -420,6 +426,7 @@ bool verbose = 0;
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
 
     //preselection on jet pt and met
+    WWTree->Met_pt  = ReducedTree->METPt;
     if (ReducedTree->METPt < 30) continue; 
     cutEff[1]++;
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
@@ -708,8 +715,8 @@ bool verbose = 0;
     for (unsigned int i=0; i<ReducedTree->JetsNum; i++) //loop on AK4 jet
       {
 	bool isCleanedJet = true;
-	if (ReducedTree->Jets_PtCorr[i]<=30 || ReducedTree->JetsPt[i]<=20 || fabs(ReducedTree->JetsEta[i])>=2.4)  continue;
-	if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
+//	if (ReducedTree->Jets_PtCorr[i]<=30 || ReducedTree->JetsPt[i]<=20 || fabs(ReducedTree->JetsEta[i])>=2.4)  continue;
+//	if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
 
 	//CLEANING
 	if (deltaR(WWTree->ungroomed_jet_eta, WWTree->ungroomed_jet_phi,
@@ -746,7 +753,7 @@ bool verbose = 0;
 	    isCleanedJet = false;
 	}
 	*/
-	if (isCleanedJet==false) continue;
+//	if (isCleanedJet==false) continue;
 
 
 	WWTree->njets++;
@@ -761,7 +768,7 @@ bool verbose = 0;
 	if (deltaRlep<oldDeltaRLep) indexCloserJetLep = i;
 
 	float deltaR = HADW.DeltaR(AK4);
-	if (deltaR<0.8) continue; //the vbf jets must be outside the had W cone
+//	if (deltaR<0.8) continue; //the vbf jets must be outside the had W cone
 	
 	if (WWTree->njets!=0) {
 	  if (WWTree->jet2_pt!=0) {
@@ -802,7 +809,7 @@ bool verbose = 0;
 	    VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
 	    VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(ii)],ReducedTree->JetsEta[indexGoodJets.at(ii)],ReducedTree->JetsPhi[indexGoodJets.at(ii)],ReducedTree->Jets_ECorr[indexGoodJets.at(ii)]);
 	    TOT = VBF1 + VBF2;
-	    if (TOT.Pt() < tempPtMax) continue;
+//	    if (TOT.Pt() < tempPtMax) continue;
 	    tempPtMax = TOT.Pt(); //take the jet pair with largest Pt
 	    nVBF1 = indexGoodJets.at(i); //save position of the 1st vbf jet
 	    nVBF2 = indexGoodJets.at(ii); //save position of the 2nd vbf jet
@@ -853,14 +860,20 @@ bool verbose = 0;
       {
       BoolIsJet = 1;
 	bool isCleanedJet = true;
-	if (ReducedTree->Jets_PtCorr[i]<=30 || fabs(ReducedTree->JetsEta[i])>=3.0)  continue;
+	if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
+	if (fabs(ReducedTree->JetsEta[i])>=3.0) continue;
+	if (ReducedTree->Jets_PtCorr[i]<=25) continue;
+	//if (ReducedTree->Jets_PtCorr[i]<=25 || fabs(ReducedTree->JetsEta[i])>=3.0)  continue;
 	BoolJetPtEtaPass = 1;
 	//if (ReducedTree->Jets_PtCorr[i]<=30 || ReducedTree->JetsPt[i]<=20 || fabs(ReducedTree->JetsEta[i])>=2.4)  continue;
-	if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
 	BoolJetLoosePass = 1;
 
 
 	//CLEANING FROM LEPTONS
+	//cout<<"\n\n\n=============================================\n\n\n"<<endl;
+	//cout<<"tightEle size = "<<tightEle.size()<<endl;
+	//if (tightEle.size()!=1) exit(EXIT_FAILURE);
+	//cout<<"\n\n\n=============================================\n\n\n"<<endl;
 	for (int j=0; j<tightEle.size(); j++) {
 	  if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
 		     ReducedTree->JetsEta[i],   ReducedTree->JetsPhi[i]) <0.3) {
@@ -970,6 +983,7 @@ bool verbose = 0;
 	    WWTree->vbf_AK4_jj_eta = TOT.Eta();
 	    WWTree->vbf_AK4_jj_phi = TOT.Phi();
 	    WWTree->vbf_AK4_jj_m = TOT.M();	
+	    WWTree->vbf_AK4_jj_DeltaEta = fabs(VBF1.Eta()-VBF2.Eta());	
 
 	}
 

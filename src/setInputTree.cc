@@ -207,6 +207,7 @@ void setInputTree::Init()
    fChain->SetBranchAddress("Electrons_trackIso", Electrons_trackIso, &b_Electrons_trackIso);
    fChain->SetBranchAddress("Electrons_isLoose", Electrons_isLoose, &b_Electrons_isLoose);
    fChain->SetBranchAddress("Electrons_isMedium", Electrons_isMedium, &b_Electrons_isMedium);
+   fChain->SetBranchAddress("Electrons_isTight", Electrons_isTight, &b_Electrons_isTight);
    fChain->SetBranchAddress("MuonsNum", &MuonsNum, &b_MuonsNum);
    fChain->SetBranchAddress("MuonsPt", MuonsPt, &b_MuonsPt);
    fChain->SetBranchAddress("MuonsEta", MuonsEta, &b_MuonsEta);

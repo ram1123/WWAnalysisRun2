@@ -30,6 +30,7 @@ class setOutputTree {
   int nu_pz_run2_type;
   int nu_pz_isre;
   float l_pt;
+  float Met_pt;
   float l_eta;
   float l_phi;
   float l_e;
@@ -130,6 +131,7 @@ class setOutputTree {
   float vbf_AK4_jj_eta;
   float vbf_AK4_jj_phi;
   float vbf_AK4_jj_m;
+  float vbf_AK4_jj_DeltaEta;
 
   float Wjets_AK4_j1_pt;
   float Wjets_AK4_j1_eta;

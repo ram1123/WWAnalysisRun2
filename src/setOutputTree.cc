@@ -31,6 +31,7 @@ void setOutputTree::initializeVariables()
   nu_pz_run2_type=-999;
   nu_pz_isre=1;
   l_pt=-999;
+  Met_pt=-999;
   l_eta=-999;
   l_phi=-999;
   l_e=-999;
@@ -138,6 +139,7 @@ void setOutputTree::setBranches()
   fTree->Branch("nu_pz_run2_type",&nu_pz_run2_type,"nu_pz_run2_type/I");
   fTree->Branch("nu_pz_isre",&nu_pz_isre,"nu_pz_isre/I");
   fTree->Branch("l_pt",&l_pt,"l_pt/F");
+  fTree->Branch("Met_pt",&Met_pt,"Met_pt/F");
   fTree->Branch("l_eta",&l_eta,"l_eta/F");
   fTree->Branch("l_phi",&l_phi,"l_phi/F");
   fTree->Branch("l_e",&l_e,"l_e/F");
@@ -236,6 +238,7 @@ void setOutputTree::setBranches()
   fTree->Branch("vbf_AK4_jj_eta",&vbf_AK4_jj_eta,"vbf_AK4_jj_eta/F");
   fTree->Branch("vbf_AK4_jj_phi",&vbf_AK4_jj_phi,"vbf_AK4_jj_phi/F");
   fTree->Branch("vbf_AK4_jj_m",&vbf_AK4_jj_m,"vbf_AK4_jj_m/F");
+  fTree->Branch("vbf_AK4_jj_DeltaEta",&vbf_AK4_jj_DeltaEta,"vbf_AK4_jj_DeltaEta/F");
 
   fTree->Branch("Wjets_AK4_j1_pt",&Wjets_AK4_j1_pt,"Wjets_AK4_j1_pt/F");
   fTree->Branch("Wjets_AK4_j1_eta",&Wjets_AK4_j1_eta,"Wjets_AK4_j1_eta/F");
