@@ -22,6 +22,7 @@
 #include "TMath.h"
 #include "TString.h"
 #include "TClass.h"
+#include "TCanvas.h"
 #include "TApplication.h"
 #include "TLorentzVector.h"
 
@@ -247,6 +248,11 @@ bool verbose = 0;
   int BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
   int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
 
+TH1F * ptEle = new TH1F("ptEle","",100,0,300);
+TH1F * ptMet = new TH1F("ptMet","",100,0,300);
+TH1F * pt_W = new TH1F("pt_W","",100,0,300);
+TCanvas *c1 = new TCanvas("c1","",1);
+
   for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
   //for (Long64_t jentry=0; jentry<50000;jentry++,jentry2++) {
 
@@ -322,6 +328,7 @@ bool verbose = 0;
 	BoolTotalEle = 1;
 	//if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
 	if (ReducedTree->Electrons_isMedium[i]==false) continue;       
+	ptEle->Fill(ReducedTree->ElectronsPt[i]);
 	//if (ReducedTree->Electrons_isLoose[i]==false) continue;       
 	//if (ReducedTree->Electrons_isTight[i]==false) continue;       
 	BoolMediumPassEle = 1;
@@ -350,8 +357,9 @@ bool verbose = 0;
 	//if (ReducedTree->TriggerProducerTriggerPass->at(1)==0) continue; //trigger
 	//if (ReducedTree->Muons_isLoose[i]==false) continue;
 	if (ReducedTree->Muons_isTight[i]==false) continue;
-	BoolTightPassMu = 1;
 	//if (ReducedTree->Muons_isHighPt[i]==false) continue;
+	ptEle->Fill(ReducedTree->ElectronsPt[i]);
+	BoolTightPassMu = 1;
 	//	if (ReducedTree->Muons_isPFMuon[i]==false) continue; //not in the synch ntuple!!
         if ((ReducedTree->Muons_trackIso[i]/ReducedTree->MuonsPt[i])>=0.1) continue;
 	BoolIsoPassMu = 1;
@@ -434,6 +442,7 @@ bool verbose = 0;
     if(WWTree->event==evento)     std::cout<<nLooseLepton<<std::endl;
     if (nLooseLepton!=1) continue; //no additional leptons
     cutEff[0]++;
+    ptMet->Fill(ReducedTree->METPt);
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
 
     //preselection on jet pt and met
@@ -588,6 +597,7 @@ bool verbose = 0;
     //    W = NU2+LEP; 
     ////
 
+	pt_W->Fill(W.Pt());
     if (W.Pt()<50) continue;
     cutEff[2]++;
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
@@ -1164,6 +1174,9 @@ bool verbose = 0;
     if(WWTree->event==evento) std::cout<<"fill: "<<count<<std::endl; count++;
     outTree->Fill();
   }
+  ptEle->SaveAs("ptEle.C");
+  ptMet->SaveAs("ptMet.C");
+  pt_W->SaveAs("pt_W.C");
   cout<<"TotalEle = "<< TotalEle <<"\tTriggerPassEle = "<<  TriggerPassEle <<"\t MediumPassEle = "<<  MediumPassEle <<"\t PtPassEle = "<<  PtPassEle <<"\t EtaPassEle = "<<  EtaPassEle <<endl;
   cout<<" TotalMu= "<< TotalMu <<"\t TriggerPassMu = "<< TriggerPassMu <<"\t TightPassMu = "<< TightPassMu <<"\t PtPassMu = "<< PtPassMu <<"\t EtaPassMu = "<< EtaPassMu <<"\t IsoPassMu = "<<  IsoPassMu <<endl;;
 
