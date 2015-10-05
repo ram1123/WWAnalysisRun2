@@ -638,7 +638,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	//if (ReducedTree->Jets_PtCorr[i]<=30 || ReducedTree->JetsPt[i]<=20 || fabs(ReducedTree->JetsEta[i])>=2.4)  continue;
 	BoolJetLoosePass = 1;
 
-
 	//CLEANING FROM LEPTONS
 	//cout<<"\n\n\n=============================================\n\n\n"<<endl;
 	//cout<<"tightEle size = "<<tightEle.size()<<endl;
@@ -682,7 +681,7 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	if (BoolJetLepCleanPass) JetLepCleanPass++;
   
 
-	
+	cutEff[6]++;	
       if (indexGoodJets.size()<4)  continue;
       TotalAK4Jets_MoreThan4++;
 
@@ -694,62 +693,29 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	int nVBF1=-1, nVBF2=-1; //position of the two vbf jets
 
 	int nGoodAK4VBFjets = 0;
-	if(verbose)
+	if (verbose)
 	for(int i=0; i<indexGoodJets.size();i++)
 	{
 	cout<<"Event = "<<jentry<<"\tpt [ "<<i<<" ] = "<<ReducedTree->Jets_PtCorr[indexGoodJets.at(i)]<<endl;
 	}
 
-	for(int i=0; i<indexGoodJets.size()-1;i++)
-	{
-		for(int j=i+1; j<indexGoodJets.size();j++)
-		{
-			VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
-			VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(j)],ReducedTree->JetsEta[indexGoodJets.at(j)],ReducedTree->JetsPhi[indexGoodJets.at(j)],ReducedTree->Jets_ECorr[indexGoodJets.at(j)]);
-			//cout<<"Found Before Check!!!!"<<endl;
-	if(verbose)
-			cout<<"Before if loop::DeltaEta = "<<abs(VBF1.Eta()-VBF2.Eta())<<"opp hemi = "<< VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) <<"\t mass of dijet = "<<(VBF1+VBF2).M()<<endl;
-			if (i==0 && j==1)
-				mjj_01->Fill((VBF1+VBF2).M());
-			if (i==0 && j==2)
-				mjj_02->Fill((VBF1+VBF2).M());
-			if (i==0 && j==3)
-				mjj_03->Fill((VBF1+VBF2).M());
-			if (i==1 && j==2)
-				mjj_12->Fill((VBF1+VBF2).M());
-			if (i==1 && j==3)
-				mjj_13->Fill((VBF1+VBF2).M());
-			if (i==2 && j==3)
-				mjj_23->Fill((VBF1+VBF2).M());
-			//if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0) continue;
 
-			if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 || (VBF1+VBF2).M()<200) continue;
-			if (abs(VBF1.Eta()-VBF2.Eta())<1.5) continue;
-			//if (DeltaEta < abs(VBF1.Eta()-VBF2.Eta()) &&  VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 && (VBF1+VBF2).M()<300) continue;
-			//if (DeltaEta < abs(VBF1.Eta()-VBF2.Eta())) continue;
-			//if (VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 ) continue;
-			//if ((VBF1+VBF2).M()<300) continue;
-	if(verbose)
 
-			cout<<"Found!!!!"<<endl;
-			DeltaEta = abs(VBF1.Eta()-VBF2.Eta()); //take the jet pair with largest DeltaEta
-			nVBF1 = indexGoodJets.at(i); //save position of the 1st vbf jet
-			nVBF2 = indexGoodJets.at(j); //save position of the 2nd vbf jet
-	if(verbose)
-			cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<"\tDeltaEta = "<<DeltaEta<<"\tEta1*Eta2 = "<<VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta())<<"\tMass = "<<(VBF1+VBF2).M()<<endl;
-		}
-	nGoodAK4VBFjets++;
-	}
+	nVBF1 = indexGoodJets.at(0);
+	nVBF2 = indexGoodJets.at(1);
 
-	if (nGoodAK4VBFjets == 0) continue;
-	cutEff[3]++;
-
-	if (nVBF1!=-1 && nVBF2!=-1) //save infos for vbf jet pair
-	{
-    //cutEff[2]++;
 		VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF1],ReducedTree->JetsEta[nVBF1],ReducedTree->JetsPhi[nVBF1],ReducedTree->Jets_ECorr[nVBF1]);
 		VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF2],ReducedTree->JetsEta[nVBF2],ReducedTree->JetsPhi[nVBF2],ReducedTree->Jets_ECorr[nVBF2]);
 		TOT = VBF1 + VBF2 ;
+
+		if ((ReducedTree->Jets_bDiscriminatorICSV[nVBF2]>0.97) && (ReducedTree->Jets_bDiscriminatorICSV[nVBF1]>0.97)) continue;
+		cutEff[7]++;
+		if (VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 ) continue;
+    		cutEff[2]++;
+		if (abs(VBF1.Eta()-VBF2.Eta())<1.5) continue;
+    		cutEff[3]++;
+		if (TOT.M()<200) continue;
+    		cutEff[4]++;
 
 	if(verbose)
 	cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<endl;
@@ -772,27 +738,26 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	    WWTree->vbf_AK4_jj_m = TOT.M();	
 	    WWTree->vbf_AK4_jj_DeltaEta = fabs(VBF1.Eta()-VBF2.Eta());	
 
-	}
 
 	int coutWjets = 0;	
 	int nWjets1 = -1, nWjets2 = -1 ;
-	for(int i=0; i<indexGoodJets.size();i++)
-	{
-	if(indexGoodJets.at(0) == nVBF1 || indexGoodJets.at(0) == nVBF2 ) continue;
-	coutWjets++;
-	if(coutWjets == 1)
-	{
-	Wjet1_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
-	nWjets1 = indexGoodJets.at(i);	// Save position of first w-jets
-	}
-        if(coutWjets == 2)
-	{
-	Wjet2_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
-	nWjets2 = indexGoodJets.at(i);  // Save position of second w-jets
-	}
+	//for(int i=0; i<indexGoodJets.size();i++)
+	//{
+	//if(indexGoodJets.at(0) == nVBF1 || indexGoodJets.at(0) == nVBF2 ) continue;
+	//coutWjets++;
+	//if(coutWjets == 1)
+	//{
+	Wjet1_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(2)],ReducedTree->JetsEta[indexGoodJets.at(2)],ReducedTree->JetsPhi[indexGoodJets.at(2)],ReducedTree->Jets_ECorr[indexGoodJets.at(2)]);
+	nWjets1 = indexGoodJets.at(2);	// Save position of first w-jets
+	//}
+        //if(coutWjets == 2)
+	//{
+	Wjet2_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(3)],ReducedTree->JetsEta[indexGoodJets.at(3)],ReducedTree->JetsPhi[indexGoodJets.at(3)],ReducedTree->Jets_ECorr[indexGoodJets.at(3)]);
+	nWjets2 = indexGoodJets.at(3);  // Save position of second w-jets
+	//}
 	if ( nWjets1 == -1 || nWjets2 == -1 ) continue;
 	cout<<nWjets1<<"\t"<<nWjets2<<endl;
-	cutEff[4]++;
+	cutEff[5]++;
 	TOT_Wjet = Wjet1_AK4 + Wjet1_AK4 ;
 
 	    WWTree->Wjets_AK4_j1_pt = ReducedTree->Jets_PtCorr[nWjets1];
@@ -813,7 +778,7 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 
 	    nWjets1 = nWjets2 = -1;
 
-	    }
+	    //}
 	
 	
 
@@ -966,9 +931,14 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
   std::cout<<"total entries: "<<ReducedTree->fChain->GetEntries()<<std::endl;
   std::cout<<"lepton eff: "<<cutEff[0]<<std::endl
 	   <<"met eff:    "<<cutEff[1]<<std::endl
-	   <<"W eff:      "<<cutEff[2]<<std::endl
-	   <<"VBF Jet found:  "<<cutEff[3]<<std::endl
-	   <<"WJets found:  "<<cutEff[4]<<std::endl;
+	   <<"Found Jet: "<<cutEff[6]<<std::endl
+	   <<"Found No B-jset: "<<cutEff[7]<<std::endl
+	   <<"Opposite Hemisphere two highest Pt jet eff:      "<<cutEff[2]<<std::endl
+	   <<"found delta eta > 1.5 for two highest pt jet:  "<<cutEff[3]<<std::endl
+	   <<"Mass of two highest pt jet > 200:  "<<cutEff[4]<<std::endl
+	   <<"Found VBF jets : "<<cutEff[4]<<std::endl
+	   <<"Found W-jets : "<<cutEff[5]<<std::endl;
+
 
   //--------close everything-------------
   ReducedTree->fChain->Delete();
