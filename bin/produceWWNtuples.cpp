@@ -631,18 +631,12 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
       BoolIsJet = 1;
 	bool isCleanedJet = true;
 	if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
+	BoolJetLoosePass = 1;
 	if (fabs(ReducedTree->JetsEta[i])>=3.0) continue;
 	if (ReducedTree->Jets_PtCorr[i]<=25) continue;
-	//if (ReducedTree->Jets_PtCorr[i]<=25 || fabs(ReducedTree->JetsEta[i])>=3.0)  continue;
 	BoolJetPtEtaPass = 1;
-	//if (ReducedTree->Jets_PtCorr[i]<=30 || ReducedTree->JetsPt[i]<=20 || fabs(ReducedTree->JetsEta[i])>=2.4)  continue;
-	BoolJetLoosePass = 1;
 
 	//CLEANING FROM LEPTONS
-	//cout<<"\n\n\n=============================================\n\n\n"<<endl;
-	//cout<<"tightEle size = "<<tightEle.size()<<endl;
-	//if (tightEle.size()!=1) exit(EXIT_FAILURE);
-	//cout<<"\n\n\n=============================================\n\n\n"<<endl;
 	for (int j=0; j<tightEle.size(); j++) {
 	  if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
 		     ReducedTree->JetsEta[i],   ReducedTree->JetsPhi[i]) <0.3) {
@@ -920,25 +914,46 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 
 
 //  sprintf("Total entries = %d \n Total Leptons = %d \n Medium Id = %d \n pt>25 = %d \n eta>2.5 = %d \n veto & 1Lep = %d \n met >30 = %d \n Wpt > 50 = %d \n HaveJet = %d \n JetPt Eta = %d \n JetLoose Id = %d \n Lepton Cleaning = %d \n Morethanor4Jet = %d \n",ReducedTree->fChain->GetEntries(), TotalEle, MediumPassEle, PtPassEle, EtaPassEle, cutEff[0] , cutEff[1], cutEff[2], IsJet, JetPtEtaPass, JetLoosePass, JetLepCleanPass, TotalAK4Jets_MoreThan4);
-  cout<<"TotalEle = "<< TotalEle <<"\tTriggerPassEle = "<<  TriggerPassEle <<"\t MediumPassEle = "<<  MediumPassEle <<"\t PtPassEle = "<<  PtPassEle <<"\t EtaPassEle = "<<  EtaPassEle <<endl;
-  cout<<" TotalMu= "<< TotalMu <<"\t TriggerPassMu = "<< TriggerPassMu <<"\t TightPassMu = "<< TightPassMu <<"\t PtPassMu = "<< PtPassMu <<"\t EtaPassMu = "<< EtaPassMu <<"\t IsoPassMu = "<<  IsoPassMu <<endl;;
-
-  cout<<"TotalAK4Jets = "<<TotalAK4Jets<<"\tTotalAK4Jets_MoreThan4 = "<<TotalAK4Jets_MoreThan4<<endl;
-  cout<<"IsJet = "<<IsJet<<"\tJetPtEtaPass = "<<JetPtEtaPass<<"\tJetLoosePass = "<<JetLoosePass<<"\tJetLepCleanPass = "<<JetLepCleanPass<<endl;
-
+  
   std::cout<<"matching: "<<(float)ok/(float)total<<std::endl;
 
-  std::cout<<"total entries: "<<ReducedTree->fChain->GetEntries()<<std::endl;
-  std::cout<<"lepton eff: "<<cutEff[0]<<std::endl
-	   <<"met eff:    "<<cutEff[1]<<std::endl
-	   <<"Found Jet: "<<cutEff[6]<<std::endl
-	   <<"Found No B-jset: "<<cutEff[7]<<std::endl
-	   <<"Opposite Hemisphere two highest Pt jet eff:      "<<cutEff[2]<<std::endl
-	   <<"found delta eta > 1.5 for two highest pt jet:  "<<cutEff[3]<<std::endl
-	   <<"Mass of two highest pt jet > 200:  "<<cutEff[4]<<std::endl
-	   <<"Found VBF jets : "<<cutEff[4]<<std::endl
-	   <<"Found W-jets : "<<cutEff[5]<<std::endl;
-
+ std::cout<<"===========================	OUTPUTS	=========================="<<std::endl;
+  std::cout<<"total entries: \t"<<ReducedTree->fChain->GetEntries()<<std::endl;
+  if( strcmp(leptonName.c_str(),"el")==0)
+  {
+  std::cout<<"MediumPassEle: \t"<<MediumPassEle<<std::endl
+  	   <<"Pt and Eta Pass ele:\t "<<EtaPassEle<<std::endl
+	   <<"lepton eff: \t"<<cutEff[0]<<std::endl
+	   <<"met eff:   \t "<<cutEff[1]<<std::endl
+	   <<"Jet Loose ID pass: \t"<<JetLoosePass<<std::endl
+	   <<"Jet Pt & Eta pass: \t"<<JetPtEtaPass<<std::endl
+	   <<"Jet Lepton Clean : \t"<< JetLepCleanPass << std::endl
+	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
+	   <<"Found No B-jset: \t"<<cutEff[7]<<std::endl
+	   <<"Opposite Hemisphere two highest Pt jet eff: \t"<<cutEff[2]<<std::endl
+	   <<"found delta eta > 1.5 for two highest pt jet: \t"<<cutEff[3]<<std::endl
+	   <<"Mass of two highest pt jet > 200: \t"<<cutEff[4]<<std::endl
+	   <<"VBF Jet found:  \t"<<cutEff[4]<<std::endl;
+  }
+  if( strcmp(leptonName.c_str(),"mu")==0)
+  {
+  std::cout<<"TightPassEle: \t"<<TightPassMu<<std::endl
+	   <<"Isolation passed: \t"<<IsoPassMu<<std::endl
+  	   <<"Pt and Eta Pass ele: \t"<<EtaPassMu<<std::endl
+	   <<"lepton eff: \t"<<cutEff[0]<<std::endl
+	   <<"met eff: \t"<<cutEff[1]<<std::endl
+	   <<"Jet Loose ID pass: \t"<<JetLoosePass<<std::endl
+	   <<"Jet Pt & Eta pass: \t"<<JetPtEtaPass<<std::endl
+	   <<"Jet Lepton Clean : \t"<< JetLepCleanPass << std::endl
+	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
+	   <<"Found No B-jset: \t"<<cutEff[7]<<std::endl
+	   <<"Opposite Hemisphere two highest Pt jet eff: \t"<<cutEff[2]<<std::endl
+	   <<"found delta eta > 1.5 for two highest pt jet: \t"<<cutEff[3]<<std::endl
+	   <<"Mass of two highest pt jet > 200: \t"<<cutEff[4]<<std::endl
+	   <<"VBF Jet found:  \t"<<cutEff[4]<<std::endl;
+  }
+  std::cout<<"===========================	OUTPUTS	=========================="<<std::endl;
+	 
 
   //--------close everything-------------
   ReducedTree->fChain->Delete();
