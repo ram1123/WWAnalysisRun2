@@ -152,7 +152,7 @@ bool verbose = 0;
   TLorentzVector W,MET,LEP;
   TLorentzVector NU0,NU1,NU2;
   TLorentzVector JET, HADW, AK4, AK4_new;
-  TLorentzVector VBF1,VBF2,TOT, VBF1_AK4, VBF2_AK4, Wjet1_AK4, Wjet2_AK4, TOT_Wjet;
+  TLorentzVector VBF1,VBF2,TOT, VBF1_AK4, VBF2_AK4, Wjet1_AK4, Wjet2_AK4, TOT_Wjet, Wjets1, Wjets2;
   TLorentzVector ELE,MU;
 
   std::vector<TLorentzVector> tightMuon;
@@ -640,10 +640,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 
 
 	//CLEANING FROM LEPTONS
-	//cout<<"\n\n\n=============================================\n\n\n"<<endl;
-	//cout<<"tightEle size = "<<tightEle.size()<<endl;
-	//if (tightEle.size()!=1) exit(EXIT_FAILURE);
-	//cout<<"\n\n\n=============================================\n\n\n"<<endl;
 	for (int j=0; j<tightEle.size(); j++) {
 	  if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
 		     ReducedTree->JetsEta[i],   ReducedTree->JetsPhi[i]) <0.3) {
@@ -672,9 +668,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	indexGoodJets.push_back(i); //save index of the "good" vbf jets candidate
 //	cout<<"yes there is jet"<<endl;
       }
-//      cout<<"=========================================================="<<endl;
-  //int BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
-//  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
 
 	if (BoolIsJet)	IsJet++;
 	if (BoolJetPtEtaPass) JetPtEtaPass++;
@@ -686,72 +679,22 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
       if (indexGoodJets.size()<4)  continue;
       TotalAK4Jets_MoreThan4++;
 
-      // Assign first two highest Pt jet as VBF tagged jets, and
-      // Next two jets as W-jets
-
 
 	float DeltaEta = 0.;
 	int nVBF1=-1, nVBF2=-1; //position of the two vbf jets
 
+	int nGoodAK4VBFjets = 0;
 	if(verbose)
 	for(int i=0; i<indexGoodJets.size();i++)
 	{
 	cout<<"Event = "<<jentry<<"\tpt [ "<<i<<" ] = "<<ReducedTree->Jets_PtCorr[indexGoodJets.at(i)]<<endl;
 	}
 
-	int coutWjets = 0;	
-	int nWjets1 = -1, nWjets2 = -1 ;
-	int nGoodWjets=0;
+	//================================ Selection of VBF jets: BEGIN	=====================================
 	for(int i=0; i<indexGoodJets.size()-1;i++)
 	{
 		for(int j=i+1; j<indexGoodJets.size();j++)
 		{
-		Wjet1_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);	
-		Wjet2_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(j)],ReducedTree->JetsEta[indexGoodJets.at(j)],ReducedTree->JetsPhi[indexGoodJets.at(j)],ReducedTree->Jets_ECorr[indexGoodJets.at(j)]);	
-
-		//if (ReducedTree->Jets_bDiscriminatorICSV[i]> 0.97 && ReducedTree->Jets_bDiscriminatorICSV[i]> 0.97) continue;
-
-		if (abs((Wjet1_AK4+Wjet2_AK4).M()-80.0)>25.0) continue;
-		cout<<"Mass of Wjets : "<<Wjet1_AK4.M()<<"\t"<<Wjet2_AK4.M()<<endl;
-		cout<<abs((Wjet1_AK4+Wjet2_AK4).M())<<endl;
-		
-		nWjets1 = indexGoodJets.at(i);	// Save position of first w-jets
-		nWjets2 = indexGoodJets.at(j);	// Save position of first w-jets
-		nGoodWjets++;
-		}
-	}
-	if ( nWjets1 == -1 || nWjets2 == -1 ) continue;
-	//cout<<nWjets1<<"\t"<<nWjets2<<endl;
-	cutEff[4]++;
-	TOT_Wjet = Wjet1_AK4 + Wjet1_AK4 ;
-
-	    WWTree->Wjets_AK4_j1_pt = ReducedTree->Jets_PtCorr[nWjets1];
-	    WWTree->Wjets_AK4_j1_eta = ReducedTree->JetsEta[nWjets1];
-	    WWTree->Wjets_AK4_j1_phi = ReducedTree->JetsPhi[nWjets1];
-	    WWTree->Wjets_AK4_j1_e = ReducedTree->Jets_ECorr[nWjets1];
-	    WWTree->Wjets_AK4_j1_bDiscriminatorCSV = ReducedTree->Jets_bDiscriminatorICSV[nWjets1];
-	    WWTree->Wjets_AK4_j2_pt = ReducedTree->Jets_PtCorr[nWjets2];
-	    WWTree->Wjets_AK4_j2_eta = ReducedTree->JetsEta[nWjets2];
-	    WWTree->Wjets_AK4_j2_phi = ReducedTree->JetsPhi[nWjets2];
-	    WWTree->Wjets_AK4_j2_e = ReducedTree->Jets_ECorr[nWjets2];
-	    WWTree->Wjets_AK4_j2_bDiscriminatorCSV = ReducedTree->Jets_bDiscriminatorICSV[nWjets2];
-	    WWTree->Wjets_AK4_jj_pt =  TOT_Wjet.Pt();
-	    WWTree->Wjets_AK4_jj_eta = TOT_Wjet.Eta();
-	    WWTree->Wjets_AK4_jj_phi = TOT_Wjet.Phi();
-	    WWTree->Wjets_AK4_jj_m =   TOT_Wjet.M();	
-	    WWTree->Wjets_AK4_jj_e =   TOT_Wjet.E();	
-
-
-	int nGoodAK4VBFjets = 0;
-	bool OppHemiMass = 0;
-	bool VBFEtaCut = 0;
-	for(int i=0; i<indexGoodJets.size()-1;i++)
-	{
-		for(int j=i+1; j<indexGoodJets.size();j++)
-		{
-		if (i==nWjets1 || i==nWjets2) continue;
-		if (j==nWjets1 || j==nWjets2) continue;
-
 			VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
 			VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(j)],ReducedTree->JetsEta[indexGoodJets.at(j)],ReducedTree->JetsPhi[indexGoodJets.at(j)],ReducedTree->Jets_ECorr[indexGoodJets.at(j)]);
 			//cout<<"Found Before Check!!!!"<<endl;
@@ -769,23 +712,10 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 				mjj_13->Fill((VBF1+VBF2).M());
 			if (i==2 && j==3)
 				mjj_23->Fill((VBF1+VBF2).M());
-			//if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0) continue;
+			if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta() > 0 || (VBF1+VBF2).M()<500) continue;
+			if (abs(VBF1.Eta()-VBF2.Eta())<3.5) continue;
 
-			if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 || (VBF1+VBF2).M()<500) continue;
-			OppHemiMass=1;
-			//cutEff[5]++;
-//cout<<"\n\n\nRam\t"<<abs(VBF1.Eta()-VBF2.Eta())<<endl;
-			if (abs(VBF1.Eta()-VBF2.Eta())<1.5) continue;
-			VBFEtaCut=1;
-
-//			if (ReducedTree->Jets_bDiscriminatorICSV[indexGoodJets.at(i)]> 0.97 && ReducedTree->Jets_bDiscriminatorICSV[indexGoodJets.at(j)]> 0.97) continue;
-			//cutEff[6]++;
-			//if (DeltaEta < abs(VBF1.Eta()-VBF2.Eta()) &&  VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 && (VBF1+VBF2).M()<300) continue;
-			//if (DeltaEta < abs(VBF1.Eta()-VBF2.Eta())) continue;
-			//if (VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) > 0 ) continue;
-			//if ((VBF1+VBF2).M()<300) continue;
 	if(verbose)
-
 			cout<<"Found!!!!"<<endl;
 			DeltaEta = abs(VBF1.Eta()-VBF2.Eta()); //take the jet pair with largest DeltaEta
 			nVBF1 = indexGoodJets.at(i); //save position of the 1st vbf jet
@@ -796,15 +726,12 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 		}
 	}
 
-	if (OppHemiMass) cutEff[2]++;
-	if (VBFEtaCut) cutEff[7]++;
 	if (nGoodAK4VBFjets == 0) continue;
 	cutEff[3]++;
 
 			if (ReducedTree->Jets_bDiscriminatorICSV[nVBF1]> 0.97 && ReducedTree->Jets_bDiscriminatorICSV[nVBF2]> 0.97) continue;
 			cutEff[6]++;
 
-	//cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<endl;
 
 	if (nVBF1!=-1 && nVBF2!=-1) //save infos for vbf jet pair
 	{
@@ -835,9 +762,65 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 
 	}
 
-/* 
-	int coutWjets = 0;	
+	//================================ Selection of VBF jets: END	=====================================
+	//
+	
+	//================================ Selection of W-jets: STARTS	=====================================
+	int nGoodAK4Wjets = 0;	
 	int nWjets1 = -1, nWjets2 = -1 ;
+	double DeltaMassWindow = 25.;
+	for(int i=0; i<indexGoodJets.size()-1;i++)
+	{
+		for(int j=i+1; j<indexGoodJets.size();j++)
+		{
+	if(indexGoodJets.at(i) == nVBF1 || indexGoodJets.at(j) == nVBF2 ) continue;
+	if(indexGoodJets.at(j) == nVBF1 || indexGoodJets.at(i) == nVBF2 ) continue;
+	//coutWjets++;
+			Wjet1_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(i)],ReducedTree->JetsEta[indexGoodJets.at(i)],ReducedTree->JetsPhi[indexGoodJets.at(i)],ReducedTree->Jets_ECorr[indexGoodJets.at(i)]);
+			Wjet2_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(j)],ReducedTree->JetsEta[indexGoodJets.at(j)],ReducedTree->JetsPhi[indexGoodJets.at(j)],ReducedTree->Jets_ECorr[indexGoodJets.at(j)]);
+			//cout<<"Found Before Check!!!!"<<endl;
+
+			if (DeltaMassWindow < abs((Wjet1_AK4+Wjet2_AK4).M()-80.)) continue;
+			cout<<"(Wjet1_AK4+Wjet2_AK4).M()-80. = "<<(Wjet1_AK4+Wjet2_AK4).M()<<endl;
+
+	if(verbose)
+			cout<<"Found!!!!"<<endl;
+			DeltaMassWindow = abs((Wjet1_AK4+Wjet2_AK4).M()-80.); //take the jet pair with largest DeltaEta
+			nWjets1 = indexGoodJets.at(i); //save position of the 1st vbf jet
+			nWjets2 = indexGoodJets.at(j); //save position of the 2nd vbf jet
+			nGoodAK4Wjets++;
+		}
+	}
+	if (nGoodAK4Wjets == 0) continue;
+	cutEff[2]++;
+	if ( nWjets1 == -1 || nWjets2 == -1 ) continue;
+	cout<<nWjets1<<"\t"<<nWjets2<<endl;
+	cout<<"Ram"<<endl;
+	//Wjets1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(nWjets1)],ReducedTree->JetsEta[indexGoodJets.at(nWjets1)],ReducedTree->JetsPhi[indexGoodJets.at(nWjets1)],ReducedTree->Jets_ECorr[indexGoodJets.at(nWjets1)]);
+	//Wjets2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[indexGoodJets.at(nWjets2)],ReducedTree->JetsEta[indexGoodJets.at(nWjets2)],ReducedTree->JetsPhi[indexGoodJets.at(nWjets2)],ReducedTree->Jets_ECorr[indexGoodJets.at(nWjets2)]);
+	//TOT_Wjet = Wjets1 + Wjets2 ;
+	TOT_Wjet = Wjet1_AK4 + Wjet2_AK4 ;
+
+	    WWTree->Wjets_AK4_j1_pt = ReducedTree->Jets_PtCorr[nWjets1];
+	    WWTree->Wjets_AK4_j1_eta = ReducedTree->JetsEta[nWjets1];
+	    WWTree->Wjets_AK4_j1_phi = ReducedTree->JetsPhi[nWjets1];
+	    WWTree->Wjets_AK4_j1_e = ReducedTree->Jets_ECorr[nWjets1];
+	    WWTree->Wjets_AK4_j1_bDiscriminatorCSV = ReducedTree->Jets_bDiscriminatorICSV[nWjets1];
+	    WWTree->Wjets_AK4_j2_pt = ReducedTree->Jets_PtCorr[nWjets2];
+	    WWTree->Wjets_AK4_j2_eta = ReducedTree->JetsEta[nWjets2];
+	    WWTree->Wjets_AK4_j2_phi = ReducedTree->JetsPhi[nWjets2];
+	    WWTree->Wjets_AK4_j2_e = ReducedTree->Jets_ECorr[nWjets2];
+	    WWTree->Wjets_AK4_j2_bDiscriminatorCSV = ReducedTree->Jets_bDiscriminatorICSV[nWjets2];
+	    WWTree->Wjets_AK4_jj_pt =  TOT_Wjet.Pt();
+	    WWTree->Wjets_AK4_jj_eta = TOT_Wjet.Eta();
+	    WWTree->Wjets_AK4_jj_phi = TOT_Wjet.Phi();
+	    WWTree->Wjets_AK4_jj_m =   TOT_Wjet.M();	
+	    WWTree->Wjets_AK4_jj_e =   TOT_Wjet.E();	
+
+
+
+	//================================ Selection of W-jets: END	=====================================
+	/* 
 	for(int i=0; i<indexGoodJets.size();i++)
 	{
 	if(indexGoodJets.at(0) == nVBF1 || indexGoodJets.at(0) == nVBF2 ) continue;
@@ -876,8 +859,8 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	    nWjets1 = nWjets2 = -1;
 
 	    }
+	*/
 	
-*/	
 
 	
 	
@@ -1031,11 +1014,9 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	   <<"Jet loose ID: \t"<<JetLoosePass<<std::endl
 	   <<"Jet Cleaning: \t"<<JetLepCleanPass<<std::endl
 	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
-	   <<"Wjet found: \t"<<cutEff[4]<<std::endl
-	   <<"Opposite Hemi \t"<<cutEff[2]<<std::endl
-	   <<"VBF eta cut \t"<<cutEff[7]<<std::endl
 	   <<"VBF Jet found:  \t"<<cutEff[3]<<std::endl
-	   <<"VBF Jet found No B-tagged:\t  "<<cutEff[6]<<std::endl;
+	   <<"VBF Jet found No B-tagged:\t  "<<cutEff[6]<<std::endl
+	   <<"Wjet found: \t"<<cutEff[2]<<std::endl;
   }
   if( strcmp(leptonName.c_str(),"mu")==0)
   {
@@ -1049,7 +1030,8 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	   <<"Jet Cleaning: \t"<<JetLepCleanPass<<std::endl
 	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
 	   <<"VBF Jet found:  \t"<<cutEff[3]<<std::endl
-	   <<"VBF Jet found No B-tagged:  \t"<<cutEff[6]<<std::endl;
+	   <<"VBF Jet found No B-tagged:  \t"<<cutEff[6]<<std::endl
+	   <<"Wjet found: \t"<<cutEff[2]<<std::endl;
   }
   std::cout<<"===========================	OUTPUTS	=========================="<<std::endl;
 	 
