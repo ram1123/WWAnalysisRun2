@@ -170,7 +170,8 @@ bool verbose = 0;
 
   char command1[3000];
   char list1[2000];
-  sprintf (list1, "InputRootFiles/listTemp_%s.txt", inputFile.c_str());
+  sprintf (list1, "InputRootFiles/%s.txt", inputFile.c_str());
+  //sprintf (list1, "InputRootFiles/listTemp_%s.txt", inputFile.c_str());
   ifstream rootList (list1);
 
   int fileCounter=0;
@@ -238,17 +239,18 @@ bool verbose = 0;
   int BoolTotalEle = 0, BoolTriggerPassEle = 0, BoolMediumPassEle = 0, BoolPtPassEle = 0, BoolEtaPassEle = 0;
   int BoolTotalMu = 0, BoolTriggerPassMu = 0, BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
   int BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
-  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
+  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0, Bool_BTagged = 0;
 
 TH1F * ptEle = new TH1F("ptEle","",100,0,300);
 TH1F * ptMet = new TH1F("ptMet","",100,0,300);
 TH1F * pt_W = new TH1F("pt_W","",100,0,300);
-TH1F * mjj_01 = new TH1F("mjj_01","",100,0,2500);
-TH1F * mjj_02 = new TH1F("mjj_02","",100,0,2500);
-TH1F * mjj_03 = new TH1F("mjj_03","",100,0,2500);
-TH1F * mjj_12 = new TH1F("mjj_12","",100,0,2500);
-TH1F * mjj_13 = new TH1F("mjj_13","",100,0,2500);
-TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
+TH1F * mjj_01 = new TH1F("mjj_01","",100,0,1.2);
+TH1F * mjj_02 = new TH1F("mjj_02","",100,0,1.2);
+TH1F * mjj_03 = new TH1F("mjj_03","",100,0,1.2);
+TH1F * mjj_12 = new TH1F("mjj_12","",100,0,1.2);
+TH1F * mjj_13 = new TH1F("mjj_13","",100,0,1.2);
+TH1F * mjj_23 = new TH1F("mjj_23","",100,0,1.2);
+TH1F * mjj_33 = new TH1F("mjj_33","",100,0,1.2);
 //TCanvas *c1 = new TCanvas("c1","",1);
 
   for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
@@ -328,7 +330,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	if (ReducedTree->Electrons_isMedium[i]==false) continue;       
 	ptEle->Fill(ReducedTree->ElectronsPt[i]);
 	//if (ReducedTree->Electrons_isLoose[i]==false) continue;       
-	//if (ReducedTree->Electrons_isTight[i]==false) continue;       
 	BoolMediumPassEle = 1;
         if (ReducedTree->ElectronsPt[i]<=25) continue;
 	BoolPtPassEle = 1;
@@ -617,11 +618,28 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
     int indexCloserJet = -1;
     int indexCloserJetLep = -1;
   //int TotalAK4Jets = 0, TotalAK4Jets_MoreThan4 = 0;
-  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
+  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0, Bool_BTagged = 0;
     for (unsigned int i=0; i<ReducedTree->JetsNum; i++) //loop on AK4 jet
       {
       BoolIsJet = 1;
 	bool isCleanedJet = true;
+			if (i==0 )
+				mjj_01->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
+			if (i==1 )
+				mjj_02->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
+			if (i==2 )
+				mjj_03->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
+			if (i==3 )
+				mjj_12->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
+			if (i==4 )
+				mjj_13->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
+			if (i==5 )
+				mjj_23->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
+			if (i==6 )
+				mjj_33->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
+
+
+
 	if (fabs(ReducedTree->JetsEta[i])>=3.0) continue;
 	if (ReducedTree->Jets_PtCorr[i]<=25) continue;
 	//if (ReducedTree->Jets_PtCorr[i]<=25 || fabs(ReducedTree->JetsEta[i])>=3.0)  continue;
@@ -647,7 +665,9 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 
 	if (isCleanedJet==false) continue;
 	BoolJetLepCleanPass = 1;
-
+//	CHECK IF THE JETS ARE B-TAGGED OR NOT
+//	if (ReducedTree->Jets_bDiscriminatorICSV[i]>0.605) continue;
+//	Bool_BTagged = 1;
 
 	WWTree->njetsAK4++;
 	TotalAK4Jets++;
@@ -665,6 +685,7 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	if (BoolJetPtEtaPass) JetPtEtaPass++;
 	if (BoolJetLoosePass) JetLoosePass++;
 	if (BoolJetLepCleanPass) JetLepCleanPass++;
+	if (Bool_BTagged) cutEff[6]++; 
   
 
 	
@@ -683,6 +704,19 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	}
 
 	//================================ Selection of VBF jets: BEGIN	=====================================
+	
+bool FirstTwoVBF = 1;	
+#if 1
+
+	//		SELECT FIRST TWO JET AS VBF JET
+	nVBF1=0;	nVBF2=1;
+	VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF1],ReducedTree->JetsEta[nVBF1],ReducedTree->JetsPhi[nVBF1],ReducedTree->Jets_ECorr[nVBF1]);
+	VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF2],ReducedTree->JetsEta[nVBF2],ReducedTree->JetsPhi[nVBF2],ReducedTree->Jets_ECorr[nVBF2]);
+	if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta() > 0 || (VBF1+VBF2).M()<500) continue;
+	if (abs(VBF1.Eta()-VBF2.Eta())<3.5) continue;
+	nGoodAK4VBFjets++;
+
+#else
 	for(int i=0; i<indexGoodJets.size()-1;i++)
 	{
 		for(int j=i+1; j<indexGoodJets.size();j++)
@@ -692,18 +726,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 			//cout<<"Found Before Check!!!!"<<endl;
 	if(verbose)
 			cout<<"Before if loop::DeltaEta = "<<abs(VBF1.Eta()-VBF2.Eta())<<"opp hemi = "<< VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) <<"\t mass of dijet = "<<(VBF1+VBF2).M()<<endl;
-			if (i==0 && j==1)
-				mjj_01->Fill((VBF1+VBF2).M());
-			if (i==0 && j==2)
-				mjj_02->Fill((VBF1+VBF2).M());
-			if (i==0 && j==3)
-				mjj_03->Fill((VBF1+VBF2).M());
-			if (i==1 && j==2)
-				mjj_12->Fill((VBF1+VBF2).M());
-			if (i==1 && j==3)
-				mjj_13->Fill((VBF1+VBF2).M());
-			if (i==2 && j==3)
-				mjj_23->Fill((VBF1+VBF2).M());
 			if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta() > 0 || (VBF1+VBF2).M()<500) continue;
 			if (abs(VBF1.Eta()-VBF2.Eta())<3.5) continue;
 
@@ -717,11 +739,12 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	nGoodAK4VBFjets++;
 		}
 	}
-
+#endif
 	if (nGoodAK4VBFjets == 0) continue;
 	cutEff[3]++;
+//cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<endl;
 
-	if (ReducedTree->Jets_bDiscriminatorICSV[nVBF1]> 0.97 && ReducedTree->Jets_bDiscriminatorICSV[nVBF2]> 0.97) continue;
+	if (ReducedTree->Jets_bDiscriminatorICSV[nVBF1]> 0.605 && ReducedTree->Jets_bDiscriminatorICSV[nVBF2]> 0.605) continue;
 	cutEff[6]++;
 
 
@@ -761,6 +784,14 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	int nGoodAK4Wjets = 0;	
 	int nWjets1 = -1, nWjets2 = -1 ;
 	double DeltaMassWindow = 25.;
+#if 1
+	nWjets1=2; nWjets2=3;
+	Wjet1_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets1],ReducedTree->JetsEta[nWjets1],ReducedTree->JetsPhi[nWjets1],ReducedTree->Jets_ECorr[nWjets1]);
+	Wjet2_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets2],ReducedTree->JetsEta[nWjets2],ReducedTree->JetsPhi[nWjets2],ReducedTree->Jets_ECorr[nWjets2]);
+	TOT_Wjet = Wjet1_AK4 + Wjet2_AK4 ;
+//	if (DeltaMassWindow < abs(TOT_Wjet.M() - 80.)) continue;
+	nGoodAK4Wjets++;
+#else
 	for(int i=0; i<indexGoodJets.size()-1;i++)
 	{
 		for(int j=i+1; j<indexGoodJets.size();j++)
@@ -829,9 +860,13 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 			nGoodAK4Wjets++;
 		}
 	}
+//if (ReducedTree->Jets_bDiscriminatorICSV[nWjets1]> 0.605 && ReducedTree->Jets_bDiscriminatorICSV[nWjets2]> 0.605) continue;
+#endif	
 	if (nGoodAK4Wjets == 0) continue;
 	cutEff[2]++;
 	if ( nWjets1 == -1 || nWjets2 == -1 ) continue;
+	if (ReducedTree->Jets_bDiscriminatorICSV[nWjets1]> 0.605 && ReducedTree->Jets_bDiscriminatorICSV[nWjets2]> 0.605) continue;
+	cutEff[7]++;
 	//cout<<nWjets1<<"\t"<<nWjets2<<endl;
 	Wjets1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets1],ReducedTree->JetsEta[nWjets1],ReducedTree->JetsPhi[nWjets1],ReducedTree->Jets_ECorr[nWjets1]);
 	Wjets2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets2],ReducedTree->JetsEta[nWjets2],ReducedTree->JetsPhi[nWjets2],ReducedTree->Jets_ECorr[nWjets2]);
@@ -982,12 +1017,13 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
   ptEle->SaveAs("ptEle.C");
   ptMet->SaveAs("ptMet.C");
   pt_W->SaveAs("pt_W.C");
-  mjj_01->SaveAs("mjj_01.C");
-  mjj_02->SaveAs("mjj_02.C");
-  mjj_03->SaveAs("mjj_03.C");
-  mjj_12->SaveAs("mjj_12.C");
-  mjj_13->SaveAs("mjj_13.C");
-  mjj_23->SaveAs("mjj_23.C");
+  mjj_01->SaveAs("mjj_01.root");
+  mjj_02->SaveAs("mjj_02.root");
+  mjj_03->SaveAs("mjj_03.root");
+  mjj_12->SaveAs("mjj_12.root");
+  mjj_13->SaveAs("mjj_13.root");
+  mjj_23->SaveAs("mjj_23.root");
+  mjj_33->SaveAs("mjj_33.root");
 
 
 
@@ -1006,8 +1042,9 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	   <<"Jet Cleaning: \t"<<JetLepCleanPass<<std::endl
 	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
 	   <<"VBF Jet found:  \t"<<cutEff[3]<<std::endl
-	   <<"VBF Jet found No B-tagged:\t  "<<cutEff[6]<<std::endl
-	   <<"Wjet found: \t"<<cutEff[2]<<std::endl;
+	   <<"VBF Jet found No B-tagged:  \t"<<cutEff[6]<<std::endl
+	   <<"Wjet found: \t"<<cutEff[2]<<std::endl
+	   <<"Wjet found No B-tagged: \t"<<cutEff[7]<<std::endl;
   }
   if( strcmp(leptonName.c_str(),"mu")==0)
   {
@@ -1022,7 +1059,8 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
 	   <<"VBF Jet found:  \t"<<cutEff[3]<<std::endl
 	   <<"VBF Jet found No B-tagged:  \t"<<cutEff[6]<<std::endl
-	   <<"Wjet found: \t"<<cutEff[2]<<std::endl;
+	   <<"Wjet found: \t"<<cutEff[2]<<std::endl
+	   <<"Wjet found No B-tagged: \t"<<cutEff[7]<<std::endl;
   }
   std::cout<<"===========================	OUTPUTS	=========================="<<std::endl;
 	 
