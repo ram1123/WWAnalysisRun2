@@ -3,6 +3,7 @@
 
 #include "TTree.h"
 #include "TChain.h"
+#include <vector>
 
 class setOutputTree {
 
@@ -99,6 +100,27 @@ class setOutputTree {
   int nBTagJet_loose;
   int nBTagJet_medium;
   int nBTagJet_tight;
+  int AK4_jet_size;
+  float AK4_maxpt_j1_pt;
+  float AK4_maxpt_j1_eta;
+  float AK4_maxpt_j1_phi;
+  float AK4_maxpt_j1_e;
+  float AK4_maxpt_j1_bDiscriminatorCSV;
+  float AK4_maxpt_j2_pt;
+  float AK4_maxpt_j2_eta;
+  float AK4_maxpt_j2_phi;
+  float AK4_maxpt_j2_e;
+  float AK4_maxpt_j2_bDiscriminatorCSV;
+  float AK4_maxpt_j3_pt;
+  float AK4_maxpt_j3_eta;
+  float AK4_maxpt_j3_phi;
+  float AK4_maxpt_j3_e;
+  float AK4_maxpt_j3_bDiscriminatorCSV;
+  float AK4_maxpt_j4_pt;
+  float AK4_maxpt_j4_eta;
+  float AK4_maxpt_j4_phi;
+  float AK4_maxpt_j4_e;
+  float AK4_maxpt_j4_bDiscriminatorCSV;
   float vbf_maxpt_j1_pt;
   float vbf_maxpt_j1_eta;
   float vbf_maxpt_j1_phi;
