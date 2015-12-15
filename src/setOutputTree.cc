@@ -239,6 +239,8 @@ void setOutputTree::setBranches()
   fTree->Branch("vbf_AK4_jj_phi",&vbf_AK4_jj_phi,"vbf_AK4_jj_phi/F");
   fTree->Branch("vbf_AK4_jj_m",&vbf_AK4_jj_m,"vbf_AK4_jj_m/F");
   fTree->Branch("vbf_AK4_jj_DeltaEta",&vbf_AK4_jj_DeltaEta,"vbf_AK4_jj_DeltaEta/F");
+  fTree->Branch("vbf_AK4_jj_AssymPt",&vbf_AK4_jj_AssymPt,"vbf_AK4_jj_AssymPt/F");
+  fTree->Branch("vbf_AK4_jj_DeltaPhi",&vbf_AK4_jj_DeltaPhi,"vbf_AK4_jj_DeltaPhi/F");
 
   fTree->Branch("Wjets_AK4_j1_pt",&Wjets_AK4_j1_pt,"Wjets_AK4_j1_pt/F");
   fTree->Branch("Wjets_AK4_j1_eta",&Wjets_AK4_j1_eta,"Wjets_AK4_j1_eta/F");
@@ -255,5 +257,6 @@ void setOutputTree::setBranches()
   fTree->Branch("Wjets_AK4_jj_phi",&Wjets_AK4_jj_phi,"Wjets_AK4_jj_phi/F");
   fTree->Branch("Wjets_AK4_jj_m",&Wjets_AK4_jj_m,"Wjets_AK4_jj_m/F");
   fTree->Branch("Wjets_AK4_jj_e",&Wjets_AK4_jj_e,"Wjets_AK4_jj_e/F");
-
+  fTree->Branch("Wjets_AK4_jj_AssymPt",&Wjets_AK4_jj_AssymPt,"Wjets_AK4_jj_AssymPt/F");
+  fTree->Branch("WW_mass",&WW_mass,"WW_mass/F");
 }

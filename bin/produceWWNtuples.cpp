@@ -709,7 +709,7 @@ bool FirstTwoVBF = 1;
 #if 1
 
 	//		SELECT FIRST TWO JET AS VBF JET
-	nVBF1=0;	nVBF2=1;
+	nVBF1=indexGoodJets.at(0);	nVBF2=indexGoodJets.at(1);
 	VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF1],ReducedTree->JetsEta[nVBF1],ReducedTree->JetsPhi[nVBF1],ReducedTree->Jets_ECorr[nVBF1]);
 	VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF2],ReducedTree->JetsEta[nVBF2],ReducedTree->JetsPhi[nVBF2],ReducedTree->Jets_ECorr[nVBF2]);
 	if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta() > 0 || (VBF1+VBF2).M()<500) continue;
@@ -774,6 +774,8 @@ bool FirstTwoVBF = 1;
 	    WWTree->vbf_AK4_jj_phi = TOT.Phi();
 	    WWTree->vbf_AK4_jj_m = TOT.M();	
 	    WWTree->vbf_AK4_jj_DeltaEta = fabs(VBF1.Eta()-VBF2.Eta());	
+	    WWTree->vbf_AK4_jj_DeltaPhi = fabs(VBF1.Phi()-VBF2.Phi());	
+	    WWTree->vbf_AK4_jj_AssymPt = fabs((ReducedTree->Jets_PtCorr[nVBF1]-ReducedTree->Jets_PtCorr[nVBF2])/(ReducedTree->Jets_PtCorr[nVBF1] + ReducedTree->Jets_PtCorr[nVBF2]));	
 
 	}
 
@@ -785,7 +787,7 @@ bool FirstTwoVBF = 1;
 	int nWjets1 = -1, nWjets2 = -1 ;
 	double DeltaMassWindow = 25.;
 #if 1
-	nWjets1=2; nWjets2=3;
+	nWjets1=indexGoodJets.at(2); nWjets2=indexGoodJets.at(3);
 	Wjet1_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets1],ReducedTree->JetsEta[nWjets1],ReducedTree->JetsPhi[nWjets1],ReducedTree->Jets_ECorr[nWjets1]);
 	Wjet2_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets2],ReducedTree->JetsEta[nWjets2],ReducedTree->JetsPhi[nWjets2],ReducedTree->Jets_ECorr[nWjets2]);
 	TOT_Wjet = Wjet1_AK4 + Wjet2_AK4 ;
@@ -887,6 +889,8 @@ bool FirstTwoVBF = 1;
 	    WWTree->Wjets_AK4_jj_phi = TOT_Wjet_Final.Phi();
 	    WWTree->Wjets_AK4_jj_m =   TOT_Wjet_Final.M();	
 	    WWTree->Wjets_AK4_jj_e =   TOT_Wjet_Final.E();	
+	    WWTree->WW_mass = (TOT + TOT_Wjet_Final).M();
+	    WWTree->Wjets_AK4_jj_AssymPt = fabs((ReducedTree->Jets_PtCorr[nWjets1]-ReducedTree->Jets_PtCorr[nWjets2])/(ReducedTree->Jets_PtCorr[nWjets1] + ReducedTree->Jets_PtCorr[nWjets2]));	
 
 
 

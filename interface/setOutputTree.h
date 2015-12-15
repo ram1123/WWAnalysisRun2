@@ -132,6 +132,8 @@ class setOutputTree {
   float vbf_AK4_jj_phi;
   float vbf_AK4_jj_m;
   float vbf_AK4_jj_DeltaEta;
+  float vbf_AK4_jj_DeltaPhi;
+  float vbf_AK4_jj_AssymPt;
 
   float Wjets_AK4_j1_pt;
   float Wjets_AK4_j1_eta;
@@ -148,6 +150,8 @@ class setOutputTree {
   float Wjets_AK4_jj_phi;
   float Wjets_AK4_jj_m;
   float Wjets_AK4_jj_e;
+  float Wjets_AK4_jj_AssymPt;
+  float WW_mass;
 
   setOutputTree(TTree* outputTree);
   //  setOutputTree(TTree *outputTree=0);
