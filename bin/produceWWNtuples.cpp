@@ -33,7 +33,7 @@
 #include "../interface/analysisUtils.h"
 
 using namespace std;
-
+void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22, double& costheta1, double& costheta2, double& Phi, double& costhetastar, double& Phi1);
 //*****PU WEIGHT***************
 
 vector<double> generate_weights(TH1* data_npu_estimated){
@@ -170,8 +170,8 @@ bool verbose = 0;
 
   char command1[3000];
   char list1[2000];
+//  sprintf (list1, "InputRootFiles/listTemp_%s.txt", inputFile.c_str());
   sprintf (list1, "InputRootFiles/%s.txt", inputFile.c_str());
-  //sprintf (list1, "InputRootFiles/listTemp_%s.txt", inputFile.c_str());
   ifstream rootList (list1);
 
   int fileCounter=0;
@@ -221,7 +221,8 @@ bool verbose = 0;
   pileupFile->Close();
 
   //---------output tree----------------
-  TFile* outROOT = TFile::Open((std::string("output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");
+  TFile* outROOT = TFile::Open((std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");	// Path here for lpc only because at lpc condor jobs output can be only saved at eos area
+  //TFile* outROOT = TFile::Open((std::string("output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");
   outROOT->cd();
   TTree* outTree = new TTree("otree", "otree");
   outTree->SetDirectory(0);
@@ -239,18 +240,17 @@ bool verbose = 0;
   int BoolTotalEle = 0, BoolTriggerPassEle = 0, BoolMediumPassEle = 0, BoolPtPassEle = 0, BoolEtaPassEle = 0;
   int BoolTotalMu = 0, BoolTriggerPassMu = 0, BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
   int BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
-  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0, Bool_BTagged = 0;
+  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
 
 TH1F * ptEle = new TH1F("ptEle","",100,0,300);
 TH1F * ptMet = new TH1F("ptMet","",100,0,300);
 TH1F * pt_W = new TH1F("pt_W","",100,0,300);
-TH1F * mjj_01 = new TH1F("mjj_01","",100,0,1.2);
-TH1F * mjj_02 = new TH1F("mjj_02","",100,0,1.2);
-TH1F * mjj_03 = new TH1F("mjj_03","",100,0,1.2);
-TH1F * mjj_12 = new TH1F("mjj_12","",100,0,1.2);
-TH1F * mjj_13 = new TH1F("mjj_13","",100,0,1.2);
-TH1F * mjj_23 = new TH1F("mjj_23","",100,0,1.2);
-TH1F * mjj_33 = new TH1F("mjj_33","",100,0,1.2);
+TH1F * mjj_01 = new TH1F("mjj_01","",100,0,2500);
+TH1F * mjj_02 = new TH1F("mjj_02","",100,0,2500);
+TH1F * mjj_03 = new TH1F("mjj_03","",100,0,2500);
+TH1F * mjj_12 = new TH1F("mjj_12","",100,0,2500);
+TH1F * mjj_13 = new TH1F("mjj_13","",100,0,2500);
+TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 //TCanvas *c1 = new TCanvas("c1","",1);
 
   for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
@@ -276,11 +276,11 @@ TH1F * mjj_33 = new TH1F("mjj_33","",100,0,1.2);
     WWTree->totalEventWeight = 1.; //temporary value
     WWTree->eff_and_pu_Weight = 1.; //temporary value
 
-    if (ReducedTree->genEventWeight>0)
-      WWTree->genWeight=1.;
-    else if (ReducedTree->genEventWeight<0)
-      WWTree->genWeight=-1.;
-    //    WWTree->genWeight = ReducedTree->genEventWeight;
+  //  if (ReducedTree->genEventWeight>0)
+    //  WWTree->genWeight=1.;
+//    else if (ReducedTree->genEventWeight<0)
+//      WWTree->genWeight=-1.;
+        WWTree->genWeight = ReducedTree->genEventWeight;
 
     //PILE-UP WEIGHT
     if (isMC) {
@@ -330,6 +330,7 @@ TH1F * mjj_33 = new TH1F("mjj_33","",100,0,1.2);
 	if (ReducedTree->Electrons_isMedium[i]==false) continue;       
 	ptEle->Fill(ReducedTree->ElectronsPt[i]);
 	//if (ReducedTree->Electrons_isLoose[i]==false) continue;       
+	//if (ReducedTree->Electrons_isTight[i]==false) continue;       
 	BoolMediumPassEle = 1;
         if (ReducedTree->ElectronsPt[i]<=25) continue;
 	BoolPtPassEle = 1;
@@ -618,28 +619,11 @@ TH1F * mjj_33 = new TH1F("mjj_33","",100,0,1.2);
     int indexCloserJet = -1;
     int indexCloserJetLep = -1;
   //int TotalAK4Jets = 0, TotalAK4Jets_MoreThan4 = 0;
-  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0, Bool_BTagged = 0;
+  int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
     for (unsigned int i=0; i<ReducedTree->JetsNum; i++) //loop on AK4 jet
       {
       BoolIsJet = 1;
 	bool isCleanedJet = true;
-			if (i==0 )
-				mjj_01->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
-			if (i==1 )
-				mjj_02->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
-			if (i==2 )
-				mjj_03->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
-			if (i==3 )
-				mjj_12->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
-			if (i==4 )
-				mjj_13->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
-			if (i==5 )
-				mjj_23->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
-			if (i==6 )
-				mjj_33->Fill(ReducedTree->Jets_bDiscriminatorICSV[i ]);
-
-
-
 	if (fabs(ReducedTree->JetsEta[i])>=3.0) continue;
 	if (ReducedTree->Jets_PtCorr[i]<=25) continue;
 	//if (ReducedTree->Jets_PtCorr[i]<=25 || fabs(ReducedTree->JetsEta[i])>=3.0)  continue;
@@ -665,9 +649,7 @@ TH1F * mjj_33 = new TH1F("mjj_33","",100,0,1.2);
 
 	if (isCleanedJet==false) continue;
 	BoolJetLepCleanPass = 1;
-//	CHECK IF THE JETS ARE B-TAGGED OR NOT
-//	if (ReducedTree->Jets_bDiscriminatorICSV[i]>0.605) continue;
-//	Bool_BTagged = 1;
+
 
 	WWTree->njetsAK4++;
 	TotalAK4Jets++;
@@ -685,7 +667,6 @@ TH1F * mjj_33 = new TH1F("mjj_33","",100,0,1.2);
 	if (BoolJetPtEtaPass) JetPtEtaPass++;
 	if (BoolJetLoosePass) JetLoosePass++;
 	if (BoolJetLepCleanPass) JetLepCleanPass++;
-	if (Bool_BTagged) cutEff[6]++; 
   
 
 	
@@ -704,19 +685,6 @@ TH1F * mjj_33 = new TH1F("mjj_33","",100,0,1.2);
 	}
 
 	//================================ Selection of VBF jets: BEGIN	=====================================
-	
-bool FirstTwoVBF = 1;	
-#if 1
-
-	//		SELECT FIRST TWO JET AS VBF JET
-	nVBF1=indexGoodJets.at(0);	nVBF2=indexGoodJets.at(1);
-	VBF1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF1],ReducedTree->JetsEta[nVBF1],ReducedTree->JetsPhi[nVBF1],ReducedTree->Jets_ECorr[nVBF1]);
-	VBF2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nVBF2],ReducedTree->JetsEta[nVBF2],ReducedTree->JetsPhi[nVBF2],ReducedTree->Jets_ECorr[nVBF2]);
-	if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta() > 0 || (VBF1+VBF2).M()<500) continue;
-	if (abs(VBF1.Eta()-VBF2.Eta())<3.5) continue;
-	nGoodAK4VBFjets++;
-
-#else
 	for(int i=0; i<indexGoodJets.size()-1;i++)
 	{
 		for(int j=i+1; j<indexGoodJets.size();j++)
@@ -726,6 +694,18 @@ bool FirstTwoVBF = 1;
 			//cout<<"Found Before Check!!!!"<<endl;
 	if(verbose)
 			cout<<"Before if loop::DeltaEta = "<<abs(VBF1.Eta()-VBF2.Eta())<<"opp hemi = "<< VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) <<"\t mass of dijet = "<<(VBF1+VBF2).M()<<endl;
+			if (i==0 && j==1)
+				mjj_01->Fill((VBF1+VBF2).M());
+			if (i==0 && j==2)
+				mjj_02->Fill((VBF1+VBF2).M());
+			if (i==0 && j==3)
+				mjj_03->Fill((VBF1+VBF2).M());
+			if (i==1 && j==2)
+				mjj_12->Fill((VBF1+VBF2).M());
+			if (i==1 && j==3)
+				mjj_13->Fill((VBF1+VBF2).M());
+			if (i==2 && j==3)
+				mjj_23->Fill((VBF1+VBF2).M());
 			if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta() > 0 || (VBF1+VBF2).M()<500) continue;
 			if (abs(VBF1.Eta()-VBF2.Eta())<3.5) continue;
 
@@ -739,14 +719,15 @@ bool FirstTwoVBF = 1;
 	nGoodAK4VBFjets++;
 		}
 	}
-#endif
+
 	if (nGoodAK4VBFjets == 0) continue;
 	cutEff[3]++;
-//cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<endl;
 
-	if (ReducedTree->Jets_bDiscriminatorICSV[nVBF1]> 0.605 && ReducedTree->Jets_bDiscriminatorICSV[nVBF2]> 0.605) continue;
+	if (ReducedTree->Jets_bDiscriminatorICSV[nVBF1]> 0.97 && ReducedTree->Jets_bDiscriminatorICSV[nVBF2]> 0.97) continue;
 	cutEff[6]++;
 
+
+	    WWTree->vbf_AK4_j_Num = nGoodAK4VBFjets;	
 
 	if (nVBF1!=-1 && nVBF2!=-1) //save infos for vbf jet pair
 	{
@@ -775,7 +756,8 @@ bool FirstTwoVBF = 1;
 	    WWTree->vbf_AK4_jj_m = TOT.M();	
 	    WWTree->vbf_AK4_jj_DeltaEta = fabs(VBF1.Eta()-VBF2.Eta());	
 	    WWTree->vbf_AK4_jj_DeltaPhi = fabs(VBF1.Phi()-VBF2.Phi());	
-	    WWTree->vbf_AK4_jj_AssymPt = fabs((ReducedTree->Jets_PtCorr[nVBF1]-ReducedTree->Jets_PtCorr[nVBF2])/(ReducedTree->Jets_PtCorr[nVBF1] + ReducedTree->Jets_PtCorr[nVBF2]));	
+    	    WWTree->vbf_AK4_jj_AssymPt = (ReducedTree->Jets_PtCorr[nVBF1]-ReducedTree->Jets_PtCorr[nVBF2])/(ReducedTree->Jets_PtCorr[nVBF1] + ReducedTree->Jets_PtCorr[nVBF2]);
+    	    //WWTree->vbf_AK4_jj_AssymPt = fabs((ReducedTree->Jets_PtCorr[nVBF1]-ReducedTree->Jets_PtCorr[nVBF2])/(ReducedTree->Jets_PtCorr[nVBF1] + ReducedTree->Jets_PtCorr[nVBF2]));
 
 	}
 
@@ -786,14 +768,6 @@ bool FirstTwoVBF = 1;
 	int nGoodAK4Wjets = 0;	
 	int nWjets1 = -1, nWjets2 = -1 ;
 	double DeltaMassWindow = 25.;
-#if 1
-	nWjets1=indexGoodJets.at(2); nWjets2=indexGoodJets.at(3);
-	Wjet1_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets1],ReducedTree->JetsEta[nWjets1],ReducedTree->JetsPhi[nWjets1],ReducedTree->Jets_ECorr[nWjets1]);
-	Wjet2_AK4.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets2],ReducedTree->JetsEta[nWjets2],ReducedTree->JetsPhi[nWjets2],ReducedTree->Jets_ECorr[nWjets2]);
-	TOT_Wjet = Wjet1_AK4 + Wjet2_AK4 ;
-//	if (DeltaMassWindow < abs(TOT_Wjet.M() - 80.)) continue;
-	nGoodAK4Wjets++;
-#else
 	for(int i=0; i<indexGoodJets.size()-1;i++)
 	{
 		for(int j=i+1; j<indexGoodJets.size();j++)
@@ -862,13 +836,9 @@ bool FirstTwoVBF = 1;
 			nGoodAK4Wjets++;
 		}
 	}
-//if (ReducedTree->Jets_bDiscriminatorICSV[nWjets1]> 0.605 && ReducedTree->Jets_bDiscriminatorICSV[nWjets2]> 0.605) continue;
-#endif	
 	if (nGoodAK4Wjets == 0) continue;
 	cutEff[2]++;
 	if ( nWjets1 == -1 || nWjets2 == -1 ) continue;
-	if (ReducedTree->Jets_bDiscriminatorICSV[nWjets1]> 0.605 && ReducedTree->Jets_bDiscriminatorICSV[nWjets2]> 0.605) continue;
-	cutEff[7]++;
 	//cout<<nWjets1<<"\t"<<nWjets2<<endl;
 	Wjets1.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets1],ReducedTree->JetsEta[nWjets1],ReducedTree->JetsPhi[nWjets1],ReducedTree->Jets_ECorr[nWjets1]);
 	Wjets2.SetPtEtaPhiE(ReducedTree->Jets_PtCorr[nWjets2],ReducedTree->JetsEta[nWjets2],ReducedTree->JetsPhi[nWjets2],ReducedTree->Jets_ECorr[nWjets2]);
@@ -890,8 +860,23 @@ bool FirstTwoVBF = 1;
 	    WWTree->Wjets_AK4_jj_m =   TOT_Wjet_Final.M();	
 	    WWTree->Wjets_AK4_jj_e =   TOT_Wjet_Final.E();	
 	    WWTree->WW_mass = (TOT + TOT_Wjet_Final).M();
-	    WWTree->Wjets_AK4_jj_AssymPt = fabs((ReducedTree->Jets_PtCorr[nWjets1]-ReducedTree->Jets_PtCorr[nWjets2])/(ReducedTree->Jets_PtCorr[nWjets1] + ReducedTree->Jets_PtCorr[nWjets2]));	
+    	    WWTree->Wjets_AK4_jj_AssymPt = (ReducedTree->Jets_PtCorr[nWjets1]-ReducedTree->Jets_PtCorr[nWjets2])/(ReducedTree->Jets_PtCorr[nWjets1] + ReducedTree->Jets_PtCorr[nWjets2]);
+    	    //WWTree->Wjets_AK4_jj_AssymPt = fabs((ReducedTree->Jets_PtCorr[nWjets1]-ReducedTree->Jets_PtCorr[nWjets2])/(ReducedTree->Jets_PtCorr[nWjets1] + ReducedTree->Jets_PtCorr[nWjets2]));
+	
+	
+	TLorentzVector p4_WHad = Wjets1  + Wjets2;
+        TLorentzVector p4_WLep = W ;        // Leptonic W 4-vector
+        TLorentzVector p4_WW = p4_WHad + p4_WLep;
+        
+        double a_costheta1, a_costheta2, a_costhetastar, a_Phi, a_Phi1;
+        computeAngles( p4_WW, p4_WLep, LEP , NU2, p4_WHad, Wjets1, Wjets2, 
+                      a_costheta1, a_costheta2, a_Phi, a_costhetastar, a_Phi1);
 
+	WWTree-> costheta1 = a_costheta1;
+	WWTree-> costheta2 = a_costheta2;
+	WWTree-> costhetastar = a_costhetastar;
+	WWTree-> Phi = a_Phi;
+	WWTree-> Phi1 = a_Phi1;
 
 
 	//================================ Selection of W-jets: END	=====================================
@@ -1018,16 +1003,15 @@ bool FirstTwoVBF = 1;
     if(WWTree->event==evento) std::cout<<"fill: "<<count<<std::endl; count++;
     outTree->Fill();
   }
-  ptEle->SaveAs("ptEle.C");
-  ptMet->SaveAs("ptMet.C");
-  pt_W->SaveAs("pt_W.C");
-  mjj_01->SaveAs("mjj_01.root");
-  mjj_02->SaveAs("mjj_02.root");
-  mjj_03->SaveAs("mjj_03.root");
-  mjj_12->SaveAs("mjj_12.root");
-  mjj_13->SaveAs("mjj_13.root");
-  mjj_23->SaveAs("mjj_23.root");
-  mjj_33->SaveAs("mjj_33.root");
+  ptEle->SaveAs ("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/ptEle.C");
+  ptMet->SaveAs ("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/ptMet.C");
+  pt_W->SaveAs  ("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/pt_W.C");
+  mjj_01->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_01.C");
+  mjj_02->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_02.C");
+  mjj_03->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_03.C");
+  mjj_12->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_12.C");
+  mjj_13->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_13.C");
+  mjj_23->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_23.C");
 
 
 
@@ -1046,9 +1030,8 @@ bool FirstTwoVBF = 1;
 	   <<"Jet Cleaning: \t"<<JetLepCleanPass<<std::endl
 	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
 	   <<"VBF Jet found:  \t"<<cutEff[3]<<std::endl
-	   <<"VBF Jet found No B-tagged:  \t"<<cutEff[6]<<std::endl
-	   <<"Wjet found: \t"<<cutEff[2]<<std::endl
-	   <<"Wjet found No B-tagged: \t"<<cutEff[7]<<std::endl;
+	   <<"VBF Jet found No B-tagged:\t  "<<cutEff[6]<<std::endl
+	   <<"Wjet found: \t"<<cutEff[2]<<std::endl;
   }
   if( strcmp(leptonName.c_str(),"mu")==0)
   {
@@ -1063,8 +1046,7 @@ bool FirstTwoVBF = 1;
 	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
 	   <<"VBF Jet found:  \t"<<cutEff[3]<<std::endl
 	   <<"VBF Jet found No B-tagged:  \t"<<cutEff[6]<<std::endl
-	   <<"Wjet found: \t"<<cutEff[2]<<std::endl
-	   <<"Wjet found No B-tagged: \t"<<cutEff[7]<<std::endl;
+	   <<"Wjet found: \t"<<cutEff[2]<<std::endl;
   }
   std::cout<<"===========================	OUTPUTS	=========================="<<std::endl;
 	 
@@ -1075,4 +1057,102 @@ bool FirstTwoVBF = 1;
   outROOT->Close();
 
   return(0);
+}
+
+//////////////////////////////////
+//// P A P E R   4 - V E C T O R   D E F I N I T I O N   O F   P H I   A N D   P H I 1
+//////////////////////////////////
+void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22, double& costheta1, double& costheta2, double& Phi, double& costhetastar, double& Phi1){
+    
+    ///////////////////////////////////////////////
+    // check for z1/z2 convention, redefine all 4 vectors with convention
+    ///////////////////////////////////////////////	
+    TLorentzVector p4H, p4Z1, p4M11, p4M12, p4Z2, p4M21, p4M22;
+    p4H = thep4H;
+    
+    p4Z1 = thep4Z1; p4M11 = thep4M11; p4M12 = thep4M12;
+    p4Z2 = thep4Z2; p4M21 = thep4M21; p4M22 = thep4M22;
+    //// costhetastar
+	TVector3 boostX = -(thep4H.BoostVector());
+	TLorentzVector thep4Z1inXFrame( p4Z1 );
+	TLorentzVector thep4Z2inXFrame( p4Z2 );	
+	thep4Z1inXFrame.Boost( boostX );
+	thep4Z2inXFrame.Boost( boostX );
+	TVector3 theZ1X_p3 = TVector3( thep4Z1inXFrame.X(), thep4Z1inXFrame.Y(), thep4Z1inXFrame.Z() );
+	TVector3 theZ2X_p3 = TVector3( thep4Z2inXFrame.X(), thep4Z2inXFrame.Y(), thep4Z2inXFrame.Z() );    
+    costhetastar = theZ1X_p3.CosTheta();
+    
+    //// --------------------------- costheta1
+    TVector3 boostV1 = -(thep4Z1.BoostVector());
+    TLorentzVector p4M11_BV1( p4M11 );
+	TLorentzVector p4M12_BV1( p4M12 );	
+    TLorentzVector p4M21_BV1( p4M21 );
+	TLorentzVector p4M22_BV1( p4M22 );
+    p4M11_BV1.Boost( boostV1 );
+	p4M12_BV1.Boost( boostV1 );
+	p4M21_BV1.Boost( boostV1 );
+	p4M22_BV1.Boost( boostV1 );
+    
+    TLorentzVector p4V2_BV1 = p4M21_BV1 + p4M22_BV1;
+    //// costheta1
+    costheta1 = -p4V2_BV1.Vect().Dot( p4M11_BV1.Vect() )/p4V2_BV1.Vect().Mag()/p4M11_BV1.Vect().Mag();
+    
+    //// --------------------------- costheta2
+    TVector3 boostV2 = -(thep4Z2.BoostVector());
+    TLorentzVector p4M11_BV2( p4M11 );
+	TLorentzVector p4M12_BV2( p4M12 );	
+    TLorentzVector p4M21_BV2( p4M21 );
+	TLorentzVector p4M22_BV2( p4M22 );
+    p4M11_BV2.Boost( boostV2 );
+	p4M12_BV2.Boost( boostV2 );
+	p4M21_BV2.Boost( boostV2 );
+	p4M22_BV2.Boost( boostV2 );
+    
+    TLorentzVector p4V1_BV2 = p4M11_BV2 + p4M12_BV2;
+    //// costheta2
+    costheta2 = -p4V1_BV2.Vect().Dot( p4M21_BV2.Vect() )/p4V1_BV2.Vect().Mag()/p4M21_BV2.Vect().Mag();
+    
+    //// --------------------------- Phi and Phi1
+    //    TVector3 boostX = -(thep4H.BoostVector());
+    TLorentzVector p4M11_BX( p4M11 );
+	TLorentzVector p4M12_BX( p4M12 );	
+    TLorentzVector p4M21_BX( p4M21 );
+	TLorentzVector p4M22_BX( p4M22 );	
+    
+	p4M11_BX.Boost( boostX );
+	p4M12_BX.Boost( boostX );
+	p4M21_BX.Boost( boostX );
+	p4M22_BX.Boost( boostX );
+    
+    TVector3 tmp1 = p4M11_BX.Vect().Cross( p4M12_BX.Vect() );
+    TVector3 tmp2 = p4M21_BX.Vect().Cross( p4M22_BX.Vect() );    
+    
+    TVector3 normal1_BX( tmp1.X()/tmp1.Mag(), tmp1.Y()/tmp1.Mag(), tmp1.Z()/tmp1.Mag() ); 
+    TVector3 normal2_BX( tmp2.X()/tmp2.Mag(), tmp2.Y()/tmp2.Mag(), tmp2.Z()/tmp2.Mag() ); 
+    
+    //// Phi
+    TLorentzVector p4Z1_BX = p4M11_BX + p4M12_BX;    
+    double tmpSgnPhi = p4Z1_BX.Vect().Dot( normal1_BX.Cross( normal2_BX) );
+    double sgnPhi = tmpSgnPhi/fabs(tmpSgnPhi);
+    Phi = sgnPhi * acos( -1.*normal1_BX.Dot( normal2_BX) );
+    
+    
+    //////////////
+    
+    TVector3 beamAxis(0,0,1);
+    TVector3 tmp3 = (p4M11_BX + p4M12_BX).Vect();
+    
+    TVector3 p3V1_BX( tmp3.X()/tmp3.Mag(), tmp3.Y()/tmp3.Mag(), tmp3.Z()/tmp3.Mag() );
+    TVector3 tmp4 = beamAxis.Cross( p3V1_BX );
+    TVector3 normalSC_BX( tmp4.X()/tmp4.Mag(), tmp4.Y()/tmp4.Mag(), tmp4.Z()/tmp4.Mag() );
+    
+    //// Phi1
+    double tmpSgnPhi1 = p4Z1_BX.Vect().Dot( normal1_BX.Cross( normalSC_BX) );
+    double sgnPhi1 = tmpSgnPhi1/fabs(tmpSgnPhi1);    
+    Phi1 = sgnPhi1 * acos( normal1_BX.Dot( normalSC_BX) );    
+    
+    //    std::cout << "extractAngles: " << std::endl;
+    //    std::cout << "costhetastar = " << costhetastar << ", costheta1 = " << costheta1 << ", costheta2 = " << costheta2 << std::endl;
+    //    std::cout << "Phi = " << Phi << ", Phi1 = " << Phi1 << std::endl;    
+    
 }

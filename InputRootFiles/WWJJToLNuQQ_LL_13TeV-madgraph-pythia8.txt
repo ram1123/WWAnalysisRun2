@@ -1,0 +1,11 @@
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_1.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_10.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_11.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_2.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_3.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_4.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_5.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_6.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_7.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_8.root
+root://xrootd.unl.edu//store/user/rasharma/WWScattering/16Nov_CMSSW74_12/Pol_WLWL/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/crab_Pol_WLWL/151125_075908/0000/ReducedSelection_9.root
