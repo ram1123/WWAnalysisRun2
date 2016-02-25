@@ -171,7 +171,8 @@ bool verbose = 0;
   char command1[3000];
   char list1[2000];
 //  sprintf (list1, "InputRootFiles/listTemp_%s.txt", inputFile.c_str());
-  sprintf (list1, "InputRootFiles/%s.txt", inputFile.c_str());
+  //sprintf (list1, "InputRootFiles/%s.txt", inputFile.c_str());
+  sprintf (list1, "%s.txt", inputFile.c_str());
   ifstream rootList (list1);
 
   int fileCounter=0;
@@ -221,8 +222,9 @@ bool verbose = 0;
   pileupFile->Close();
 
   //---------output tree----------------
-  TFile* outROOT = TFile::Open((std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");	// Path here for lpc only because at lpc condor jobs output can be only saved at eos area
-  //TFile* outROOT = TFile::Open((std::string("output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");
+ // TFile* outROOT = TFile::Open((std::string("/eos/uscms/store/user/rasharma/tmp/output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");	// Path here for lpc only because at lpc condor jobs output can be only saved at eos area
+  //TFile* outROOT = TFile::Open((std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");	// Path here for lpc only because at lpc condor jobs output can be only saved at eos area
+  TFile* outROOT = TFile::Open((leptonName+std::string("_")+outputFile+(".root")).c_str(),"recreate");
   outROOT->cd();
   TTree* outTree = new TTree("otree", "otree");
   outTree->SetDirectory(0);
@@ -245,6 +247,7 @@ bool verbose = 0;
 TH1F * ptEle = new TH1F("ptEle","",100,0,300);
 TH1F * ptMet = new TH1F("ptMet","",100,0,300);
 TH1F * pt_W = new TH1F("pt_W","",100,0,300);
+TH1F * nJets_ak4_afterSelect = new TH1F("nJets_ak4_afterSelect", "", 10, 0, 10);
 TH1F * mjj_01 = new TH1F("mjj_01","",100,0,2500);
 TH1F * mjj_02 = new TH1F("mjj_02","",100,0,2500);
 TH1F * mjj_03 = new TH1F("mjj_03","",100,0,2500);
@@ -253,8 +256,8 @@ TH1F * mjj_13 = new TH1F("mjj_13","",100,0,2500);
 TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 //TCanvas *c1 = new TCanvas("c1","",1);
 
-  for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
-  //for (Long64_t jentry=0; jentry<50000;jentry++,jentry2++) {
+  //for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
+  for (Long64_t jentry=0; jentry<50000;jentry++,jentry2++) {
 
     Long64_t iEntry = ReducedTree->LoadTree(jentry);
     if (iEntry < 0) break;
@@ -667,7 +670,8 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	if (BoolJetPtEtaPass) JetPtEtaPass++;
 	if (BoolJetLoosePass) JetLoosePass++;
 	if (BoolJetLepCleanPass) JetLepCleanPass++;
-  
+ 
+ 	nJets_ak4_afterSelect ->Fill(indexGoodJets.size());
 
 	
       if (indexGoodJets.size()<4)  continue;
@@ -785,48 +789,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 			//cout<<"(Wjet1_AK4+Wjet2_AK4).M()-80. = "<<(Wjet1_AK4+Wjet2_AK4).M()<<endl;
 			
 //			cout<< "====> " << Wjet1_AK4.Mag() << "\t" << Wjet2_AK4.Mag() << "\t" << TOT_Wjet.Mag() <<endl;
-//	cout<<"======================	Check wokring of TLorentzVector	============================"<<endl;
-//
-//		double pt1	= ReducedTree->Jets_PtCorr[indexGoodJets.at(i)];
-//		double eta1	= ReducedTree->JetsEta[indexGoodJets.at(i)];
-//		double phi1	= ReducedTree->JetsPhi[indexGoodJets.at(i)];
-//		double e1	= ReducedTree->Jets_ECorr[indexGoodJets.at(i)];
-//
-//		double pt2	= ReducedTree->Jets_PtCorr[indexGoodJets.at(j)];
-//		double eta2	= ReducedTree->JetsEta[indexGoodJets.at(j)];
-//		double phi2	= ReducedTree->JetsPhi[indexGoodJets.at(j)];
-//		double e2	= ReducedTree->Jets_ECorr[indexGoodJets.at(j)];
-//
-//		double px1	= pt1 * cos(phi1);
-//		double py1	= pt1 * sin(phi1);
-//		double pz1	= pt1 * sinh(eta1);
-//
-//		double px2	= pt2 * cos(phi2);
-//		double py2	= pt2 * sin(phi2);
-//		double pz2	= pt2 * sinh(eta2);
-//
-//
-//		double px	= px1 + px2;
-//		double py	= py1 + py2;
-//		double pz	= pz1 + pz2;
-//		double e	= e1 + e2;
-//
-//		//double pz1	= e1  * tanh(eta1);
-//		//double pz1	= sqrt(e1*e1 - pt1*pt1) * sinh(eta1);
-//		double p1	= sqrt(px1*px1+py1*py1+pz1*pz1);
-//		double p2	= sqrt(px2*px2+py2*py2+pz2*pz2);
-//		double p	= sqrt(px*px+py*py+pz*pz);
-//
-//		cout<<"px1 = "<< px1 << "\t LV: px1 = "<< Wjet1_AK4.Px() << endl;
-//		cout<<"py1 = "<< py1 << "\t LV: py1 = "<< Wjet1_AK4.Py() << endl;
-//		cout<<"pz1 = "<< pz1 << "\t LV: pz1 = "<< Wjet1_AK4.Pz() << endl;
-//		cout<<"p = "<< sqrt(px1*px1+py1*py1+pz1*pz1) << "\t LV: p = "<< Wjet1_AK4.P() <<endl;
-//		cout<<"Invariant Mass of P1 = "<< sqrt(abs(p1*p1 - e1*e1)) << "\t LV: m = "<< Wjet1_AK4.M()<<endl;
-//		cout<<"Invariant Mass of P2 = "<< sqrt(abs(p2*p2 - e2*e2)) << "\t LV: m = "<< Wjet2_AK4.M()<<endl;
-//
-//		cout<<"Invariant Mass 2body = "<< sqrt(abs(p*p - e*e)) <<"\t LV:m =  "<< TOT_Wjet.M()<<endl;
-//		cout<<"LV:e = "<< e1 <<endl;
-//	cout<<"======================	END:: Check wokring of TLorentzVector	============================"<<endl;
 
 	if(verbose)
 			cout<<"Found!!!!"<<endl;
@@ -1003,16 +965,49 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
     if(WWTree->event==evento) std::cout<<"fill: "<<count<<std::endl; count++;
     outTree->Fill();
   }
-  ptEle->SaveAs ("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/ptEle.C");
-  ptMet->SaveAs ("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/ptMet.C");
-  pt_W->SaveAs  ("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/pt_W.C");
-  mjj_01->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_01.C");
-  mjj_02->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_02.C");
-  mjj_03->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_03.C");
-  mjj_12->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_12.C");
-  mjj_13->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_13.C");
-  mjj_23->SaveAs("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_23.C");
-
+int eos = 0; // Save output to eos area  
+if (eos)
+{
+  std::string strNjet = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName +"/Plots/"+leptonName+"_"+outputFile+"_nJets_ak4_afterSelect.C";	const char * cNjet = strNjet.c_str();	nJets_ak4_afterSelect->SaveAs(cNjet);
+  std::string strptEle = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName +"/Plots/"+leptonName+"_"+outputFile+"_ptEle.C";	const char * cptEle = strptEle.c_str();	ptEle->SaveAs(cptEle);
+  std::string strptMet = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName +"/Plots/"+leptonName+"_"+outputFile+"_ptMet.C";	const char * cptMet = strptMet.c_str();	ptMet->SaveAs(cptMet);
+  std::string strpt_W = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName  +"/Plots/"+leptonName+"_"+outputFile+"_pt_W.C";	const char * cpt_W = strpt_W.c_str();	pt_W->SaveAs(cpt_W);
+  std::string strmjj_01 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_01.C";	const char * cmjj_01 = strmjj_01.c_str();	mjj_01->SaveAs(cmjj_01);
+  std::string strmjj_02 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_02.C";	const char * cmjj_02 = strmjj_02.c_str();	mjj_02->SaveAs(cmjj_02);
+  std::string strmjj_03 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_03.C";	const char * cmjj_03 = strmjj_03.c_str();	mjj_03->SaveAs(cmjj_03);
+  std::string strmjj_12 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_12.C";	const char * cmjj_12 = strmjj_12.c_str();	mjj_12->SaveAs(cmjj_12);
+  std::string strmjj_13 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_13.C";	const char * cmjj_13 = strmjj_13.c_str();	mjj_13->SaveAs(cmjj_13);
+  std::string strmjj_23 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_23.C";	const char * cmjj_23 = strmjj_23.c_str();	mjj_23->SaveAs(cmjj_23);
+//  ptEle->SaveAs (std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_/ptEle")+leptonName+std::string("_")+outputFile+std::string(".C"));
+//  ptMet->SaveAs (std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/ptMet.C");
+//  pt_W->SaveAs  (std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/pt_W.C");
+//  mjj_01->SaveAs(std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_01.C");
+//  mjj_02->SaveAs(std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_02.C");
+//  mjj_03->SaveAs(std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_03.C");
+//  mjj_12->SaveAs(std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_12.C");
+}
+else
+{
+  std::string strNjet 	= leptonName +"_"+leptonName+"_"+outputFile+"_nJets_ak4_afterSelect.C";	const char * cNjet = strNjet.c_str();	nJets_ak4_afterSelect->SaveAs(cNjet);
+  std::string strptEle 	= leptonName +"_"+leptonName+"_"+outputFile+"_ptEle.C";	const char * cptEle = strptEle.c_str();	ptEle->SaveAs(cptEle);
+  std::string strptMet 	= leptonName +"_"+leptonName+"_"+outputFile+"_ptMet.C";	const char * cptMet = strptMet.c_str();	ptMet->SaveAs(cptMet);
+  std::string strpt_W 	= leptonName +"_"+leptonName+"_"+outputFile+"_pt_W.C";	const char * cpt_W = strpt_W.c_str();	pt_W->SaveAs(cpt_W);
+  std::string strmjj_01 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_01.C";	const char * cmjj_01 = strmjj_01.c_str();	mjj_01->SaveAs(cmjj_01);
+  std::string strmjj_02 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_02.C";	const char * cmjj_02 = strmjj_02.c_str();	mjj_02->SaveAs(cmjj_02);
+  std::string strmjj_03 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_03.C";	const char * cmjj_03 = strmjj_03.c_str();	mjj_03->SaveAs(cmjj_03);
+  std::string strmjj_12 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_12.C";	const char * cmjj_12 = strmjj_12.c_str();	mjj_12->SaveAs(cmjj_12);
+  std::string strmjj_13 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_13.C";	const char * cmjj_13 = strmjj_13.c_str();	mjj_13->SaveAs(cmjj_13);
+  std::string strmjj_23 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_23.C";	const char * cmjj_23 = strmjj_23.c_str();	mjj_23->SaveAs(cmjj_23);
+//  ptEle->SaveAs (std::string("output/output_/ptEle")+leptonName+std::string("_")+outputFile+std::string(".C"));
+//  ptMet->SaveAs (std::string("output/temp_plots/ptMet.C");
+//  pt_W->SaveAs  (std::string("output/temp_plots/pt_W.C");
+//  mjj_01->SaveAs(std::string("output/temp_plots/mjj_01.C");
+//  mjj_02->SaveAs(std::string("output/temp_plots/mjj_02.C");
+//  mjj_03->SaveAs(std::string("output/temp_plots/mjj_03.C");
+//  mjj_12->SaveAs(std::string("output/temp_plots/mjj_12.C");
+//  mjj_13->SaveAs(std::string("output/temp_plots/mjj_13.C");
+//  mjj_23->SaveAs(std::string("output/temp_plots/mjj_23.C");
+}
 
 
   std::cout<<"matching: "<<(float)ok/(float)total<<std::endl;
@@ -1021,35 +1016,61 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
   std::cout<<"total entries: \t"<<ReducedTree->fChain->GetEntries()<<std::endl;
   if( strcmp(leptonName.c_str(),"el")==0)
   {
-  std::cout<<"MediumPassEle: \t"<<MediumPassEle<<std::endl
-  	   <<"Pt and Eta Pass ele:\t "<<EtaPassEle<<std::endl
-	   <<"lepton eff: \t"<<cutEff[0]<<std::endl
-	   <<"met eff:   \t "<<cutEff[1]<<std::endl
-	   <<"Jet pt & eta :\t "<<JetPtEtaPass<<std::endl
-	   <<"Jet loose ID: \t"<<JetLoosePass<<std::endl
-	   <<"Jet Cleaning: \t"<<JetLepCleanPass<<std::endl
-	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
-	   <<"VBF Jet found:  \t"<<cutEff[3]<<std::endl
-	   <<"VBF Jet found No B-tagged:\t  "<<cutEff[6]<<std::endl
-	   <<"Wjet found: \t"<<cutEff[2]<<std::endl;
+  std::cout<<"MediumPassEle: \t"	<<MediumPassEle		<<"\t"<< setprecision(3) << fixed <<(float)MediumPassEle/(float)ReducedTree->fChain->GetEntries()<<std::endl
+  	   <<"Pt and Eta Pass ele:\t "	<<EtaPassEle		<<"\t"<< setprecision(3) << fixed <<(float)EtaPassEle/(float)MediumPassEle<<std::endl
+	   <<"Electron eff: \t"		<<cutEff[0]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[0]/(float)EtaPassEle<<std::endl
+	   <<"met eff:   \t "		<<cutEff[1]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[1]/(float)cutEff[0]<<std::endl
+	   <<"Jet pt & eta :\t "	<<JetPtEtaPass		<<"\t"<< setprecision(3) << fixed <<(float)JetPtEtaPass/(float)cutEff[1]<<std::endl
+	   <<"Jet loose ID: \t"		<<JetLoosePass		<<"\t"<< setprecision(3) << fixed <<(float)JetLoosePass/(float)JetPtEtaPass<<std::endl
+	   <<"Jet Cleaning: \t"		<<JetLepCleanPass	<<"\t"<< setprecision(3) << fixed <<(float)JetLepCleanPass/(float)JetLoosePass<<std::endl
+	   <<"Events >=4Jet: \t"	<<TotalAK4Jets_MoreThan4<<"\t"<< setprecision(3) << fixed <<(float)TotalAK4Jets_MoreThan4/(float)JetLepCleanPass<<std::endl
+	   <<"VBF Jet found:  \t"	<<cutEff[3]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[3]/(float)TotalAK4Jets_MoreThan4<<std::endl
+	   <<"VBF Jet No B-tagged:\t  "	<<cutEff[6]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[6]/(float)cutEff[3]<<std::endl
+	   <<"Wjet found: \t"		<<cutEff[2]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[2]/(float)cutEff[6]<<std::endl;
   }
   if( strcmp(leptonName.c_str(),"mu")==0)
   {
-  std::cout<<"TightPassEle: \t"<<TightPassMu<<std::endl
-	   <<"Isolation passed: \t"<<IsoPassMu<<std::endl
-  	   <<"Pt and Eta Pass ele: \t"<<EtaPassMu<<std::endl
-	   <<"lepton eff: \t"<<cutEff[0]<<std::endl
-	   <<"met eff: \t"<<cutEff[1]<<std::endl
-	   <<"Jet pt & eta: \t"<<JetPtEtaPass<<std::endl
-	   <<"Jet loose ID: \t"<<JetLoosePass<<std::endl
-	   <<"Jet Cleaning: \t"<<JetLepCleanPass<<std::endl
-	   <<"Events >=4Jet: \t"<<TotalAK4Jets_MoreThan4<<std::endl
-	   <<"VBF Jet found:  \t"<<cutEff[3]<<std::endl
-	   <<"VBF Jet found No B-tagged:  \t"<<cutEff[6]<<std::endl
-	   <<"Wjet found: \t"<<cutEff[2]<<std::endl;
+  std::cout<<"TightPassEle: \t"		<<TightPassMu		<<"\t"<< setprecision(3) << fixed <<(float)TightPassMu/(float)ReducedTree->fChain->GetEntries()<<std::endl
+	   <<"Isolation passed: \t"	<<IsoPassMu		<<"\t"<< setprecision(3) << fixed <<(float)IsoPassMu/(float)TightPassMu<<std::endl
+  	   <<"Pt and Eta Pass ele: \t"	<<EtaPassMu		<<"\t"<< setprecision(3) << fixed <<(float)EtaPassMu/(float)IsoPassMu<<std::endl
+	   <<"Muon eff: \t"		<<cutEff[0]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[0]/(float)EtaPassMu<<std::endl
+	   <<"met eff: \t"		<<cutEff[1]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[1]/(float)cutEff[0]<<std::endl
+	   <<"Jet pt & eta: \t"		<<JetPtEtaPass		<<"\t"<< setprecision(3) << fixed <<(float)JetPtEtaPass/(float)cutEff[1]<<std::endl
+	   <<"Jet loose ID: \t"		<<JetLoosePass		<<"\t"<< setprecision(3) << fixed <<(float)JetLoosePass/(float)JetPtEtaPass<<std::endl
+	   <<"Jet Cleaning: \t"		<<JetLepCleanPass	<<"\t"<< setprecision(3) << fixed <<(float)JetLepCleanPass/(float)JetLoosePass<<std::endl
+	   <<"Events >=4Jet: \t"	<<TotalAK4Jets_MoreThan4<<"\t"<< setprecision(3) << fixed <<(float)TotalAK4Jets_MoreThan4/(float)JetLepCleanPass<<std::endl
+	   <<"VBF Jet found:  \t"	<<cutEff[3]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[3]/(float)TotalAK4Jets_MoreThan4<<std::endl
+	   <<"VBF Jet No B-tagged:  \t"	<<cutEff[6]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[6]/(float)cutEff[3]<<std::endl
+	   <<"Wjet found: \t"		<<cutEff[2]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[2]/(float)cutEff[6]<<std::endl;
   }
   std::cout<<"===========================	OUTPUTS	=========================="<<std::endl;
 	 
+
+  std::cout<<"===========================	Short OUTPUTS	=========================="<<std::endl;
+  std::cout<<"total entries: \t"<<ReducedTree->fChain->GetEntries()<<std::endl;
+  if( strcmp(leptonName.c_str(),"el")==0)
+  {
+  std::cout<<"Electron eff: \t"		<<cutEff[0]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[0]/(float)ReducedTree->fChain->GetEntries()<<std::endl
+	   <<"met eff:   \t "		<<cutEff[1]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[1]/(float)cutEff[0]<<std::endl
+	   <<"Jet eff: \t"		<<JetLepCleanPass	<<"\t"<< setprecision(3) << fixed <<(float)JetLepCleanPass/(float)cutEff[1]<<std::endl
+	   <<"Events >=4Jet: \t"	<<TotalAK4Jets_MoreThan4<<"\t"<< setprecision(3) << fixed <<(float)TotalAK4Jets_MoreThan4/(float)JetLepCleanPass<<std::endl
+	   <<"VBF Jet found:  \t"	<<cutEff[3]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[3]/(float)TotalAK4Jets_MoreThan4<<std::endl
+	   <<"VBF Jet No B-tagged:\t  "	<<cutEff[6]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[6]/(float)cutEff[3]<<std::endl
+	   <<"Wjet found: \t"		<<cutEff[2]		<<"\t"<< setprecision(3) << fixed <<(float)cutEff[2]/(float)cutEff[6]<<std::endl;
+  }
+  if( strcmp(leptonName.c_str(),"mu")==0)
+  {
+  std::cout<<"Muon eff: \t"		<<cutEff[0]		<<"\t"<<  setprecision(3) << fixed <<(float)cutEff[0]/(float)ReducedTree->fChain->GetEntries()<<std::endl
+	   <<"met eff: \t"		<<cutEff[1]		<<"\t"<<  setprecision(3) << fixed <<(float)cutEff[1]/(float)cutEff[0]<<std::endl
+	   <<"Jet eff: \t"		<<JetLepCleanPass	<<"\t"<<  setprecision(3) << fixed <<(float)JetLepCleanPass/(float)cutEff[1]<<std::endl
+	   <<"Events >=4Jet: \t"	<<TotalAK4Jets_MoreThan4<<"\t"<<  setprecision(3) << fixed <<(float)TotalAK4Jets_MoreThan4/(float)JetLepCleanPass<<std::endl
+	   <<"VBF Jet found:  \t"	<<cutEff[3]		<<"\t"<<  setprecision(3) << fixed <<(float)cutEff[3]/(float)TotalAK4Jets_MoreThan4<<std::endl
+	   <<"VBF Jet No B-tagged:  \t"	<<cutEff[6]		<<"\t"<<  setprecision(3) << fixed <<(float)cutEff[6]/(float)cutEff[3]<<std::endl
+	   <<"Wjet found: \t"		<<cutEff[2]		<<"\t"<<  setprecision(3) << fixed <<(float)cutEff[2]/(float)cutEff[6]<<std::endl;
+  }
+  std::cout<<"===========================       Short OUTPUTS	=========================="<<std::endl;
+
+
 
   //--------close everything-------------
   ReducedTree->fChain->Delete();
