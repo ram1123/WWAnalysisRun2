@@ -101,17 +101,6 @@ vector<double> generate_weights(TH1* data_npu_estimated){
  5.005E-06
 };
   vector<double> result(60);
-  /*  
-  double s = 0.0;
-  for(int npu=0; npu<60; ++npu){
-    double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));                              
-    result[npu] = npu_estimated / npu_probs[npu];
-    s += npu_estimated;
-  }
-  // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
-  for(int npu=0; npu<60; ++npu){
-    result[npu] /= s;
-    }*/
   
   for(int npu=0; npu<60; ++npu){
     if (data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu))==NULL)
@@ -170,25 +159,12 @@ bool verbose = 0;
 
   char command1[3000];
   char list1[2000];
-//  sprintf (list1, "InputRootFiles/listTemp_%s.txt", inputFile.c_str());
   //sprintf (list1, "InputRootFiles/%s.txt", inputFile.c_str());
   sprintf (list1, "%s.txt", inputFile.c_str());
   ifstream rootList (list1);
 
   int fileCounter=0;
   Long64_t totalEntries=0;
-#if 0
-  while (!rootList.eof())
-    {
-      char iRun_tW[700];
-      rootList >> iRun_tW;
-      ReducedTree->fChain->Add(iRun_tW);
-      cout<<"file counter = "<<fileCounter<<endl;
-      fileCounter++;
-    }
-#else
-	//ReducedTree->fChain->Add("/afs/cern.ch/user/r/rasharma/work/WW_Scattering/AnalysisFrameWork/CMSSW_7_4_7_patch2/src/AllHadronicSUSY/ReducedSelection.root");
-	//ReducedTree->fChain->Add("/afs/cern.ch/user/r/rasharma/work/public/Temp/W_LW_L_50k.root");
 	while (rootList.good())
 	{
 	string line;
@@ -199,7 +175,6 @@ bool verbose = 0;
 	cout<<"file counter = "<<fileCounter<<endl;
 	fileCounter++;
 	}
-#endif
   std::cout<<"number of files found: "<<fileCounter-1<<std::endl;
   std::cout<<"total entries: "<<ReducedTree->fChain->GetEntries()<<std::endl;
   totalEntries=ReducedTree->fChain->GetEntries();
@@ -211,8 +186,6 @@ bool verbose = 0;
   int cutEff[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
   //--------pile up file -----------------
-  //    TFile* pileupFile = TFile::Open("190456-208686-13Julv2_Prompt_Moriond2013.69400.observed.root");  
-  //TH1F *pileupHisto = (TH1F*)pileupFile->Get("pileup");
   TFile* pileupFile = TFile::Open("PU.root");  
   TH1F *pileupHisto = (TH1F*)pileupFile->Get("puweights");
 
@@ -222,7 +195,6 @@ bool verbose = 0;
   pileupFile->Close();
 
   //---------output tree----------------
- // TFile* outROOT = TFile::Open((std::string("/eos/uscms/store/user/rasharma/tmp/output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");	// Path here for lpc only because at lpc condor jobs output can be only saved at eos area
   //TFile* outROOT = TFile::Open((std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_")+leptonName+std::string("/")+outputFile+(".root")).c_str(),"recreate");	// Path here for lpc only because at lpc condor jobs output can be only saved at eos area
   TFile* outROOT = TFile::Open((leptonName+std::string("_")+outputFile+(".root")).c_str(),"recreate");
   outROOT->cd();
@@ -233,36 +205,66 @@ bool verbose = 0;
 
   //---------start loop on events------------
   Long64_t jentry2=0;
+/* 
+ *
+ *Patch for New Tree
+ *
+ */
+ //TFile f("tree1.root","recreate");	// CutAnalysis
+ TFile f((leptonName+std::string("_")+outputFile+("_1.root")).c_str(),"recreate");
+ TTree t1("Leptopn","Tree for understanding Cut Flow"); // CutAnalysis
+ TTree t2("Jet","Tree for understanding JET cut Flow: After Selecting Lepton and Good Jet"); // CutAnalysis
+ TTree t3("MET","Tree for understanding MET: After Selecting Lepton and Good Jet"); // CutAnalysis
 
-  int TotalEle= 0, TriggerPassEle = 0, MediumPassEle = 0, PtPassEle = 0, EtaPassEle = 0;
-  int TotalMu= 0, TriggerPassMu = 0, TightPassMu = 0, PtPassMu = 0, EtaPassMu = 0, IsoPassMu = 0;
+ Int_t Ele_num, Mu_num;
+ Double_t Ele_pt, Ele_eta, Ele_phi, Ele_E;
+ Double_t Mu_pt, Mu_eta, Mu_phi, Mu_E;
+
+ t1.Branch("Ele_num"	,	&Ele_num	,	"Ele_num/I"	);
+ t1.Branch("Ele_pt"	,	&Ele_pt		,	"Ele_pt/D"	);
+ t1.Branch("Ele_eta"	,	&Ele_eta	,	"Ele_eta/D"	);
+ t1.Branch("Ele_phi"	,	&Ele_phi	,	"Ele_phi/D"	);
+
+ t1.Branch("Mu_num"	,	&Mu_num		,	"Mu_num/I"	);
+ t1.Branch("Mu_pt"	,	&Mu_pt		,	"Mu_pt/D"	);
+ t1.Branch("Mu_eta"	,	&Mu_eta		,	"Mu_eta/D"	);
+ t1.Branch("Mu_phi"	,	&Mu_phi		,	"Mu_phi/D"	);
+
+ Int_t Jet_num_1, Jet_num_2;
+ Double_t Jet0_pt, Jet0_eta, Jet0_phi, Jet0_E;
+
+ t2.Branch("Jet_num_1"	,	&Jet_num_1	,	"Jet_num_1/I"	);
+ t2.Branch("Jet_num_2"	,	&Jet_num_2	,	"Jet_num_2/I"	);
+ t2.Branch("Jet0_pt"	,	&Jet0_pt	,	"Jet0_pt/D"	);
+ t2.Branch("Jet0_eta"	,	&Jet0_eta	,	"Jet0_eta/D"	);
+ t2.Branch("Jet0_phi"	,	&Jet0_phi	,	"Jet0_phi/D"	);
+ t2.Branch("Jet0_E"	,	&Jet0_E		,	"Jet0_E/D"	);
+
+ Double_t pf_MET_pt , pf_MET_phi ;
+ t3.Branch("pf_MET_pt"	,	&pf_MET_pt	,	"pf_MET_pt/D"	);
+ t3.Branch("pf_MET_phi"	,	&pf_MET_phi	,	"pf_MET_phi/D"	);
+/*
+ * END
+ */
+
+  int MediumPassEle = 0, PtPassEle = 0, EtaPassEle = 0;
+  int TightPassMu = 0, EtaPassMu = 0, IsoPassMu = 0;
   int TotalAK4Jets = 0, TotalAK4Jets_MoreThan4 = 0;
   int IsJet = 0, JetPtEtaPass = 0, JetLoosePass = 0, JetLepCleanPass = 0;
 
-  int BoolTotalEle = 0, BoolTriggerPassEle = 0, BoolMediumPassEle = 0, BoolPtPassEle = 0, BoolEtaPassEle = 0;
-  int BoolTotalMu = 0, BoolTriggerPassMu = 0, BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
+  int BoolTriggerPassEle = 0, BoolMediumPassEle = 0, BoolPtPassEle = 0, BoolEtaPassEle = 0;
+  int BoolTriggerPassMu = 0, BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
   int BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
   int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
 
-TH1F * ptEle = new TH1F("ptEle","",100,0,300);
-TH1F * ptMet = new TH1F("ptMet","",100,0,300);
-TH1F * pt_W = new TH1F("pt_W","",100,0,300);
-TH1F * nJets_ak4_afterSelect = new TH1F("nJets_ak4_afterSelect", "", 10, 0, 10);
-TH1F * mjj_01 = new TH1F("mjj_01","",100,0,2500);
-TH1F * mjj_02 = new TH1F("mjj_02","",100,0,2500);
-TH1F * mjj_03 = new TH1F("mjj_03","",100,0,2500);
-TH1F * mjj_12 = new TH1F("mjj_12","",100,0,2500);
-TH1F * mjj_13 = new TH1F("mjj_13","",100,0,2500);
-TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
-//TCanvas *c1 = new TCanvas("c1","",1);
 
-  //for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
-  for (Long64_t jentry=0; jentry<50000;jentry++,jentry2++) {
+
+  for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++) {
+  //for (Long64_t jentry=0; jentry<50000;jentry++,jentry2++) {
 
     Long64_t iEntry = ReducedTree->LoadTree(jentry);
     if (iEntry < 0) break;
     int nb = ReducedTree->fChain->GetEntry(jentry);   
-    // if (Cut(ientry) < 0) continue;                                                                                                                           
 
     tightMuon.clear();
     tightEle.clear();
@@ -279,11 +281,7 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
     WWTree->totalEventWeight = 1.; //temporary value
     WWTree->eff_and_pu_Weight = 1.; //temporary value
 
-  //  if (ReducedTree->genEventWeight>0)
-    //  WWTree->genWeight=1.;
-//    else if (ReducedTree->genEventWeight<0)
-//      WWTree->genWeight=-1.;
-        WWTree->genWeight = ReducedTree->genEventWeight;
+    WWTree->genWeight = ReducedTree->genEventWeight;
 
     //PILE-UP WEIGHT
     if (isMC) {
@@ -306,7 +304,7 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
     WWTree->run   = ReducedTree->RunNum;
     WWTree->event = ReducedTree->EvtNum;
     WWTree->lumi = ReducedTree->LumiBlockNum;
-   // WWTree->njets = ReducedTree->NJets;
+    WWTree->njets = ReducedTree->NJets;
     WWTree->nPV  = ReducedTree->NVtx;
 
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
@@ -316,8 +314,8 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 
     /////////////////THE SELECTED LEPTON
     int nTightLepton=0;
-   BoolTotalEle = 0, BoolTriggerPassEle = 0, BoolMediumPassEle = 0, BoolPtPassEle = 0, BoolEtaPassEle = 0;
-   BoolTotalMu = 0, BoolTriggerPassMu = 0, BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
+   BoolMediumPassEle = 0, BoolPtPassEle = 0, BoolEtaPassEle = 0;
+   BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
    BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
     if (strcmp(leptonName.c_str(),"el")==0) {
     	if (verbose)
@@ -328,10 +326,8 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
       for (int i=0; i<ReducedTree->ElectronsNum; i++) {
 	//if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
-	BoolTotalEle = 1;
 	//if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
 	if (ReducedTree->Electrons_isMedium[i]==false) continue;       
-	ptEle->Fill(ReducedTree->ElectronsPt[i]);
 	//if (ReducedTree->Electrons_isLoose[i]==false) continue;       
 	//if (ReducedTree->Electrons_isTight[i]==false) continue;       
 	BoolMediumPassEle = 1;
@@ -355,13 +351,11 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
     	cout<<"==================> debug 3 "<<endl;
       float tempPt=0.;
       for (int i=0; i<ReducedTree->MuonsNum; i++) {
-      BoolTotalMu = 1;
 	//if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->TriggerProducerTriggerPass->at(1)==0) continue; //trigger
 	//if (ReducedTree->Muons_isLoose[i]==false) continue;
 	if (ReducedTree->Muons_isTight[i]==false) continue;
 	//if (ReducedTree->Muons_isHighPt[i]==false) continue;
-	ptEle->Fill(ReducedTree->ElectronsPt[i]);
 	BoolTightPassMu = 1;
 	//	if (ReducedTree->Muons_isPFMuon[i]==false) continue; //not in the synch ntuple!!
         if ((ReducedTree->Muons_trackIso[i]/ReducedTree->MuonsPt[i])>=0.1) continue;
@@ -388,26 +382,19 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	
 	if(BoolEtaPassMu)
 	EtaPassMu++;
-	if(BoolPtPassMu)
-	PtPassMu++;
 	if(BoolIsoPassMu)
 	IsoPassMu++;
 	if(BoolTightPassMu)
 	TightPassMu++;
 //	if(BoolTriggerPassMu)
 //	TriggerPassMu++;
-        if(BoolTotalMu)
-        TotalMu++;
-	if(BoolEtaPassEle)
+       	if(BoolEtaPassEle)
 	EtaPassEle++;
 	if(BoolPtPassEle)
 	PtPassEle++;
 	if(BoolMediumPassEle)
 	MediumPassEle++;
-        if(BoolTotalEle)
-        TotalEle++;
 //	if(BoolTriggerPassEle)
-//	TriggerPassEle++;
 
     //======================= END::Counting events that passed above lep ids	=======================
     if (nTightLepton==0) continue; //no leptons with required ID
@@ -443,14 +430,28 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
       nLooseLepton++;
     }
     if(WWTree->event==evento)     std::cout<<nLooseLepton<<std::endl;
-    if (nLooseLepton!=1) continue; //no additional leptons
+       if (nLooseLepton!=1) continue; //no additional leptons
     cutEff[0]++;
-    ptMet->Fill(ReducedTree->METPt);
+ 
+    if (strcmp(leptonName.c_str(),"el")==0) {
+    Ele_num	= nLooseLepton; 	// CutAnalysis
+    Ele_pt	= WWTree->l_pt;
+    Ele_eta	= WWTree->l_eta;
+    Ele_phi	= WWTree->l_phi;
+    }
+    if (strcmp(leptonName.c_str(),"mu")==0) {
+    Mu_num	= nLooseLepton; 	// CutAnalysis
+    Mu_pt	= WWTree->l_pt;
+    Mu_eta	= WWTree->l_eta;
+    Mu_phi	= WWTree->l_phi;
+    }
+
+    t1.Fill();
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
 
     //preselection on jet pt and met
     WWTree->Met_pt  = ReducedTree->METPt;
-    if (ReducedTree->METPt < 20) continue; 
+    //if (ReducedTree->METPt < 20) continue; 
     cutEff[1]++;
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
 
@@ -600,7 +601,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
     //    W = NU2+LEP; 
     ////
 
-	pt_W->Fill(W.Pt());
     //if (W.Pt()<50) continue;
     if(WWTree->event==evento) std::cout<<"debug: "<<count<<std::endl; count++;
 
@@ -623,6 +623,8 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
     int indexCloserJetLep = -1;
   //int TotalAK4Jets = 0, TotalAK4Jets_MoreThan4 = 0;
   int BoolIsJet = 0, BoolJetPtEtaPass = 0, BoolJetLoosePass = 0, BoolJetLepCleanPass = 0;
+  Jet_num_1 = ReducedTree->JetsNum;
+
     for (unsigned int i=0; i<ReducedTree->JetsNum; i++) //loop on AK4 jet
       {
       BoolIsJet = 1;
@@ -671,9 +673,20 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 	if (BoolJetLoosePass) JetLoosePass++;
 	if (BoolJetLepCleanPass) JetLepCleanPass++;
  
- 	nJets_ak4_afterSelect ->Fill(indexGoodJets.size());
+     Jet_num_2	= indexGoodJets.size();
+     if (indexGoodJets.size()<1) continue;
+     Jet0_pt	= ReducedTree->Jets_PtCorr[indexGoodJets.at(0)];
+     Jet0_eta	= ReducedTree->JetsEta[indexGoodJets.at(0)];
+     Jet0_phi	= ReducedTree->JetsPhi[indexGoodJets.at(0)];
+     Jet0_E	= ReducedTree->Jets_ECorr[indexGoodJets.at(0)];
 
+     t2.Fill();
+
+    //MET.SetPtEtaPhiE(ReducedTree->METPt,0.,ReducedTree->METPhi,0.);
+     pf_MET_pt = ReducedTree->METPt;
+     pf_MET_phi= ReducedTree->METPhi;
 	
+     t3.Fill();
       if (indexGoodJets.size()<4)  continue;
       TotalAK4Jets_MoreThan4++;
 
@@ -698,18 +711,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
 			//cout<<"Found Before Check!!!!"<<endl;
 	if(verbose)
 			cout<<"Before if loop::DeltaEta = "<<abs(VBF1.Eta()-VBF2.Eta())<<"opp hemi = "<< VBF1.Eta()*VBF2.Eta()*cos(VBF1.Theta()-VBF2.Theta()) <<"\t mass of dijet = "<<(VBF1+VBF2).M()<<endl;
-			if (i==0 && j==1)
-				mjj_01->Fill((VBF1+VBF2).M());
-			if (i==0 && j==2)
-				mjj_02->Fill((VBF1+VBF2).M());
-			if (i==0 && j==3)
-				mjj_03->Fill((VBF1+VBF2).M());
-			if (i==1 && j==2)
-				mjj_12->Fill((VBF1+VBF2).M());
-			if (i==1 && j==3)
-				mjj_13->Fill((VBF1+VBF2).M());
-			if (i==2 && j==3)
-				mjj_23->Fill((VBF1+VBF2).M());
 			if (DeltaEta > abs(VBF1.Eta()-VBF2.Eta()) || VBF1.Eta()*VBF2.Eta() > 0 || (VBF1+VBF2).M()<500) continue;
 			if (abs(VBF1.Eta()-VBF2.Eta())<3.5) continue;
 
@@ -965,49 +966,6 @@ TH1F * mjj_23 = new TH1F("mjj_23","",100,0,2500);
     if(WWTree->event==evento) std::cout<<"fill: "<<count<<std::endl; count++;
     outTree->Fill();
   }
-int eos = 0; // Save output to eos area  
-if (eos)
-{
-  std::string strNjet = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName +"/Plots/"+leptonName+"_"+outputFile+"_nJets_ak4_afterSelect.C";	const char * cNjet = strNjet.c_str();	nJets_ak4_afterSelect->SaveAs(cNjet);
-  std::string strptEle = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName +"/Plots/"+leptonName+"_"+outputFile+"_ptEle.C";	const char * cptEle = strptEle.c_str();	ptEle->SaveAs(cptEle);
-  std::string strptMet = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName +"/Plots/"+leptonName+"_"+outputFile+"_ptMet.C";	const char * cptMet = strptMet.c_str();	ptMet->SaveAs(cptMet);
-  std::string strpt_W = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName  +"/Plots/"+leptonName+"_"+outputFile+"_pt_W.C";	const char * cpt_W = strpt_W.c_str();	pt_W->SaveAs(cpt_W);
-  std::string strmjj_01 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_01.C";	const char * cmjj_01 = strmjj_01.c_str();	mjj_01->SaveAs(cmjj_01);
-  std::string strmjj_02 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_02.C";	const char * cmjj_02 = strmjj_02.c_str();	mjj_02->SaveAs(cmjj_02);
-  std::string strmjj_03 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_03.C";	const char * cmjj_03 = strmjj_03.c_str();	mjj_03->SaveAs(cmjj_03);
-  std::string strmjj_12 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_12.C";	const char * cmjj_12 = strmjj_12.c_str();	mjj_12->SaveAs(cmjj_12);
-  std::string strmjj_13 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_13.C";	const char * cmjj_13 = strmjj_13.c_str();	mjj_13->SaveAs(cmjj_13);
-  std::string strmjj_23 = "/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_"+leptonName+"/Plots/"+leptonName+"_"+outputFile+"_mjj_23.C";	const char * cmjj_23 = strmjj_23.c_str();	mjj_23->SaveAs(cmjj_23);
-//  ptEle->SaveAs (std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees_13Jan2016/output/output_/ptEle")+leptonName+std::string("_")+outputFile+std::string(".C"));
-//  ptMet->SaveAs (std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/ptMet.C");
-//  pt_W->SaveAs  (std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/pt_W.C");
-//  mjj_01->SaveAs(std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_01.C");
-//  mjj_02->SaveAs(std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_02.C");
-//  mjj_03->SaveAs(std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_03.C");
-//  mjj_12->SaveAs(std::string("/eos/uscms/store/user/rasharma/WWScattering/WWTrees/output/temp_plots/mjj_12.C");
-}
-else
-{
-  std::string strNjet 	= leptonName +"_"+leptonName+"_"+outputFile+"_nJets_ak4_afterSelect.C";	const char * cNjet = strNjet.c_str();	nJets_ak4_afterSelect->SaveAs(cNjet);
-  std::string strptEle 	= leptonName +"_"+leptonName+"_"+outputFile+"_ptEle.C";	const char * cptEle = strptEle.c_str();	ptEle->SaveAs(cptEle);
-  std::string strptMet 	= leptonName +"_"+leptonName+"_"+outputFile+"_ptMet.C";	const char * cptMet = strptMet.c_str();	ptMet->SaveAs(cptMet);
-  std::string strpt_W 	= leptonName +"_"+leptonName+"_"+outputFile+"_pt_W.C";	const char * cpt_W = strpt_W.c_str();	pt_W->SaveAs(cpt_W);
-  std::string strmjj_01 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_01.C";	const char * cmjj_01 = strmjj_01.c_str();	mjj_01->SaveAs(cmjj_01);
-  std::string strmjj_02 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_02.C";	const char * cmjj_02 = strmjj_02.c_str();	mjj_02->SaveAs(cmjj_02);
-  std::string strmjj_03 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_03.C";	const char * cmjj_03 = strmjj_03.c_str();	mjj_03->SaveAs(cmjj_03);
-  std::string strmjj_12 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_12.C";	const char * cmjj_12 = strmjj_12.c_str();	mjj_12->SaveAs(cmjj_12);
-  std::string strmjj_13 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_13.C";	const char * cmjj_13 = strmjj_13.c_str();	mjj_13->SaveAs(cmjj_13);
-  std::string strmjj_23 = leptonName +"_"+leptonName+"_"+outputFile+"_mjj_23.C";	const char * cmjj_23 = strmjj_23.c_str();	mjj_23->SaveAs(cmjj_23);
-//  ptEle->SaveAs (std::string("output/output_/ptEle")+leptonName+std::string("_")+outputFile+std::string(".C"));
-//  ptMet->SaveAs (std::string("output/temp_plots/ptMet.C");
-//  pt_W->SaveAs  (std::string("output/temp_plots/pt_W.C");
-//  mjj_01->SaveAs(std::string("output/temp_plots/mjj_01.C");
-//  mjj_02->SaveAs(std::string("output/temp_plots/mjj_02.C");
-//  mjj_03->SaveAs(std::string("output/temp_plots/mjj_03.C");
-//  mjj_12->SaveAs(std::string("output/temp_plots/mjj_12.C");
-//  mjj_13->SaveAs(std::string("output/temp_plots/mjj_13.C");
-//  mjj_23->SaveAs(std::string("output/temp_plots/mjj_23.C");
-}
 
 
   std::cout<<"matching: "<<(float)ok/(float)total<<std::endl;
@@ -1076,6 +1034,9 @@ else
   ReducedTree->fChain->Delete();
   outTree->Write();
   outROOT->Close();
+  t1.Write();
+  t2.Write();
+  t3.Write();
 
   return(0);
 }
