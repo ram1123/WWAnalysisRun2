@@ -10,8 +10,9 @@ git clone https://github.com/lbrianza/WWAnalysisRun2;
 
 Few points to note:
 
-1. The main code is in directory bin named produceWWNtuples.cpp
-2. This takes a input text file that should be in pwd.
+1. This code is working on CMSSW version CMSSW_7_1_5.
+2. The main code is in directory bin named produceWWNtuples.cpp
+3. This takes a input text file that should be in pwd.
   1. This input text file has list of input root file (with path) for a particular sample.
   2. Presently you can find all the input text file in directory InputRootFiles
 
