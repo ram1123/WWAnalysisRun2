@@ -216,7 +216,7 @@ bool verbose = 0;
  TTree t2("Jet","Tree for understanding JET cut Flow: After Selecting Lepton and Good Jet"); // CutAnalysis
  TTree t3("MET","Tree for understanding MET: After Selecting Lepton and Good Jet"); // CutAnalysis
 
- Int_t Ele_num, Mu_num;
+ Int_t Ele_num, Mu_num, Ele_nPV, Mu_nPV;
  Double_t Ele_pt, Ele_eta, Ele_phi, Ele_E;
  Double_t Mu_pt, Mu_eta, Mu_phi, Mu_E;
 
@@ -224,13 +224,15 @@ bool verbose = 0;
  t1.Branch("Ele_pt"	,	&Ele_pt		,	"Ele_pt/D"	);
  t1.Branch("Ele_eta"	,	&Ele_eta	,	"Ele_eta/D"	);
  t1.Branch("Ele_phi"	,	&Ele_phi	,	"Ele_phi/D"	);
+ t1.Branch("Ele_nPV"	,	&Ele_nPV	,	"Ele_nPV/I"	);
 
  t1.Branch("Mu_num"	,	&Mu_num		,	"Mu_num/I"	);
  t1.Branch("Mu_pt"	,	&Mu_pt		,	"Mu_pt/D"	);
  t1.Branch("Mu_eta"	,	&Mu_eta		,	"Mu_eta/D"	);
  t1.Branch("Mu_phi"	,	&Mu_phi		,	"Mu_phi/D"	);
+ t1.Branch("Mu_nPV"	,	&Mu_nPV		,	"Mu_nPV/I"	);
 
- Int_t Jet_num_1, Jet_num_2;
+ Int_t Jet_num_1, Jet_num_2, Jet0_nPV;
  Double_t Jet0_pt, Jet0_eta, Jet0_phi, Jet0_E;
 
  t2.Branch("Jet_num_1"	,	&Jet_num_1	,	"Jet_num_1/I"	);
@@ -239,10 +241,13 @@ bool verbose = 0;
  t2.Branch("Jet0_eta"	,	&Jet0_eta	,	"Jet0_eta/D"	);
  t2.Branch("Jet0_phi"	,	&Jet0_phi	,	"Jet0_phi/D"	);
  t2.Branch("Jet0_E"	,	&Jet0_E		,	"Jet0_E/D"	);
+ t2.Branch("Jet0_nPV"	,	&Jet0_nPV	,	"Jet0_nPV/I"	);
 
+ Int_t pf_MET_nPV;
  Double_t pf_MET_pt , pf_MET_phi ;
  t3.Branch("pf_MET_pt"	,	&pf_MET_pt	,	"pf_MET_pt/D"	);
  t3.Branch("pf_MET_phi"	,	&pf_MET_phi	,	"pf_MET_phi/D"	);
+ t3.Branch("pf_MET_nPV"	,	&pf_MET_nPV	,	"pf_MET_nPV/I"	);
 /*
  * END
  */
@@ -282,6 +287,7 @@ bool verbose = 0;
     WWTree->eff_and_pu_Weight = 1.; //temporary value
 
     WWTree->genWeight = ReducedTree->genEventWeight;
+ //   cout<<"ReducedTree->genEventWeight = "<<ReducedTree->genEventWeight<<endl;
 
     //PILE-UP WEIGHT
     if (isMC) {
@@ -318,18 +324,18 @@ bool verbose = 0;
    BoolTightPassMu = 0, BoolPtPassMu = 0, BoolEtaPassMu = 0, BoolIsoPassMu = 0;
    BoolTotalAK4Jets = 0, BoolTotalAK4Jets_MoreThan4 = 0;
     if (strcmp(leptonName.c_str(),"el")==0) {
-    	if (verbose)
-    	cout<<"==================> debug 2 "<<endl;
       float tempPt=0.;
-
-
+      int passTrigger=0;
       for (int i=0; i<ReducedTree->ElectronsNum; i++) {
-	//if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
-	//if (ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
-	//if (ReducedTree->Electrons_isHEEP[i]==false) continue;       
+	if (applyTrigger==1)
+	  for (int t=0; t<ReducedTree->TriggerProducerTriggerNames->size(); t++)
+	  {
+	  if(TString(ReducedTree->TriggerProducerTriggerNames->at(t)).Contains("HLT_Ele23_WPLoose_Gsf_v"))
+	  if (ReducedTree->TriggerProducerTriggerPass->at(t)==1) {passTrigger=1; //trigger
+	  cout<<"Enter Ele"<<endl;}
+	  }
+	  if (passTrigger==0) continue;
 	if (ReducedTree->Electrons_isMedium[i]==false) continue;       
-	//if (ReducedTree->Electrons_isLoose[i]==false) continue;       
-	//if (ReducedTree->Electrons_isTight[i]==false) continue;       
 	BoolMediumPassEle = 1;
         if (ReducedTree->ElectronsPt[i]<=25) continue;
 	BoolPtPassEle = 1;
@@ -349,10 +355,19 @@ bool verbose = 0;
     else if (strcmp(leptonName.c_str(),"mu")==0) {
     	if (verbose)
     	cout<<"==================> debug 3 "<<endl;
+      int passTrigger=0;
       float tempPt=0.;
       for (int i=0; i<ReducedTree->MuonsNum; i++) {
-	//if (applyTrigger==1 && ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
-	//if (ReducedTree->TriggerProducerTriggerPass->at(1)==0) continue; //trigger
+	if (applyTrigger==1)
+	  for (int t=0; t<ReducedTree->TriggerProducerTriggerNames->size(); t++)
+	  {
+	  if(TString(ReducedTree->TriggerProducerTriggerNames->at(t)).Contains("HLT_IsoMu20_v"))
+	  if (ReducedTree->TriggerProducerTriggerPass->at(t)==1) {passTrigger=1; //trigger
+	  cout<<"Enter MU"<<endl;}
+	  }
+	  if (passTrigger==0) continue;
+
+	//if (ReducedTree->TriggerProducerTriggerPass->at(0)==0) continue; //trigger
 	//if (ReducedTree->Muons_isLoose[i]==false) continue;
 	if (ReducedTree->Muons_isTight[i]==false) continue;
 	//if (ReducedTree->Muons_isHighPt[i]==false) continue;
@@ -438,12 +453,14 @@ bool verbose = 0;
     Ele_pt	= WWTree->l_pt;
     Ele_eta	= WWTree->l_eta;
     Ele_phi	= WWTree->l_phi;
+    Ele_nPV	= WWTree->nPV;
     }
     if (strcmp(leptonName.c_str(),"mu")==0) {
     Mu_num	= nLooseLepton; 	// CutAnalysis
     Mu_pt	= WWTree->l_pt;
     Mu_eta	= WWTree->l_eta;
     Mu_phi	= WWTree->l_phi;
+    Mu_nPV	= WWTree->nPV;
     }
 
     t1.Fill();
@@ -679,12 +696,14 @@ bool verbose = 0;
      Jet0_eta	= ReducedTree->JetsEta[indexGoodJets.at(0)];
      Jet0_phi	= ReducedTree->JetsPhi[indexGoodJets.at(0)];
      Jet0_E	= ReducedTree->Jets_ECorr[indexGoodJets.at(0)];
+     Jet0_nPV	= WWTree->nPV;
 
      t2.Fill();
 
     //MET.SetPtEtaPhiE(ReducedTree->METPt,0.,ReducedTree->METPhi,0.);
      pf_MET_pt = ReducedTree->METPt;
      pf_MET_phi= ReducedTree->METPhi;
+     pf_MET_nPV= WWTree->nPV;
 	
      t3.Fill();
       if (indexGoodJets.size()<4)  continue;
