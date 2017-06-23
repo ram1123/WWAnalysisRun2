@@ -153,10 +153,6 @@ int main (int argc, char** argv)
   std::vector<TLorentzVector> looseEle;
 
   int ok=0, total=0;
-  int runno=260627;
-  int lumo=524;
-  int evento=942309369;
-  int count=0;
 	
   setInputTree *ReducedTree = new setInputTree (inputTreeName.c_str());
   ReducedTree->Init();
@@ -166,14 +162,9 @@ int main (int argc, char** argv)
   //cout<<"Ramkrishna "<<endl;
   //exit(0);
   sprintf(command1, "xrd eoscms dirlist %s/%s/  | awk '{print \"root://eoscms.cern.ch/\"$5}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());
-  //sprintf(command1,"find %s/%s/ -name \"*.root\" > listTemp_%s.txt",(inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());
-  //sprintf(command1,"eos root://cmseos.fnal.gov ls %s/%s/ | awk '{print \"root://cmseos.fnal.gov\/%s/%s/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(), (inputFile).c_str(), (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());
-  //sprintf(command1,"xrdfsls %s/%s/ | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(), (inputFile).c_str(),  outputFile.c_str());
-  //sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s/%s/ | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(), (inputFile).c_str(),  outputFile.c_str());
   std::cout<<command1<<std::endl;
   system(command1);
   char list1[2000];
-  //sprintf (list1, "InputRootFile_%s.dat", inputFile.c_str());
   sprintf (list1, "listTemp_%s.txt", outputFile.c_str());
   ifstream rootList (list1);
 
@@ -235,7 +226,7 @@ int main (int argc, char** argv)
   TTree* outTree = new TTree("otree", "otree");
   setOutputTree* WWTree = new setOutputTree(outTree);
 
-  float top_NNLO_weight[2];
+  //float top_NNLO_weight[2];
 
   std::ifstream badEventsFile;
   std::multimap<int,int> badEventsList;
@@ -265,11 +256,9 @@ int main (int argc, char** argv)
   for (Long64_t jentry=0; jentry<1198;jentry++,jentry2++)
   {
     
-    //cout<<"Event no. = "<<jentry<<endl;
     Long64_t iEntry = ReducedTree->LoadTree(jentry);
     if (iEntry < 0) break;
     ReducedTree->fChain->GetEntry(jentry);
-    // if (Cut(ientry) < 0) continue;                                                                                                                           
     
     tightMuon.clear();
     tightEle.clear();
@@ -284,18 +273,18 @@ int main (int argc, char** argv)
     WWTree->event = ReducedTree->evtNum;
     WWTree->lumi  = ReducedTree->lumiSec;
     
-    /*    
+    /*     
     bool skipEvent = false;
     if( isMC==0 ) //apply json file
     {
-      if(AcceptEventByRunAndLumiSection(ReducedTree->RunNum,ReducedTree->LumiBlockNum,jsonMap) == false) skipEvent = true;                           
-      std::pair<int,Long64_t> eventLSandID(ReducedTree->LumiBlockNum,ReducedTree->EvtNum);            
-      std::pair<int,std::pair<int,Long64_t> > eventRUNandLSandID(ReducedTree->RunNum,eventLSandID); 
+      if(AcceptEventByRunAndLumiSection(ReducedTree->runNum,ReducedTree->lumiSec,jsonMap) == false) skipEvent = true;                           
+      std::pair<int,Long64_t> eventLSandID(ReducedTree->lumiSec,ReducedTree->evtNum);            
+      std::pair<int,std::pair<int,Long64_t> > eventRUNandLSandID(ReducedTree->runNum,eventLSandID); 
       if( eventsMap[eventRUNandLSandID] == 1 ) skipEvent = true;                                             
       else eventsMap[eventRUNandLSandID] = 1;                                                          
     }
     if( skipEvent == true ) continue;    
-    */    
+   */
     
     WWTree->initializeVariables(); //initialize all variables
    /*  
@@ -361,9 +350,7 @@ int main (int argc, char** argv)
     
     WWTree->nPV = ReducedTree->PV_;
     
-    count=0;
     cutEff[0]++;
-    if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"debug: "<<count<<std::endl; count++;
     
     /////////////////THE SELECTED LEPTON
     int nTightLepton=0;
@@ -372,9 +359,8 @@ int main (int argc, char** argv)
       float tempPt=0.;
 
       for (int i=0; i<ReducedTree->Electron_; i++) {
-	if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"debug ele: "<<i<<std::endl;
 //	if (applyTrigger==1)
-//	  for (unsigned int t=0; t<ReducedTree->TriggerProducerTriggerNames->size(); t++)
+//	  for ( int t=0; t<ReducedTree->TriggerProducerTriggerNames->size(); t++)
 //	    if(TString(ReducedTree->TriggerProducerTriggerNames->at(t)).Contains("HLT_Ele27_eta2p1_WPLoose_Gsf_v") ||
 //	       TString(ReducedTree->TriggerProducerTriggerNames->at(t)).Contains("HLT_Ele105_CaloIdVT_GsfTrkIdT_v") )
 //	      if (ReducedTree->TriggerProducerTriggerPass->at(t)==1) passTrigger=1; //trigger
@@ -384,7 +370,6 @@ int main (int argc, char** argv)
         if (ReducedTree->Electron_pt[i]<=45) continue;
         if (fabs(ReducedTree->Electron_eta[i])>=2.1) continue;
 	// if (fabs(ReducedTree->Electron_eta[i])>=2.5) continue; //this is already in the HEEP requirement
-	// if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"debug ele: "<<i<<std::endl;
 	if (ReducedTree->Electron_pt[i]<tempPt) continue;
 	ELE.SetPtEtaPhiE(ReducedTree->Electron_pt[i],ReducedTree->Electron_eta[i],ReducedTree->Electron_phi[i],ReducedTree->Electron_ecalEnergy[i]);
 	tightEle.push_back(ELE);
@@ -403,7 +388,7 @@ int main (int argc, char** argv)
       float tempPt=0.;
       for (int i=0; i<ReducedTree->Muon_; i++) {
 	//if (applyTrigger==1)
-	//  for (unsigned int t=0; t<ReducedTree->TriggerProducerTriggerNames->size(); t++)
+	//  for ( int t=0; t<ReducedTree->TriggerProducerTriggerNames->size(); t++)
 	//    if(TString(ReducedTree->TriggerProducerTriggerNames->at(t)).Contains("HLT_IsoMu27"))
 	//      if (ReducedTree->TriggerProducerTriggerPass->at(t)==1) passTrigger=1; //trigger
 	//if (passTrigger==0 && applyTrigger==1) continue;
@@ -562,7 +547,6 @@ int main (int argc, char** argv)
     // //preselection on met
     // if (ReducedTree->pfMET < 30) continue;
     // cutEff[3]++;
-    // if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"debug: "<<count<<std::endl; count++;
     
     // Calculate Neutrino Pz using all the possible choices : 
     // type0 -> if real roots, pick the one nearest to the lepton Pz except when the Pz so chosen
@@ -580,7 +564,6 @@ int main (int argc, char** argv)
     //W_Met_jes_dn.SetPxPyPzE(ReducedTree->METPtDown * TMath::Cos(ReducedTree->METPhiDown), ReducedTree->METPtDown * TMath::Sin(ReducedTree->METPhiDown), 0., sqrt(ReducedTree->METPtDown*ReducedTree->METPtDown));
     
     // if(LEP.Pt()<=0 || W_Met.Pt() <= 0 ){ std::cerr<<" Negative Lepton - Neutrino Pt "<<std::endl; continue ; }
-    // if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"debug: "<<count<<std::endl; count++;
     
     // type0 calculation of neutrino pZ
     METzCalculator NeutrinoPz_type0;
@@ -697,7 +680,6 @@ int main (int argc, char** argv)
     //preselection on met
     if (ReducedTree->pfMET < 30 && ReducedTree->puppET < 30) continue;
     cutEff[3]++;
-    if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"debug: "<<count<<std::endl; count++;
     
     // Calculate Neutrino Pz using all the possible choices : 
     // type0 -> if real roots, pick the one nearest to the lepton Pz except when the Pz so chosen
@@ -712,7 +694,6 @@ int main (int argc, char** argv)
     
     if(LEP.Pt()<=0 || W_Met.Pt() <= 0 ){ std::cerr<<" Negative Lepton - Neutrino Pt "<<std::endl; continue ; }
     cutEff[4]++;
-    if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"debug: "<<count<<std::endl; count++;
     
     // type0 calculation of neutrino pZ
     NeutrinoPz_type0.SetMET(W_Met);
@@ -820,11 +801,10 @@ int main (int argc, char** argv)
     ///////////THE FAT JET - AK8
     float tempPt=0., tempMass=0.;
     int nGoodAK8jets=0;
-    int hadWpos = -1;
     int ttb_jet_position=-1; //position of AK8 jet in ttbar-topology
     // if (ReducedTree->AK8CHS_ < 1 ) continue; 
     
-    for (unsigned int i=0; i<ReducedTree->AK8CHS_; i++)
+    for ( int i=0; i<ReducedTree->AK8CHS_; i++)
     {
       bool isCleanedJet = true;
       if (ReducedTree->AK8CHS_pt[i]<100 || fabs(ReducedTree->AK8CHS_eta[i])>2.4)  continue; //be careful: this is not inside the synchntuple code
@@ -839,12 +819,12 @@ int main (int argc, char** argv)
       //if (ReducedTree->AK8Jets_AK8isLooseJetId[i]==false) continue; //fat jet must satisfy loose ID
       
       //CLEANING FROM LEPTONS
-      for (unsigned int j=0; j<tightEle.size(); j++) {
+      for (std::size_t j=0; j<tightEle.size(); j++) {
         if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
                    ReducedTree->AK8CHS_eta[i], ReducedTree->AK8CHS_phi[i]) < 1.0)
           isCleanedJet = false;
       }
-      for (unsigned int j=0; j<tightMuon.size(); j++) {
+      for ( std::size_t j=0; j<tightMuon.size(); j++) {
         if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
                    ReducedTree->AK8CHS_eta[i], ReducedTree->AK8CHS_phi[i]) < 1.0)
           isCleanedJet = false;
@@ -870,7 +850,6 @@ int main (int argc, char** argv)
       
       tempPt = WWTree->ungroomed_jet_pt;
       nGoodAK8jets++;
-      hadWpos = i;
     }
     if (WWTree->ungroomed_jet_pt > 0)
     {
@@ -892,9 +871,8 @@ int main (int argc, char** argv)
     int nGoodPuppiAK8jets=0;
     int hadWPuppiAK8pos = -1;
     int ttb_PuppiAK8_jet_position=-1; //position of AK8 jet in ttbar-topology
-    if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"debug: "<<count<<std::endl; count++;
     
-    for (unsigned int i=0; i<ReducedTree->AddAK8Puppi_; i++)
+    for ( int i=0; i<ReducedTree->AddAK8Puppi_; i++)
     {
       bool isCleanedJet = true;
       if (ReducedTree->AK8Puppi_pt[i]<100 || fabs(ReducedTree->AK8Puppi_eta[i])>2.4)  continue; //be careful: this is not inside the synchntuple code
@@ -909,12 +887,12 @@ int main (int argc, char** argv)
       //if (ReducedTree->PuppiAK8Jets_PuppiAK8isLooseJetId[i]==false) continue; //fat jet must satisfy loose ID
       
       //CLEANING FROM LEPTONS
-      for (unsigned int j=0; j<tightEle.size(); j++) {
+      for ( std::size_t j=0; j<tightEle.size(); j++) {
         if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
                    ReducedTree->AK8Puppi_eta[i], ReducedTree->AK8Puppi_phi[i]) < 1.0)
           isCleanedJet = false;
       }
-      for (unsigned int j=0; j<tightMuon.size(); j++) {
+      for ( std::size_t j=0; j<tightMuon.size(); j++) {
         if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
                    ReducedTree->AK8Puppi_eta[i], ReducedTree->AK8Puppi_phi[i]) < 1.0)
           isCleanedJet = false;
@@ -971,7 +949,7 @@ int main (int argc, char** argv)
     float tempPt1 = 0.; int pos1 = -1;
     float tempPt2 = 0.; int pos2 = -1;
     int nGoodAK4jets=0;
-    for (unsigned int i=0; i<ReducedTree->AK4CHS_; i++) //loop on AK4 jet
+    for ( int i=0; i<ReducedTree->AK4CHS_; i++) //loop on AK4 jet
     {
       bool isCleanedJet = true;
       if (ReducedTree->AK4CHS_pt[i]<=30  || fabs(ReducedTree->AK4CHS_eta[i])>=2.4)  continue;
@@ -979,13 +957,13 @@ int main (int argc, char** argv)
       if (ReducedTree->AK4CHS_csv[i]>0.890) continue;
       
       //CLEANING FROM LEPTONS
-      for (unsigned int j=0; j<tightEle.size(); j++) {
+      for ( std::size_t j=0; j<tightEle.size(); j++) {
         if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
                    ReducedTree->AK4CHS_eta[i], ReducedTree->AK4CHS_phi[i]) < 0.3) {
           isCleanedJet = false;
         }
       }
-      for (unsigned int j=0; j<tightMuon.size(); j++) {
+      for ( std::size_t j=0; j<tightMuon.size(); j++) {
         if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
                    ReducedTree->AK4CHS_eta[i], ReducedTree->AK4CHS_phi[i]) < 0.3) {
           isCleanedJet = false;
@@ -1073,7 +1051,7 @@ int main (int argc, char** argv)
     tempPt1 = 0.; int pos1Puppi = -1;
     tempPt2 = 0.; int pos2Puppi = -1;
     int nGoodPuppiAK4jets=0;
-    for (unsigned int i=0; i<ReducedTree->AK4Puppi_; i++) //loop on PuppiAK4 jet
+    for ( int i=0; i<ReducedTree->AK4Puppi_; i++) //loop on PuppiAK4 jet
     {
       bool isCleanedJet = true;
       if ( ReducedTree->AK4Puppi_pt[i]<=20 || fabs(ReducedTree->AK4Puppi_eta[i])>=2.4)  continue;
@@ -1081,13 +1059,13 @@ int main (int argc, char** argv)
       if (ReducedTree->AK4Puppi_csv[i]>0.890) continue;
       
       //CLEANING FROM LEPTONS
-      for (unsigned int j=0; j<tightEle.size(); j++) {
+      for ( std::size_t j=0; j<tightEle.size(); j++) {
         if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
                    ReducedTree->AK4Puppi_eta[i], ReducedTree->AK4Puppi_phi[i]) < 0.3) {
           isCleanedJet = false;
         }
       }
-      for (unsigned int j=0; j<tightMuon.size(); j++) {
+      for ( std::size_t j=0; j<tightMuon.size(); j++) {
         if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
                    ReducedTree->AK4Puppi_eta[i], ReducedTree->AK4Puppi_phi[i]) < 0.3) {
           isCleanedJet = false;
@@ -1307,7 +1285,7 @@ int main (int argc, char** argv)
     
     std::vector<int> indexGoodVBFJets;
     
-    for (unsigned int i=0; i<ReducedTree->AK4CHS_; i++) //loop on AK4 jet
+    for ( int i=0; i<ReducedTree->AK4CHS_; i++) //loop on AK4 jet
     {
       bool isCleaned = true;
       bool isCleanedFromFatJet = true;
@@ -1336,13 +1314,13 @@ int main (int argc, char** argv)
       }      
       
       //CLEANING FROM LEPTONS
-      for (unsigned int j=0; j<tightEle.size(); j++) {
+      for ( std::size_t j=0; j<tightEle.size(); j++) {
         if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
                    ReducedTree->AK4CHS_eta[i],   ReducedTree->AK4CHS_phi[i]) < 0.3) {
           isCleaned = false;
         }
       }
-      for (unsigned int j=0; j<tightMuon.size(); j++) {
+      for ( std::size_t j=0; j<tightMuon.size(); j++) {
         if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
                    ReducedTree->AK4CHS_eta[i],   ReducedTree->AK4CHS_phi[i]) < 0.3) {
           isCleaned = false;
@@ -1411,7 +1389,7 @@ int main (int argc, char** argv)
     
     std::vector<int> indexGoodVBFJetsPuppi;
     
-    for (unsigned int i=0; i<ReducedTree->AK4Puppi_; i++) //loop on PuppiAK4 jet
+    for ( int i=0; i<ReducedTree->AK4Puppi_; i++) //loop on PuppiAK4 jet
     {
       bool isCleaned = true;
       bool isCleanedFromFatJet = true;
@@ -1440,13 +1418,13 @@ int main (int argc, char** argv)
       }      
       
       //CLEANING FROM LEPTONS
-      for (unsigned int j=0; j<tightEle.size(); j++) {
+      for ( std::size_t j=0; j<tightEle.size(); j++) {
         if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
                    ReducedTree->AK4Puppi_eta[i],   ReducedTree->AK4Puppi_phi[i]) < 0.3) {
           isCleaned = false;
         }
       }
-      for (unsigned int j=0; j<tightMuon.size(); j++) {
+      for ( std::size_t j=0; j<tightMuon.size(); j++) {
         if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
                    ReducedTree->AK4Puppi_eta[i],   ReducedTree->AK4Puppi_phi[i]) < 0.3) {
           isCleaned = false;
@@ -1543,8 +1521,8 @@ int main (int argc, char** argv)
       float tempPtMax=0.;
       int nVBF1=-1, nVBF2=-1; //position of the two vbf jets
       
-      for (unsigned int i=0; i<indexGoodVBFJetsPuppi.size()-1; i++) {
-        for (unsigned int ii=i+1; ii<indexGoodVBFJetsPuppi.size(); ii++) {
+      for (std::size_t i=0; i<indexGoodVBFJetsPuppi.size()-1; i++) {
+        for ( std::size_t ii=i+1; ii<indexGoodVBFJetsPuppi.size(); ii++) {
           VBF1.SetPtEtaPhiE(ReducedTree->AK4Puppi_pt[indexGoodVBFJetsPuppi.at(i)],ReducedTree->AK4Puppi_eta[indexGoodVBFJetsPuppi.at(i)],ReducedTree->AK4Puppi_phi[indexGoodVBFJetsPuppi.at(i)],ReducedTree->AK4Puppi_ptRaw[indexGoodVBFJetsPuppi.at(i)]);
           VBF2.SetPtEtaPhiE(ReducedTree->AK4Puppi_pt[indexGoodVBFJetsPuppi.at(ii)],ReducedTree->AK4Puppi_eta[indexGoodVBFJetsPuppi.at(ii)],ReducedTree->AK4Puppi_phi[indexGoodVBFJetsPuppi.at(ii)],ReducedTree->AK4Puppi_ptRaw[indexGoodVBFJetsPuppi.at(ii)]);
           TOT = VBF1 + VBF2;
@@ -1662,7 +1640,6 @@ int main (int argc, char** argv)
 
     
     /////////////////FILL THE TREE
-    if(WWTree->event==evento && WWTree->run==runno && WWTree->lumi==lumo) std::cout<<"fill: "<<count<<std::endl; count++;
     outTree->Fill();
   }
   std::cout << "---------end loop on events------------" << std::endl;
