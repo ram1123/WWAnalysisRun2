@@ -1,0 +1,15 @@
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/tch_bar
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/tch
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/TTbar_amcatnlo
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/WJets100ext2
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/WZ_excl_amcatnlo
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_el_2016_runD_v1
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_el_2016_runF_v1
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_el_2016_runG_v1
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_el_2016_runH_v2
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_mu_2016_runB_v3
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_mu_2016_runC_v1
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_mu_2016_runD_v1
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_mu_2016_runE_v1
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_mu_2016_runF_v1
+eosrm -r /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016/data_mu_2016_runG_v1
