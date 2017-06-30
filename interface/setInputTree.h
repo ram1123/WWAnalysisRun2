@@ -17,10 +17,13 @@
 // Header file for the classes stored in the TTree if any.
 #include "TClonesArray.h"
 
+#include "BaconAnaDefs.hh"
+
 class setInputTree {
 public :
    TChain          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
+   unsigned int    fITrigger;
 
 
    // Declaration of leaf types
@@ -87,6 +90,7 @@ public :
    Float_t         trkMETphi;
    Float_t         rhoIso;
    Float_t         rhoJet;
+   //TriggerBits	   triggerBits;	// fired trigger bits
  //bitset<256>     triggerBits;
    Bool_t          hasGoodPV;
  //baconhep::TGenEventInfo *GenEvtInfo;
@@ -897,6 +901,7 @@ public :
    TBranch        *b_Info_trkMETphi;   //!
    TBranch        *b_Info_rhoIso;   //!
    TBranch        *b_Info_rhoJet;   //!
+   //TBranch	  *b_Info_triggerBits;
    TBranch        *b_Info_hasGoodPV;   //!
    TBranch        *b_GenEvtInfo_id_1;   //!
    TBranch        *b_GenEvtInfo_id_2;   //!

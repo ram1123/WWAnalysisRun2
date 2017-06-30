@@ -9,6 +9,8 @@ import string
 if __name__ == '__main__':
     parser = argparse.ArgumentParser (description = 'produce ntuples with WW semileptonic final state')
     parser.add_argument ('-i', '--inputFolder' , default = '/store/user/arapyan/Run2/WWJJToLNuQQ_LL_13TeV-madgraph-pythia8/Samples/170503_175516/' , help='input folder with the reduced trees')
+    #parser.add_argument ('-i', '--inputFolder' , default = '/store/user/arapyan/Run2/WWJJToLNuQQ_LT_13TeV-madgraph-pythia8/Samples/170503_175158/' , help='input folder with the reduced trees')
+    #parser.add_argument ('-i', '--inputFolder' , default = '/store/cmst3/group/monojet/production/' , help='input folder with the reduced trees')
     parser.add_argument ('-o', '--output' , default = 'OutPutRootFile', help='output file')
     parser.add_argument ('-mc', '--ismc' , default = '0', help='is MC or not')
     parser.add_argument ('-l', '--lepton' , default = 'el', help='lepton category (mu or el)')

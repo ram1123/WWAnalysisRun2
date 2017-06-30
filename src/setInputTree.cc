@@ -120,6 +120,7 @@ void setInputTree::Init()
    fChain->SetBranchAddress("trkMETphi", &trkMETphi, &b_Info_trkMETphi);
    fChain->SetBranchAddress("rhoIso", &rhoIso, &b_Info_rhoIso);
    fChain->SetBranchAddress("rhoJet", &rhoJet, &b_Info_rhoJet);
+   //fChain->Branch("triggerBits",&fITrigger, "fITrigger/i");
    fChain->SetBranchAddress("hasGoodPV", &hasGoodPV, &b_Info_hasGoodPV);
    fChain->SetBranchAddress("id_1", &id_1, &b_GenEvtInfo_id_1);
    fChain->SetBranchAddress("id_2", &id_2, &b_GenEvtInfo_id_2);

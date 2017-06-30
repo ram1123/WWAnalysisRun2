@@ -11,11 +11,14 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 
 ## Instructions
 
+	cmsrel CMSSW_8_0_11
+	cd CMSSW_8_0_11/src
+	cmsenv
 	git clone https://github.com/ram1123/WWAnalysisRun2.git;
-	cd WWAnalysisRun2/;
+	cd WWAnalysisRun2
 	git checkout bacon_80x
-	make;
-	python python/produceWWNtuples.py -l el -mc True  
+	make
+	python python/produceWWNtuples.py -l el
 
 ## To Do List
 - [ ] Apply Trigger, & IDs
