@@ -306,6 +306,7 @@ void setOutputTree::initializeVariables()
   vbf_maxpt_jj_eta		=-999;
   vbf_maxpt_jj_phi		=-999;
   vbf_maxpt_jj_m		=-999;
+  vbf_maxpt_jj_Deta		=-999;
   jet2_pt	=0;
   jet2_eta	=0;
   jet2_phi	=0;
@@ -357,6 +358,7 @@ void setOutputTree::initializeVariables()
   AK4_2_phi_gen		=-999;
   AK4_2_e_gen		=-999;
   AK4_2_mass_gen	=-999;
+  AK4_jj_DeltaEta_gen	=-999;
   AK4_DR_GENRECO_11	= -999.;
   AK4_DR_GENRECO_12	= -999.;
   AK4_DR_GENRECO_21	= -999.;
@@ -553,6 +555,7 @@ void setOutputTree::setBranches()
   fTree->Branch("AK4_2_phi_gen",&AK4_2_phi_gen,"AK4_2_phi_gen/F");
   fTree->Branch("AK4_2_e_gen",&AK4_2_e_gen,"AK4_2_e_gen/F");
   fTree->Branch("AK4_2_mass_gen",&AK4_2_mass_gen,"AK4_2_mass_gen/F");
+  fTree->Branch("AK4_jj_DeltaEta_gen",&AK4_jj_DeltaEta_gen,"AK4_jj_DeltaEta_gen/F");
   fTree->Branch("AK4_DR_GENRECO_11", &AK4_DR_GENRECO_11 , "AK4_DR_GENRECO_11/F");
   fTree->Branch("AK4_DR_GENRECO_12", &AK4_DR_GENRECO_12 , "AK4_DR_GENRECO_12/F");
   fTree->Branch("AK4_DR_GENRECO_21", &AK4_DR_GENRECO_21 , "AK4_DR_GENRECO_21/F");
@@ -677,6 +680,7 @@ void setOutputTree::setBranches()
   fTree->Branch("vbf_maxpt_jj_eta",&vbf_maxpt_jj_eta,"vbf_maxpt_jj_eta/F");
   fTree->Branch("vbf_maxpt_jj_phi",&vbf_maxpt_jj_phi,"vbf_maxpt_jj_phi/F");
   fTree->Branch("vbf_maxpt_jj_m",&vbf_maxpt_jj_m,"vbf_maxpt_jj_m/F");
+  fTree->Branch("vbf_maxpt_jj_Deta",&vbf_maxpt_jj_Deta,"vbf_maxpt_jj_Deta/F");
   fTree->Branch("jet2_pt",&jet2_pt,"jet2_pt/F");
   fTree->Branch("jet2_eta",&jet2_eta,"jet2_eta/F");
   fTree->Branch("jet2_phi",&jet2_phi,"jet2_phi/F");

@@ -20,6 +20,10 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 	make
 	python python/produceWWNtuples.py -l el
 
+* To see the various options availabe with **produceWWNtuples.py** do,
+
+		python python/produceWWNtuples.py --help
+
 ## To Do List
 - [ ] Apply Trigger, & IDs
 - [ ] Apply PU
@@ -30,7 +34,6 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 ## POG Recipes for Moriond 2017
 
 * Pile-up reweighting xsec = 69.2mb
-* 
 
 Ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/POGRecipesICHEP2016
 

@@ -195,6 +195,7 @@ class setOutputTree {
   float AK4_2_phi_gen;
   float AK4_2_e_gen;
   float AK4_2_mass_gen;
+  float AK4_jj_DeltaEta_gen;
   float AK4_DR_GENRECO_11;
   float AK4_DR_GENRECO_12;
   float AK4_DR_GENRECO_21;
@@ -319,6 +320,7 @@ class setOutputTree {
   float vbf_maxpt_jj_eta;
   float vbf_maxpt_jj_phi;
   float vbf_maxpt_jj_m;
+  float vbf_maxpt_jj_Deta;
   float jet2_pt;
   float jet2_eta;
   float jet2_phi;
