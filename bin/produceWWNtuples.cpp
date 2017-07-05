@@ -112,6 +112,25 @@ int main (int argc, char** argv)
   int applyTrigger = atoi(argv[10]);
   std::string jsonFileName = argv[11];
   int isLocal = atoi(argv[12]);
+  int VBFSel  = atoi(argv[13]);
+
+	  if ( VBFSel==1)
+	  {
+	  	cout<<"VBF selection method 1"<<endl;
+	  }
+	  else if ( VBFSel==2)
+	  {
+	  	cout<<"VBF selection method 2"<<endl;
+	  }
+	  else if ( VBFSel==3)
+	  {
+	  	cout<<"VBF selection method 3"<<endl;
+	  }
+	  else
+	  {
+	  	cout<<"\n\nERROR:	Enter valid vbf selection criteria....\n\n"<<endl;
+		exit(0);
+	  }
   
 //cout<<"\n\n>>>>>>>>>>>>>>>		Ramkrishna >>>>>>> "<<endl;
   float weight = std::atof(xSecWeight.c_str())/std::atof(numberOfEntries.c_str());
@@ -253,7 +272,7 @@ int main (int argc, char** argv)
   
   //---------start loop on events------------
   std::cout << "---------start loop on events------------" << std::endl;
-  //for (Long64_t jentry=0; jentry<11;jentry++,jentry2++)
+  //for (Long64_t jentry=0; jentry<91;jentry++,jentry2++)
   for (Long64_t jentry=0; jentry<ReducedTree->fChain->GetEntries();jentry++,jentry2++)
   {
     
@@ -341,6 +360,8 @@ int main (int argc, char** argv)
 		WWTree->AK4_2_e_gen	= v_genVBFquarks[1].E();
 		WWTree->AK4_2_mass_gen	= v_genVBFquarks[1].M();
 
+		WWTree->AK4_jj_DeltaEta_gen = abs(v_genVBFquarks[0].Eta() - v_genVBFquarks[1].Eta());
+
 		count_genEvents++;
 	}
 	else
@@ -421,7 +442,7 @@ int main (int argc, char** argv)
 
       for (int i=0; i<ReducedTree->Electron_; i++) {
 //	if (applyTrigger==1)
-        if (ReducedTree->Electron_pt[i]<=45) continue;
+        if (ReducedTree->Electron_pt[i]<=35) continue;
         if (fabs(ReducedTree->Electron_eta[i])>=2.1) continue;
 	if (ReducedTree->Electron_pt[i]<tempPt) continue;
 	ELE.SetPtEtaPhiE(ReducedTree->Electron_pt[i],ReducedTree->Electron_eta[i],ReducedTree->Electron_phi[i],ReducedTree->Electron_ecalEnergy[i]);
@@ -442,7 +463,7 @@ int main (int argc, char** argv)
       for (int i=0; i<ReducedTree->Muon_; i++) {
 	//if (applyTrigger==1)
         if ((ReducedTree->Muon_trkIso[i]/ReducedTree->Muon_pt[i])>=0.1) continue;
-        if (ReducedTree->Muon_pt[i]<40) continue;
+        if (ReducedTree->Muon_pt[i]<30) continue;
         if (fabs(ReducedTree->Muon_eta[i])>=2.1) continue;
 	MU.SetPtEtaPhiM(ReducedTree->Muon_pt[i],ReducedTree->Muon_eta[i],ReducedTree->Muon_phi[i],0.1057);
 	tightMuon.push_back(MU);
@@ -578,7 +599,7 @@ int main (int argc, char** argv)
       //if (ReducedTree->Muon_isLoose[i]==false) continue;
       if ((ReducedTree->Muon_trkIso[i]/ReducedTree->Muon_pt[i])>=0.1) continue;
       if (fabs(ReducedTree->Muon_eta[i])>=2.4) continue;
-      if (ReducedTree->Muon_pt[i]<20) continue;
+      if (ReducedTree->Muon_pt[i]<25) continue;
       MU.SetPtEtaPhiM(ReducedTree->Muon_pt[i],ReducedTree->Muon_eta[i],ReducedTree->Muon_phi[i],0.1057);
       looseMuon.push_back(MU);
       nLooseLepton++;
@@ -1578,6 +1599,7 @@ int main (int argc, char** argv)
     if (indexGoodVBFJetsPuppi.size()>=2) 
     {
       float tempPtMax=0.;
+      float DRvbf;
       int nVBF1=-1, nVBF2=-1; //position of the two vbf jets
       
       for (std::size_t i=0; i<indexGoodVBFJetsPuppi.size()-1; i++) {
@@ -1585,8 +1607,30 @@ int main (int argc, char** argv)
           VBF1.SetPtEtaPhiM(ReducedTree->AK4Puppi_pt[indexGoodVBFJetsPuppi.at(i)],ReducedTree->AK4Puppi_eta[indexGoodVBFJetsPuppi.at(i)],ReducedTree->AK4Puppi_phi[indexGoodVBFJetsPuppi.at(i)],ReducedTree->AK4Puppi_mass[indexGoodVBFJetsPuppi.at(i)]);
           VBF2.SetPtEtaPhiM(ReducedTree->AK4Puppi_pt[indexGoodVBFJetsPuppi.at(ii)],ReducedTree->AK4Puppi_eta[indexGoodVBFJetsPuppi.at(ii)],ReducedTree->AK4Puppi_phi[indexGoodVBFJetsPuppi.at(ii)],ReducedTree->AK4Puppi_mass[indexGoodVBFJetsPuppi.at(ii)]);
           TOT = VBF1 + VBF2;
-          if (TOT.Pt() < tempPtMax) continue;
-          tempPtMax = TOT.Pt(); //take the jet pair with largest Pt
+	  if ( VBFSel==1)
+	  {
+		if (TOT.Pt() < tempPtMax) continue;
+		tempPtMax = TOT.Pt(); //take the jet pair with largest Pt
+		//cout<<i<<"\t"<<ii<<"\t tempPtMax = "<<tempPtMax<<endl;
+	  }
+	  else if ( VBFSel==2)
+	  {
+		if (TOT.M() < tempPtMax) continue;
+		tempPtMax = TOT.M(); //take the jet pair with largest Pt
+		//cout<<"tempPtMax = "<<tempPtMax<<endl;
+	  }
+	  else if ( VBFSel==3)
+	  {
+	  	DRvbf = abs(deltaR(VBF1.Eta(), VBF1.Phi(), VBF2.Eta(), VBF2.Phi()));
+		if (DRvbf < tempPtMax) continue;
+		tempPtMax = DRvbf; //take the jet pair with largest Pt
+		//cout<<"tempPtMax = "<<tempPtMax<<endl;
+	  }
+	  else
+	  {
+	  	cout<<"\n\nERROR:	Enter valid vbf selection criteria....\n\n"<<endl;
+		exit(0);
+	  }
           nVBF1 = indexGoodVBFJetsPuppi.at(i); //save position of the 1st vbf jet
           nVBF2 = indexGoodVBFJetsPuppi.at(ii); //save position of the 2nd vbf jet
         }
@@ -1594,9 +1638,8 @@ int main (int argc, char** argv)
       
       if (nVBF1!=-1 && nVBF2!=-1) //save infos for vbf jet pair
       {
-        nVBF1 = indexGoodVBFJetsPuppi.at(0); //save position of the 1st vbf jet
-        nVBF2 = indexGoodVBFJetsPuppi.at(1); //save position of the 2nd vbf jet
         // nVBF1=0; nVBF2=1;
+	//cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<endl;
         
         VBF1.SetPtEtaPhiM(ReducedTree->AK4CHS_pt[nVBF1],ReducedTree->AK4CHS_eta[nVBF1],ReducedTree->AK4CHS_phi[nVBF1],ReducedTree->AK4CHS_mass[nVBF1]);
         VBF2.SetPtEtaPhiM(ReducedTree->AK4CHS_pt[nVBF2],ReducedTree->AK4CHS_eta[nVBF2],ReducedTree->AK4CHS_phi[nVBF2],ReducedTree->AK4CHS_mass[nVBF2]);
@@ -1616,6 +1659,7 @@ int main (int argc, char** argv)
         WWTree->vbf_maxpt_jj_eta = TOT.Eta();
         WWTree->vbf_maxpt_jj_phi = TOT.Phi();
         WWTree->vbf_maxpt_jj_m = TOT.M();	
+	WWTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
 
 	WWTree->AK4_DR_GENRECO_11 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
 	WWTree->AK4_DR_GENRECO_12 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
