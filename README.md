@@ -14,10 +14,13 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 	cmsrel CMSSW_8_0_11
 	cd CMSSW_8_0_11/src
 	cmsenv
+	git clone git@github.com:ksung25/BaconAna.git
+	mkdir WWAnalysis
+	cd WWAnalysis
 	git clone https://github.com/ram1123/WWAnalysisRun2.git;
 	cd WWAnalysisRun2
 	git checkout bacon_80x
-	make
+	scramv1 b -j 8
 	python python/produceWWNtuples.py -l el
 
 * To see the various options availabe with **produceWWNtuples.py** do,
@@ -25,11 +28,10 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 		python python/produceWWNtuples.py --help
 
 ## To Do List
-- [ ] Apply Trigger, & IDs
-- [ ] Apply PU
 - [ ] Apply latest ID, ISO, & Trigger Efficiency for electron and muons
+- [ ] Apply ID for jets
+- [ ] Apply PU
 - [ ] Clean the code
-- [ ] make script to extract the number of events from log files
 
 ## POG Recipes for Moriond 2017
 
