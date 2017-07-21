@@ -12,7 +12,7 @@ if __name__ == '__main__':
     #parser.add_argument ('-i', '--inputFolder' , default = '/store/user/arapyan/Run2/WWJJToLNuQQ_LT_13TeV-madgraph-pythia8/Samples/170503_175158/' , help='input folder with the reduced trees')
     #parser.add_argument ('-i', '--inputFolder' , default = '/store/cmst3/group/monojet/production/' , help='input folder with the reduced trees')
     parser.add_argument ('-o', '--output' , default = 'OutPutRootFile', help='output file')
-    parser.add_argument ('-v', '--vbfsel' , default = '2', help='1 = select highest pt jet pair, 2 = select highest mjj, 3 = select highest DEta_jj VBF Jets')
+    parser.add_argument ('-v', '--vbfsel' , default = '3', help='1 = select highest pt jet pair, 2 = select highest mjj, 3 = select highest DEta_jj VBF Jets')
     parser.add_argument ('-mc', '--ismc' , default = '0', help='is MC or not')
     parser.add_argument ('-l', '--lepton' , default = 'el', help='lepton category (mu or el)')
     parser.add_argument ('-t', '--tree' , default = 'Events', help='name of the input tree')
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument ('-trig', '--applyTrigger' , default = '0' , help='apply trigger or not')
     parser.add_argument ('-json', '--json', default = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt', help="json file to apply")
     parser.add_argument ('-loc', '--isLocal' , default = '0', help='run in local or not')
-    parser.add_argument ('-exe', '--exe' , default = './produceWWNtuples.exe', help='location of the executable')
+    parser.add_argument ('-exe', '--exe' , default = 'produceWWNtuples', help='location of the executable')
     args = parser.parse_args ()
 
     command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.mass+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel

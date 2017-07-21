@@ -61,6 +61,9 @@ void setOutputTree::initializeVariables()
   l_phi		=-999;
   l_e		=-999;
   l_charge	=-999;
+  isGen		=-999;
+  lep_pt_gen	=-999;
+  lep_eta_gen	=-999;
   W_pt_gen	=-999;
   W_pz_gen	=-999;
   W_rap_gen	=-999;
@@ -359,6 +362,7 @@ void setOutputTree::initializeVariables()
   AK4_2_e_gen		=-999;
   AK4_2_mass_gen	=-999;
   AK4_jj_DeltaEta_gen	=-999;
+  AK4_jj_mass_gen	=-999;
   AK4_DR_GENRECO_11	= -999.;
   AK4_DR_GENRECO_12	= -999.;
   AK4_DR_GENRECO_21	= -999.;
@@ -517,6 +521,9 @@ void setOutputTree::setBranches()
   fTree->Branch("ttb_jet_mass_fi",&ttb_jet_mass_fi,"ttb_jet_mass_fi");
   fTree->Branch("ttb_jet_tau2tau1",&ttb_jet_tau2tau1,"ttb_jet_tau2tau1");
   fTree->Branch("ttb_deltaeta_lak8jet",&ttb_deltaeta_lak8jet,"ttb_deltaeta_lak8jet/F");
+  fTree->Branch("isGen",&isGen,"isGen/F");
+  fTree->Branch("lep_pt_gen",&lep_pt_gen,"lep_pt_gen");
+  fTree->Branch("lep_eta_gen",&lep_eta_gen,"lep_eta_gen");
   fTree->Branch("W_pt_gen",&W_pt_gen,"W_pt_gen");
   fTree->Branch("W_pz_gen",&W_pz_gen,"W_pz_gen");
   fTree->Branch("W_rap_gen",&W_rap_gen,"W_rap_gen");
@@ -556,6 +563,7 @@ void setOutputTree::setBranches()
   fTree->Branch("AK4_2_e_gen",&AK4_2_e_gen,"AK4_2_e_gen/F");
   fTree->Branch("AK4_2_mass_gen",&AK4_2_mass_gen,"AK4_2_mass_gen/F");
   fTree->Branch("AK4_jj_DeltaEta_gen",&AK4_jj_DeltaEta_gen,"AK4_jj_DeltaEta_gen/F");
+  fTree->Branch("AK4_jj_mass_gen",&AK4_jj_mass_gen,"AK4_jj_mass_gen/F");
   fTree->Branch("AK4_DR_GENRECO_11", &AK4_DR_GENRECO_11 , "AK4_DR_GENRECO_11/F");
   fTree->Branch("AK4_DR_GENRECO_12", &AK4_DR_GENRECO_12 , "AK4_DR_GENRECO_12/F");
   fTree->Branch("AK4_DR_GENRECO_21", &AK4_DR_GENRECO_21 , "AK4_DR_GENRECO_21/F");

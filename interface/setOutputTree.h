@@ -157,6 +157,9 @@ class setOutputTree {
   float PuppiAK4_jet2_eta;
   float PuppiAK4_jet2_phi;
   float PuppiAK4_jet2_e;
+  int   isGen;
+  float lep_pt_gen;
+  float lep_eta_gen;
   float W_pt_gen;
   float W_pz_gen;
   float W_rap_gen;
@@ -196,6 +199,7 @@ class setOutputTree {
   float AK4_2_e_gen;
   float AK4_2_mass_gen;
   float AK4_jj_DeltaEta_gen;
+  float AK4_jj_mass_gen;
   float AK4_DR_GENRECO_11;
   float AK4_DR_GENRECO_12;
   float AK4_DR_GENRECO_21;

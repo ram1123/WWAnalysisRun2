@@ -3,8 +3,8 @@ ROOT_LIB:=`root-config --libs --glibs`
 ROOT_FLAGS:=`root-config --cflags --ldflags`
 ROOT_INCLUDE:=`root-config --incdir`
 
-DEPS= interface/setOutputTree.h interface/METzCalculator.h interface/analysisUtils.h interface/setInputTree.h interface/METzCalculator_Run2.h interface/pseudodataNtuple.h interface/setInputPseudodata.h interface/PUWeight.h interface/readJSONFile.h
-DEPS_OBJ= lib/setOutputTree.o lib/METzCalculator.o lib/analysisUtils.o lib/setInputTree.o lib/METzCalculator_Run2.o lib/pseudodataNtuple.o lib/setInputPseudodata.o lib/PUWeight.o lib/readJSONFile.o
+DEPS= interface/setOutputTree.h interface/METzCalculator.h interface/analysisUtils.h interface/setInputTree.h interface/METzCalculator_Run2.h interface/pseudodataNtuple.h interface/setInputPseudodata.h interface/PUWeight.h interface/readJSONFile.h 
+DEPS_OBJ= lib/setOutputTree.o lib/METzCalculator.o lib/analysisUtils.o lib/setInputTree.o lib/METzCalculator_Run2.o lib/pseudodataNtuple.o lib/setInputPseudodata.o lib/PUWeight.o lib/readJSONFile.o ${CMSSW_BASE}/lib/${SCRAM_ARCH}/libBaconAnaDataFormats.so
 
 CC = g++
 CFLAGS = -Wall
