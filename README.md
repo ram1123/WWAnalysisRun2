@@ -11,8 +11,8 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 
 ## Instructions
 
-	cmsrel CMSSW_8_0_11
-	cd CMSSW_8_0_11/src
+	cmsrel CMSSW_8_0_26_patch1
+	cd CMSSW_8_0_26_patch1/src
 	cmsenv
 	git clone git@github.com:ksung25/BaconAna.git
 	mkdir WWAnalysis
@@ -22,6 +22,12 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 	git checkout bacon_80x
 	scramv1 b -j 8
 	python python/produceWWNtuples.py -l el
+
+* To submit the batch job:
+	* Go to directory:
+
+			CMSSW_8_0_26_patch1/src/WWAnalysis
+			python  WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2.py
 
 * To see the various options availabe with **produceWWNtuples.py** do,
 

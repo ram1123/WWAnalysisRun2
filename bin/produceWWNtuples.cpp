@@ -213,7 +213,8 @@ int main (int argc, char** argv)
   Long64_t totalEntries=0;
   
   if (isLocal==1) {
-    eventTree->AddFile("root://eoscms.cern.ch//store/cmst3/group/monojet/production/12//WWToLNuQQ_13TeV_powheg_ext/WWToLNuQQ_13TeV_powheg_ext_0.root",-1,"Events");
+    //eventTree->AddFile("root://eoscms.cern.ch//store/cmst3/group/monojet/production/12//WWToLNuQQ_13TeV_powheg_ext/WWToLNuQQ_13TeV_powheg_ext_0.root",-1,"Events");
+    eventTree->AddFile("root://eoscms.cern.ch//store/cmst3/group/monojet/production/12/SingleElectronRun2016B_23Sep2016_v2/SingleElectronRun2016B_23Sep2016_v2_0.root",-1,"Events");
     cout<<" ====> Found local file."<<endl;
   }
   else {
@@ -316,7 +317,6 @@ int main (int argc, char** argv)
     looseMuon.clear();
     looseEle.clear();
     
-    genBr->GetEntry(jentry);
 
     if (jentry2%100 == 0) std::cout << "read entry: " << jentry2 <<"/"<<totalEntries<<std:: endl;
     //*********************************
@@ -330,6 +330,7 @@ int main (int argc, char** argv)
     /////////////////MC Info
     if (isMC==1)
     {
+      genBr->GetEntry(jentry);
       genPartArr->Clear();
       genBr->GetEntry(jentry);
       genPartBr->GetEntry(jentry);
@@ -428,7 +429,10 @@ int main (int argc, char** argv)
     cutEff[0]++;
 
     //if (GenPassCut == 0)  continue;
+    if (isMC==1)
+    {
     if (GenPassCut == 0)   cutEff[1]++;
+    }
     
     vertexArr->Clear();
     vertexBr->GetEntry(jentry);

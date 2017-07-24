@@ -10,15 +10,14 @@ import subprocess
 currentDir = os.getcwd();
 CMSSWDir = currentDir+"/../";
 
-inputFolder = "/store/cmst3/group/monojet/production/12/";
-#inputFolder = "/eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Jan102016";
-#outputFolder = currentDir+"/output/";
-outputFolder = currentDir+"/WWAnalysisRun2/output_test/";
+inputFolder = "/store/cmst3/group/monojet/production/12/";	# Path of MC files
+#inputFolder = "/store/cmst3/group/monojet/production/12a/";	# Path of data files
+outputFolder = currentDir+"/WWAnalysisRun2/output/";
 exeName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
 
 dryRun = False;
-doMC = True;
-doData = False;
+doMC = False;
+doData = True;
 
 category = ["mu","el"];
 #category = ["el"];
@@ -61,166 +60,43 @@ samples = [
     ]
 
 nameDataMu = [
-"data_mu_2016_runB_v3_1",
-"data_mu_2016_runB_v3_10",
-"data_mu_2016_runB_v3_11",
-"data_mu_2016_runB_v3_12",
-"data_mu_2016_runB_v3_13",
-"data_mu_2016_runB_v3_14",
-"data_mu_2016_runB_v3_15",
-"data_mu_2016_runB_v3_16",
-"data_mu_2016_runB_v3_17",
-"data_mu_2016_runB_v3_18",
-"data_mu_2016_runB_v3_19",
-"data_mu_2016_runB_v3_2",
-"data_mu_2016_runB_v3_3",
-"data_mu_2016_runB_v3_4",
-"data_mu_2016_runB_v3_5",
-"data_mu_2016_runB_v3_6",
-"data_mu_2016_runB_v3_7",
-"data_mu_2016_runB_v3_8",
-"data_mu_2016_runB_v3_9",
-"data_mu_2016_runC_v1",
-"data_mu_2016_runC_v1_1",
-"data_mu_2016_runC_v1_2",
-"data_mu_2016_runC_v1_3",
-"data_mu_2016_runC_v1_4",
-"data_mu_2016_runC_v1_5",
-"data_mu_2016_runC_v1_6",
-"data_mu_2016_runC_v1_7",
-"data_mu_2016_runD_v1_1",
-"data_mu_2016_runD_v1_10",
-"data_mu_2016_runD_v1_11",
-"data_mu_2016_runD_v1_12",
-"data_mu_2016_runD_v1_2",
-"data_mu_2016_runD_v1_3",
-"data_mu_2016_runD_v1_4",
-"data_mu_2016_runD_v1_5",
-"data_mu_2016_runD_v1_6",
-"data_mu_2016_runD_v1_7",
-"data_mu_2016_runD_v1_8",
-"data_mu_2016_runD_v1_9",
-"data_mu_2016_runE_v1_1",
-"data_mu_2016_runE_v1_10",
-"data_mu_2016_runE_v1_2",
-"data_mu_2016_runE_v1_3",
-"data_mu_2016_runE_v1_4",
-"data_mu_2016_runE_v1_5",
-"data_mu_2016_runE_v1_6",
-"data_mu_2016_runE_v1_7",
-"data_mu_2016_runE_v1_8",
-"data_mu_2016_runE_v1_9",
-"data_mu_2016_runF_v1_1",
-"data_mu_2016_runF_v1_2",
-"data_mu_2016_runF_v1_3",
-"data_mu_2016_runF_v1_4",
-"data_mu_2016_runF_v1_5",
-"data_mu_2016_runF_v1_6",
-"data_mu_2016_runF_v1_7",
-"data_mu_2016_runF_v1_8",
-"data_mu_2016_runG_v1_1",
-"data_mu_2016_runG_v1_10",
-"data_mu_2016_runG_v1_11",
-"data_mu_2016_runG_v1_12",
-"data_mu_2016_runG_v1_13",
-"data_mu_2016_runG_v1_14",
-"data_mu_2016_runG_v1_15",
-"data_mu_2016_runG_v1_16",
-"data_mu_2016_runG_v1_17",
-"data_mu_2016_runG_v1_2",
-"data_mu_2016_runG_v1_3",
-"data_mu_2016_runG_v1_4",
-"data_mu_2016_runG_v1_5",
-"data_mu_2016_runG_v1_6",
-"data_mu_2016_runG_v1_7",
-"data_mu_2016_runG_v1_8",
-"data_mu_2016_runG_v1_9",
-"data_mu_2016_runH_v3"
+"SingleMuonRun2016B_23Sep2016_v1",
+"SingleMuonRun2016B_23Sep2016_v3",
+"SingleMuonRun2016C_23Sep2016_v1",
+"SingleMuonRun2016D_23Sep2016_v1",
+"SingleMuonRun2016E_23Sep2016_v1",
+"SingleMuonRun2016F_23Sep2016_v1",
+"SingleMuonRun2016G_23Sep2016_v1",
+"SingleMuonRun2016H_PromptReco_v1",
+"SingleMuonRun2016H_PromptReco_v2",
+"SingleMuonRun2016H_PromptReco_v3"
+
+#"SingleMuonRun2016B_03Feb2017_ver1_v1",
+#"SingleMuonRun2016B_03Feb2017_ver2_v2",
+#"SingleMuonRun2016C_03Feb2017_v1",
+#"SingleMuonRun2016D_03Feb2017_v1",
+#"SingleMuonRun2016E_03Feb2017_v1",
+#"SingleMuonRun2016F_03Feb2017_v1",
+#"SingleMuonRun2016G_03Feb2017_v1",
+#"SingleMuonRun2016H_03Feb2017_ver2_v1",
+#"SingleMuonRun2016H_03Feb2017_ver3_v1"
 ];
 
 nameDataEl = [
-"data_el_2016_runC_v1_1",
-"data_el_2016_runC_v1_10",
-"data_el_2016_runC_v1_11",
-"data_el_2016_runC_v1_12",
-"data_el_2016_runC_v1_13",
-"data_el_2016_runC_v1_14",
-"data_el_2016_runC_v1_2",
-"data_el_2016_runC_v1_3",
-"data_el_2016_runC_v1_4",
-"data_el_2016_runC_v1_5",
-"data_el_2016_runC_v1_6",
-"data_el_2016_runC_v1_7",
-"data_el_2016_runC_v1_8",
-"data_el_2016_runC_v1_9",
-"data_el_2016_runD_v1_1",
-"data_el_2016_runD_v1_10",
-"data_el_2016_runD_v1_11",
-"data_el_2016_runD_v1_12",
-"data_el_2016_runD_v1_2",
-"data_el_2016_runD_v1_3",
-"data_el_2016_runD_v1_4",
-"data_el_2016_runD_v1_5",
-"data_el_2016_runD_v1_6",
-"data_el_2016_runD_v1_7",
-"data_el_2016_runD_v1_8",
-"data_el_2016_runD_v1_9",
-"data_el_2016_runF_v1_1",
-"data_el_2016_runF_v1_10",
-"data_el_2016_runF_v1_11",
-"data_el_2016_runF_v1_12",
-"data_el_2016_runF_v1_13",
-"data_el_2016_runF_v1_14",
-"data_el_2016_runF_v1_15",
-"data_el_2016_runF_v1_16",
-"data_el_2016_runF_v1_17",
-"data_el_2016_runF_v1_2",
-"data_el_2016_runF_v1_3",
-"data_el_2016_runF_v1_4",
-"data_el_2016_runF_v1_5",
-"data_el_2016_runF_v1_6",
-"data_el_2016_runF_v1_7",
-"data_el_2016_runF_v1_8",
-"data_el_2016_runF_v1_9",
-"data_el_2016_runG_v1_1",
-"data_el_2016_runG_v1_10",
-"data_el_2016_runG_v1_11",
-"data_el_2016_runG_v1_12",
-"data_el_2016_runG_v1_13",
-"data_el_2016_runG_v1_14",
-"data_el_2016_runG_v1_15",
-"data_el_2016_runG_v1_16",
-"data_el_2016_runG_v1_17",
-"data_el_2016_runG_v1_18",
-"data_el_2016_runG_v1_19",
-"data_el_2016_runG_v1_2",
-"data_el_2016_runG_v1_3",
-"data_el_2016_runG_v1_4",
-"data_el_2016_runG_v1_5",
-"data_el_2016_runG_v1_6",
-"data_el_2016_runG_v1_7",
-"data_el_2016_runG_v1_8",
-"data_el_2016_runG_v1_9",
-"data_el_2016_runH_v2_1",
-"data_el_2016_runH_v2_10",
-"data_el_2016_runH_v2_11",
-"data_el_2016_runH_v2_12",
-"data_el_2016_runH_v2_13",
-"data_el_2016_runH_v2_14",
-"data_el_2016_runH_v2_15",
-"data_el_2016_runH_v2_16",
-"data_el_2016_runH_v2_17",
-"data_el_2016_runH_v2_18",
-"data_el_2016_runH_v2_19",
-"data_el_2016_runH_v2_2",
-"data_el_2016_runH_v2_3",
-"data_el_2016_runH_v2_4",
-"data_el_2016_runH_v2_5",
-"data_el_2016_runH_v2_6",
-"data_el_2016_runH_v2_7",
-"data_el_2016_runH_v2_8",
-"data_el_2016_runH_v2_9",
-"data_el_2016_runH_v3"
+"SingleElectronRun2016B_23Sep2016_v2",
+"SingleElectronRun2016C_23Sep2016_v1",
+"SingleElectronRun2016H_PromptReco_v1",
+"SingleElectronRun2016H_PromptReco_v3",
+
+#"SingleElectron_Run2016C-03Feb2017-v1",
+#"SingleElectron_Run2016E-03Feb2017-v1",
+#"SingleElectronRun2016F_03Feb2017_v1",
+#"SingleElectron_Run2016G-03Feb2017-v1",
+#"SingleElectronRun2016H_03Feb2017_ver2_v1",
+#"SingleElectronRun2016H_03Feb2017_ver3_v1",
+#"SingleElectronRun2016F_03Feb2017_v1",
+#"SingleElectronRun2016H_03Feb2017_ver2_v1",
+#"SingleElectronRun2016H_03Feb2017_ver3_v1"
 ];
 
 
@@ -240,14 +116,13 @@ for a in range(len(category)):
             outScript.write('#!/bin/bash');
             outScript.write("\n"+'cd '+CMSSWDir);
             outScript.write("\n"+'eval `scram runtime -sh`');
-            #outScript.write("\n"+'cd '+currentDir);
-            #outScript.write("\n"+'source scripts/setup.sh');
-            outScript.write("\n"+"ls");
             outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
-            outScript.write("\n"+"cp "+currentDir+"/WWAnalysisRun2/*.txt ./");
-            outScript.write("\n"+"cp "+currentDir+"/WWAnalysisRun2/*.root ./");
             outScript.write("\n"+command);
-            outScript.write("\n"+"mv WWTree_"+(samples[i][1])+".root "+outputFolder+"/output_"+category[a]);
+	    outScript.write("\n"+"echo \"====> LISTING ALL FILES..... \"");
+	    outScript.write("\n"+"ls");
+	    outScript.write("\n"+"echo \"====> MOVING OUTPUT ROOT FILES\"");
+	    outScript.write("\n"+"cp WWTree_"+(samples[i][1])+"_"+category[a]+".root "+outputFolder+"/output_"+category[a]);
+	    outScript.write("\n"+"echo \"#########i########### Finished COPYING...\"");
             outScript.write("\n");
             outScript.close();
             os.system("chmod 777 "+currentDir+"/"+fn+".sh");
@@ -260,20 +135,20 @@ for a in range(len(category)):
     #data
     if( doData ):
         for i in range(len(nameData[category[a]])):
-            fn = "Job/job_"+(nameData[category[a]])[i]+"_"+category[a];
+            fn = "WWAnalysisRun2/Job/job_"+(nameData[category[a]])[i]+"_"+category[a];
             outScript = open(fn+".sh","w");
-            command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py --exe "+exeName+" -i "+inputFolder+" -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+" -l "+category[a]+" -w 1. -no 1. -mass 0 --ismc 0 -trig 1";
+            command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+inputFolder+" -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+" -l "+category[a]+" -w 1. -no 1. -mass 0 --ismc 0 -trig 1";
             print command;
             outScript.write('#!/bin/bash');
             outScript.write("\n"+'cd '+CMSSWDir);
             outScript.write("\n"+'eval `scram runtime -sh`');
-            #outScript.write("\n"+'cd '+currentDir);
-            #outScript.write("\n"+'source scripts/setup.sh');
-            outScript.write("\n"+"cd -");
-            outScript.write("\n"+"cp "+currentDir+"/*.txt ./");
-            outScript.write("\n"+"cp "+currentDir+"/*.root ./");
+	    outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
             outScript.write("\n"+command);
-            outScript.write("\n"+"mv WWTree_"+(nameData[category[a]])[i]+".root "+outputFolder+"/output_"+category[a]);
+	    outScript.write("\n"+"echo \"====> LISTING ALL FILES..... \"");
+	    outScript.write("\n"+"ls");
+	    outScript.write("\n"+"echo \"====> MOVING OUTPUT ROOT FILES\"");
+            outScript.write("\n"+"cp WWTree_"+(nameData[category[a]])[i]+".root "+outputFolder+"/output_"+category[a]);
+	    outScript.write("\n"+"echo \"#########i########### Finishedi COPYING...\"");
             outScript.write("\n");
             outScript.close();
             os.system("chmod 777 "+currentDir+"/"+fn+".sh");
@@ -281,4 +156,4 @@ for a in range(len(category)):
             print command2
             if( dryRun != True ):
                 os.system(command2);
-                time.sleep(3)
+                time.sleep(1)
