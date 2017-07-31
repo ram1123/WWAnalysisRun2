@@ -3,13 +3,15 @@
 
 #include "TTree.h"
 #include "TChain.h"
+#include <vector>
 
 class setOutputTree {
 
  public:
 
   TTree* fTree;
-  
+  std::vector<int>      LHEid;
+  std::vector<float> LHEWeight;
   int run;
   int event;
   int nEvents;
@@ -54,11 +56,21 @@ class setOutputTree {
   float nu_pz_run2_oth;
   int nu_pz_run2_type;
   int nu_pz_isre;
-  float l_pt;
-  float l_eta;
-  float l_phi;
-  float l_e;
-  float l_charge;
+  int type;
+  float l_pt1;
+  float l_eta1;
+  float l_phi1;
+  float l_e1;
+  float l_charge1;
+  float l_pt2;
+  float l_eta2;
+  float l_phi2;
+  float l_e2;
+  float l_charge2;
+  float dilep_pt;
+  float dilep_eta;
+  float dilep_phi;
+  float dilep_m;
   float ungroomed_jet_pt;
   float ungroomed_jet_pt_jes_up;
   float ungroomed_jet_pt_jes_dn; 

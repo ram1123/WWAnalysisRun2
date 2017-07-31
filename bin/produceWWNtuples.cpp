@@ -37,6 +37,7 @@
 #include "BaconAna/DataFormats/interface/TJet.hh"
 #include "BaconAna/DataFormats/interface/TAddJet.hh"
 #include "BaconAna/Utils/interface/TTrigger.hh"
+#include "BaconAna/DataFormats/interface/TLHEWeight.hh"
 
 #include "../interface/setOutputTree.h"
 #include "../interface/METzCalculator.h"
@@ -158,11 +159,11 @@ int main (int argc, char** argv)
   // define map with events                                                                                                                                     
   std::map<std::pair<int,std::pair<int,int> >,int> eventsMap;
 //
-  applyTrigger=true;
+  //applyTrigger=true;
   const baconhep::TTrigger triggerMenu("../../BaconAna/DataFormats/data/HLTFile_25ns");  
   std::cout<<"apply trigger: "<<applyTrigger<<std::endl;
 
-  TLorentzVector W,W_puppi,LEP;
+  TLorentzVector W,W_puppi,LEP, LEP2;
   TLorentzVector NU0,NU1,NU2,NU0_puppi,NU1_puppi,NU2_puppi;
   TLorentzVector NU0_jes_up, NU0_jes_dn;
   TLorentzVector JET, JET_PuppiAK8, AK4;
@@ -197,6 +198,7 @@ int main (int argc, char** argv)
   TClonesArray *vjetArrPuppi  = new TClonesArray("baconhep::TJet");
   TClonesArray *vjetAddArrPuppi  = new TClonesArray("baconhep::TAddJet");
   TClonesArray *jetArrPuppi  = new TClonesArray("baconhep::TJet");
+  TClonesArray *lheWgtArr = new TClonesArray("baconhep::TLHEWeight");
   
   TChain* eventTree = new TChain(inputTreeName.c_str());
 
@@ -213,20 +215,20 @@ int main (int argc, char** argv)
   Long64_t totalEntries=0;
   
   if (isLocal==1) {
-    //eventTree->AddFile("root://eoscms.cern.ch//store/cmst3/group/monojet/production/12//WWToLNuQQ_13TeV_powheg_ext/WWToLNuQQ_13TeV_powheg_ext_0.root",-1,"Events");
-    eventTree->AddFile("root://eoscms.cern.ch//store/cmst3/group/monojet/production/12/SingleElectronRun2016B_23Sep2016_v2/SingleElectronRun2016B_23Sep2016_v2_0.root",-1,"Events");
-    cout<<" ====> Found local file."<<endl;
+    eventTree->AddFile("root://eoscms.cern.ch//eos/cms/store/user/arapyan/Run2/WminusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8/Output_11.root",-1,"");
+      //eventTree->AddFile("root://eoscms.cern.ch//store/cmst3/group/monojet/production/12/SingleElectronRun2016B_23Sep2016_v2/SingleElectronRun2016B_23Sep2016_v2_0.root",-1,"Events");
+      cout<<" ====> Found local file."<<endl;
   }
   else {
     while (!rootList.eof())
-    {
-      char iRun_tW[700];
-      rootList >> iRun_tW;
-      if(!rootList.good())break;
-      cout<<"===> "<<iRun_tW<<endl;
-      eventTree->AddFile(iRun_tW,-1,"Events");
-      fileCounter++;
-    }
+      {
+	char iRun_tW[700];
+	rootList >> iRun_tW;
+	if(!rootList.good())break;
+	cout<<"===> "<<iRun_tW<<endl;
+	eventTree->AddFile(iRun_tW,-1,"Events");
+	fileCounter++;
+      }
   }
   
   eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
@@ -239,11 +241,12 @@ int main (int argc, char** argv)
   eventTree->SetBranchAddress("AK8Puppi",   &vjetArrPuppi); TBranch *vjetBrPuppi = eventTree->GetBranch("AK8Puppi");  
   eventTree->SetBranchAddress("AddAK8Puppi",   &vjetAddArrPuppi); TBranch *vjetAddBrPuppi = eventTree->GetBranch("AddAK8Puppi");  
   eventTree->SetBranchAddress("AK4Puppi",   &jetArrPuppi); TBranch *jetBrPuppi = eventTree->GetBranch("AK4Puppi");  
-  TBranch *genBr=0, *genPartBr=0;
+  TBranch *genBr=0, *genPartBr=0, *lhePartBr=0;
   if(isMC)
      { 
        eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
        eventTree->SetBranchAddress("GenParticle",&genPartArr); genPartBr = eventTree->GetBranch("GenParticle");
+       eventTree->SetBranchAddress("LHEWeight",&lheWgtArr); lhePartBr = eventTree->GetBranch("LHEWeight");	      
      }
   std::cout<<"number of files found: "<<fileCounter<<std::endl;
   totalEntries=eventTree->GetEntries();
@@ -309,7 +312,6 @@ int main (int argc, char** argv)
   for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
   {
     infoBr->GetEntry(jentry);
-
     int GenPassCut = 0;
 
     tightMuon.clear();
@@ -318,7 +320,7 @@ int main (int argc, char** argv)
     looseEle.clear();
     
 
-    if (jentry2%100 == 0) std::cout << "read entry: " << jentry2 <<"/"<<totalEntries<<std:: endl;
+    if (jentry2%1000 == 0) std::cout << "read entry: " << jentry2 <<"/"<<totalEntries<<std:: endl;
     //*********************************
     // JSON FILE AND DUPLIACTES IN DATA
     WWTree->run   = info->runNum;
@@ -330,6 +332,11 @@ int main (int argc, char** argv)
     /////////////////MC Info
     if (isMC==1)
     {
+      lheWgtArr->Clear();
+      if(lhePartBr)
+	{
+	  lhePartBr->GetEntry(jentry);
+	}
       genBr->GetEntry(jentry);
       genPartArr->Clear();
       genBr->GetEntry(jentry);
@@ -410,6 +417,15 @@ int main (int argc, char** argv)
 		//cout<<"In this loop......."<<endl;
 	 }
     }
+
+    for (int i = 446; i<lheWgtArr->GetEntriesFast();i++)     // Note that i is starting from 446.
+      {
+        const baconhep::TLHEWeight *lhe = (baconhep::TLHEWeight*)((*lheWgtArr)[i]);
+        //cout<<"==> "<<i<<"\t"<<lhe->id<<"\t"<<lhe->weight<<endl;
+        WWTree->LHEid.push_back(lhe->id);
+        WWTree->LHEWeight.push_back(lhe->weight);
+      }
+    
     
     WWTree->issignal = 0;
     WWTree->wSampleWeight = weight; //xsec/numberOfEntries
@@ -437,71 +453,135 @@ int main (int argc, char** argv)
     vertexArr->Clear();
     vertexBr->GetEntry(jentry);
     WWTree->nPV = vertexArr->GetEntries();
-    
-    
+  
+    if(applyTrigger==1)
+      if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits) ||  triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
+  
     /////////////////THE SELECTED LEPTON
-    int nTightLepton=0, nLooseLepton=0;
-    if (strcmp(leptonName.c_str(),"el")==0) { //electrons
-      //int passTrigger=0;
-      float tempPt=0.;
-      if(applyTrigger==1)
-	triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits);
-      electronArr->Clear();
-      electronBr->GetEntry(jentry);
-      for (int i=0; i<electronArr->GetEntriesFast(); i++) {
-	const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
-        if (ele->pt<=30) continue;
-        if (fabs(ele->eta)>=2.5) continue;
-	if(!passEleLooseSel(ele,info->rhoIso)) continue;
-	nLooseLepton++;
-	if(!passEleTightSel(ele,info->rhoIso)) continue;
-	if (ele->pt<tempPt) continue;
-	ELE.SetPtEtaPhiE(ele->pt,ele->eta,ele->phi,ele->ecalEnergy);
-	tightEle.push_back(ELE);
-	WWTree->l_pt  = ele->pt;
-	WWTree->l_eta = ele->eta;
-	WWTree->l_phi = ele->phi;	
-	WWTree->l_e= ele->ecalEnergy;	
-	WWTree->l_charge= ele->q;
-	tempPt = WWTree->l_pt;
-	nTightLepton++;
+    int nTightEle=0, nLooseEle=0;
+    int nTightMu=0, nLooseMu=0;
+    double pt_cut = 20;
+    double leadelept_cut = 30;
+    double leadmupt_cut = 27;
+    //   if (strcmp(leptonName.c_str(),"el")==0) { //electrons
+    //int passTrigger=0;
+    //float tempPt=0.;
+    electronArr->Clear();
+    electronBr->GetEntry(jentry);
+    const baconhep::TElectron *leadele = NULL;
+    const baconhep::TElectron *subele = NULL;
+    for (int i=0; i<electronArr->GetEntriesFast(); i++) {
+      const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
+      if (ele->pt<=pt_cut) continue;
+      if (fabs(ele->eta)>=2.5) continue;
+      if(!passEleLooseSel(ele,info->rhoIso)) continue;
+      nLooseEle++;
+      if(!passEleTightSel(ele,info->rhoIso)) continue;
+      ELE.SetPtEtaPhiE(ele->pt,ele->eta,ele->phi,ele->ecalEnergy);
+      tightEle.push_back(ELE);
+      nTightEle++;
+      if(!leadele || ele->pt>leadele->pt)
+	{
+	  if(!(ele->pt>leadelept_cut)) continue;
+	  subele = leadele;
+	  leadele = ele;
+	}
+      else if (!subele || ele->pt > subele->pt)
+	{
+	  subele = ele;
+	}
+    }
+    if(leadele)
+      {
+	WWTree->l_pt1  = leadele->pt;
+	WWTree->l_eta1 = leadele->eta;
+	WWTree->l_phi1 = leadele->phi;	
+	WWTree->l_e1 = leadele->ecalEnergy;	
+	WWTree->l_charge1 = leadele->q;
       }
-    } //end electrons
-    else if (strcmp(leptonName.c_str(),"mu")==0) { //Muon
-      //int passTrigger=0;
-      if(applyTrigger==1)
-	if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits))) continue;
-      float tempPt=0.;
-      muonArr->Clear();
-      muonBr->GetEntry(jentry);
-      for(Int_t i=0; i<muonArr->GetEntriesFast(); i++) {
-	const baconhep::TMuon *mu = (baconhep::TMuon*)((*muonArr)[i]);
-	if (mu->pt<27) continue;
-	if (fabs(mu->eta)>=2.4) continue;
-	if(!passMuonLooseSel(mu)) continue;
-	nLooseLepton++;
-	if(!passMuonTightSel(mu)) continue;
-	if (mu->pt<tempPt) continue;
-	MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1057);
-	tightMuon.push_back(MU);
-	WWTree->l_pt  = mu->pt;
-	WWTree->l_eta = mu->eta;
-	WWTree->l_phi = mu->phi;
-	WWTree->l_e = MU.E();
-	WWTree->l_charge= mu->q;
-	tempPt = WWTree->l_pt;
-	nTightLepton++;
-      }   
-    } //end Muon
+    if(subele)
+      {
+	WWTree->l_pt2  = subele->pt;
+	WWTree->l_eta2 = subele->eta;
+	WWTree->l_phi2 = subele->phi;	
+	WWTree->l_e2 = subele->ecalEnergy;	
+	WWTree->l_charge2 = subele->q;
+      }
+    //    } //end electrons
+    //   else if (strcmp(leptonName.c_str(),"mu")==0) { //Muon
+    //int passTrigger=0;
+    muonArr->Clear();
+    muonBr->GetEntry(jentry);
+    const baconhep::TMuon *leadmu = NULL;
+    const baconhep::TMuon *submu = NULL;
+    double leadmue=-999, submue = -999;
+    for(Int_t i=0; i<muonArr->GetEntriesFast(); i++) {
+      const baconhep::TMuon *mu = (baconhep::TMuon*)((*muonArr)[i]);
+      if (mu->pt<pt_cut) continue;
+      if (fabs(mu->eta)>=2.4) continue;
+      if(!passMuonLooseSel(mu)) continue;
+      nLooseMu++;
+      if(!passMuonTightSel(mu)) continue;
+      nTightMu++;
+      MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1057);
+      tightMuon.push_back(MU);
+      if(!leadmu || mu->pt>leadmu->pt)
+	{
+	  if(!(mu->pt>leadmupt_cut)) continue;
+	  submu = leadmu;
+	  leadmu = mu;
+	  leadmue = MU.E();
+	}
+      else if (!submu || mu->pt > submu->pt)
+	{
+	  submu = mu;
+	  submue = MU.E();
+	}
+    }   
+    if(leadmu)
+      {
+	WWTree->l_pt1  = leadmu->pt;
+	WWTree->l_eta1 = leadmu->eta;
+	WWTree->l_phi1 = leadmu->phi;	
+	WWTree->l_e1 = leadmue;	
+	WWTree->l_charge1 = leadmu->q;
+      }
+    if(submu)
+      {
+	WWTree->l_pt2  = submu->pt;
+	WWTree->l_eta2 = submu->eta;
+	WWTree->l_phi2 = submu->phi;	
+	WWTree->l_e2 = submue;	
+	WWTree->l_charge2 = submu->q;
+      }
+    //   } //end Muon
+    std::cout << nTightMu << " " << nTightEle << " " << " " << nLooseEle << " " << nLooseMu << " " << std::endl; 
+    std::cout << leadele << " " << subele << " " << leadmu << " " << submu << std::endl;
+    if(!(WWTree->l_pt1>0)) continue;
+    if ((nTightMu+nTightEle)==0) continue; //no leptons with required ID
+    if((nLooseEle+nLooseMu)>2) continue;
+    if(nTightMu>0 && nLooseEle>0) continue;
+    if(nTightEle>0 && nLooseMu>0) continue;
+    if(nTightMu==1 && nLooseMu>1) continue;
+    if(nTightEle==1 && nLooseEle>1) continue;
+    if(nTightMu>0)
+      WWTree->type=0;
+    else
+      WWTree->type=1;
+    std::cout << WWTree->type << std::endl;
     
-    if (nTightLepton==0) continue; //no leptons with required ID
-    if(nLooseLepton>1) continue;
     //if (nTightLepton!=1) continue; //no leptons with required ID
     cutEff[2]++;
     
-    LEP.SetPtEtaPhiE(WWTree->l_pt,WWTree->l_eta,WWTree->l_phi,WWTree->l_e);
-    
-    
+    LEP.SetPtEtaPhiE(WWTree->l_pt1,WWTree->l_eta1,WWTree->l_phi1,WWTree->l_e1);
+    LEP2.SetPtEtaPhiE(WWTree->l_pt2,WWTree->l_eta2,WWTree->l_phi2,WWTree->l_e2);
+    if(WWTree->l_pt2>0)
+      {
+	WWTree->dilep_pt  = (LEP+LEP2).Pt();
+	WWTree->dilep_eta = (LEP+LEP2).Eta();
+	WWTree->dilep_phi = (LEP+LEP2).Phi();	
+	WWTree->dilep_m = (LEP+LEP2).M();	
+      }
     //////////////THE MET
     
     // //preselection on met
@@ -769,8 +849,8 @@ int main (int argc, char** argv)
 	bool isCleanedJet = true;
 	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
 	if (addjet->mass_prun>tempMass) {
-	  if ( (jet->eta>0 && WWTree->l_eta<0) || 
-	       (jet->eta<0 && WWTree->l_eta>0)) { //jet and lepton in opposite hemisphere for ttb
+	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
+	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
 	    //ttb_jet_position=i; //save AK8 jet in ttbar topology
 	    tempMass=addjet->mass_prun;
 	  }
@@ -848,8 +928,8 @@ int main (int argc, char** argv)
 	bool isCleanedJet = true;
 	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
 	if (addjet->mass_prun>tempMass) {
-	  if ( (jet->eta>0 && WWTree->l_eta<0) || 
-	       (jet->eta<0 && WWTree->l_eta>0)) { //jet and lepton in opposite hemisphere for ttb
+	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
+	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
 	    //ttb_PuppiAK8_jet_position=i; //save AK8 jet in ttbar topology
 	    tempMass=addjet->mass_prun;
 	  }
@@ -932,7 +1012,7 @@ int main (int argc, char** argv)
       bool isCleanedJet = true;
       if (jet->pt<=30  || fabs(jet->eta)>=2.4)  continue;
       //if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
-      if (jet->csv>0.890) continue;
+      //if (jet->csv>0.890) continue;
       
       //CLEANING FROM LEPTONS
       for ( std::size_t j=0; j<tightEle.size(); j++) {
@@ -1039,9 +1119,9 @@ int main (int argc, char** argv)
       TempAK4.SetPtEtaPhiM(jet->pt,fabs(jet->eta),jet->phi,jet->mass);
       TempAK4array.push_back(TempAK4);
       bool isCleanedJet = true;
-      if ( jet->pt<=20 || fabs(jet->eta)>=2.4)  continue;
+      if ( jet->pt<=30 || fabs(jet->eta)>=2.4)  continue;
       //if (ReducedTree->JetsPuppi_isLooseJetId[i]==false) continue;
-      if (jet->csv>0.890) continue;
+      //if (jet->csv>0.890) continue;
       
       //CLEANING FROM LEPTONS
       for ( std::size_t j=0; j<tightEle.size(); j++) {
@@ -1202,7 +1282,7 @@ int main (int argc, char** argv)
     WWTree->phi_lvj_type0_PuppiAK8 = (LEP + NU0_puppi + JET_PuppiAK8).Phi();
     WWTree->phi_lvj_type2_PuppiAK8 = (LEP + NU2_puppi + JET_PuppiAK8).Phi();
     WWTree->phi_lvj_run2_PuppiAK8  = (LEP + NU1_puppi + JET_PuppiAK8).Phi();
-    WWTree->energy_lvj_type0_PuppiAK8 = (LEP + NU0_puppi + JET_PuppiAK8).E();
+    WWTree->energy_lvj_type0_PuppiAK8 = (LEP + LEP2 + JET_PuppiAK8).M();
     WWTree->energy_lvj_type2_PuppiAK8 = (LEP + NU2_puppi + JET_PuppiAK8).E();
     WWTree->energy_lvj_run2_PuppiAK8  = (LEP + NU1_puppi + JET_PuppiAK8).E();
     WWTree->mass_lvj_type0_PuppiAK8 = (LEP + NU0_puppi + JET_PuppiAK8).M();
@@ -1226,7 +1306,7 @@ int main (int argc, char** argv)
     WWTree->mass_lvjj_type0_met_jes_up_PuppiAK4 = (LEP + NU0_jes_up + PuppiAK4_JET1_jes_up + PuppiAK4_JET2_jes_up).M();
     WWTree->mass_lvjj_type0_met_jes_dn_PuppiAK4 = (LEP + NU0_jes_dn + PuppiAK4_JET1_jes_dn + PuppiAK4_JET2_jes_dn).M();
 
-    if (WWTree->mass_lvj_type0_PuppiAK8 < 500 || WWTree->mass_lvj_type2_PuppiAK8 < 500 || WWTree->mass_lvj_run2_PuppiAK8 < 500) continue;
+    //if (WWTree->mass_lvj_type0_PuppiAK8 < 500 || WWTree->mass_lvj_type2_PuppiAK8 < 500 || WWTree->mass_lvj_run2_PuppiAK8 < 500) continue;
     cutEff[8]++;
     
 
@@ -1286,15 +1366,11 @@ int main (int argc, char** argv)
         if (deltaR(WWTree->ungroomed_jet_eta, WWTree->ungroomed_jet_phi,
                    jet->eta,jet->phi) < 0.8 )
           isCleanedFromFatJet = false;
-      }
-      
-      //CLEANING FROM UNMERGED JETS
-      if (nGoodAK4jets>0) {
+      } else if (nGoodAK4jets>0) {
         if (deltaR(WWTree->AK4_jet1_eta, WWTree->AK4_jet1_phi,
                    jet->eta,jet->phi) < 0.4 )
           isCleanedFromUnmergedJets = false;
-      }
-      if (nGoodAK4jets>1) {
+      } else if (nGoodAK4jets>1) {
         if (deltaR(WWTree->AK4_jet2_eta, WWTree->AK4_jet2_phi,
                    jet->eta,jet->phi) < 0.4 )
           isCleanedFromUnmergedJets = false;
@@ -1391,15 +1467,11 @@ int main (int argc, char** argv)
         if (deltaR(WWTree->ungroomed_PuppiAK8_jet_eta, WWTree->ungroomed_PuppiAK8_jet_phi,
                    jet->eta,jet->phi) < 0.8 )
           isCleanedFromFatJet = false;
-      }
-      
-      //CLEANING FROM UNMERGED JETS
-      if (nGoodPuppiAK4jets>0) {
+      } else if (nGoodPuppiAK4jets>0) {
         if (deltaR(WWTree->PuppiAK4_jet1_eta, WWTree->PuppiAK4_jet1_phi,
                    jet->eta,jet->phi) < 0.4 )
           isCleanedFromUnmergedJets = false;
-      }
-      if (nGoodPuppiAK4jets>1) {
+      } else if (nGoodPuppiAK4jets>1) {
         if (deltaR(WWTree->PuppiAK4_jet2_eta, WWTree->PuppiAK4_jet2_phi,
                    jet->eta,jet->phi) < 0.4 )
           isCleanedFromUnmergedJets = false;
@@ -1668,7 +1740,7 @@ int main (int argc, char** argv)
   //--------close everything-------------
   delete info; delete gen;
   delete genPartArr; delete muonArr; delete electronArr; delete vertexArr;
-  delete vjetArr; delete vjetAddArr; delete jetArr; delete vjetArrPuppi; delete vjetAddArrPuppi; delete jetArrPuppi;
+  delete vjetArr; delete vjetAddArr; delete jetArr; delete vjetArrPuppi; delete vjetAddArrPuppi; delete jetArrPuppi; delete lheWgtArr;
   outTree->Write();
   outROOT->Close();
   int t1 = time(NULL);

@@ -12,6 +12,8 @@ setOutputTree::~setOutputTree(){
 
 void setOutputTree::initializeVariables()
 {
+  LHEid.clear();
+  LHEWeight.clear();
   run		=-999;
   event		=-999;
   nEvents	=0;
@@ -56,11 +58,21 @@ void setOutputTree::initializeVariables()
   nu_pz_run2_oth	=-999;
   nu_pz_run2_type	=-999;
   nu_pz_isre	=1;
-  l_pt		=-999;
-  l_eta		=-999;
-  l_phi		=-999;
-  l_e		=-999;
-  l_charge	=-999;
+  type = -1;
+  l_pt1		=-999;
+  l_eta1       	=-999;
+  l_phi1       	=-999;
+  l_e1		=-999;
+  l_charge1	=-999;
+  l_pt2		=-999;
+  l_eta2	=-999;
+  l_phi2	=-999;
+  l_e2		=-999;
+  l_charge2	=-999;
+  dilep_pt	=-999;
+  dilep_eta	=-999;
+  dilep_phi	=-999;
+  dilep_m	=-999;
   isGen		=-999;
   lep_pt_gen	=-999;
   lep_eta_gen	=-999;
@@ -374,6 +386,8 @@ void setOutputTree::initializeVariables()
 
 void setOutputTree::setBranches()
 {
+  fTree->Branch("LHEid",&LHEid);
+  fTree->Branch("LHEWeight",&LHEWeight);
   fTree->Branch("run",&run,"run/I");
   fTree->Branch("event",&event,"event/I");
   fTree->Branch("nEvents",&nEvents,"nEvents/I");
@@ -418,11 +432,21 @@ void setOutputTree::setBranches()
   fTree->Branch("nu_pz_run2_oth",&nu_pz_run2_oth,"nu_pz_run2_oth/F");
   fTree->Branch("nu_pz_run2_type",&nu_pz_run2_type,"nu_pz_run2_type/I");
   fTree->Branch("nu_pz_isre",&nu_pz_isre,"nu_pz_isre/I");
-  fTree->Branch("l_pt",&l_pt,"l_pt/F");
-  fTree->Branch("l_eta",&l_eta,"l_eta/F");
-  fTree->Branch("l_phi",&l_phi,"l_phi/F");
-  fTree->Branch("l_e",&l_e,"l_e/F");
-  fTree->Branch("l_charge",&l_charge,"l_charge/F");
+  fTree->Branch("type",&type,"type/I");
+  fTree->Branch("l_pt1",&l_pt1,"l_pt1/F");
+  fTree->Branch("l_eta1",&l_eta1,"l_eta1/F");
+  fTree->Branch("l_phi1",&l_phi1,"l_phi1/F");
+  fTree->Branch("l_e1",&l_e1,"l_e1/F");
+  fTree->Branch("l_charge1",&l_charge1,"l_charge1/F");
+  fTree->Branch("l_pt2",&l_pt2,"l_pt2/F");
+  fTree->Branch("l_eta2",&l_eta2,"l_eta2/F");
+  fTree->Branch("l_phi2",&l_phi2,"l_phi2/F");
+  fTree->Branch("l_e2",&l_e2,"l_e2/F");
+  fTree->Branch("dilep_pt",&dilep_pt,"dilep_pt/F");
+  fTree->Branch("dilep_eta",&dilep_eta,"dilep_eta/F");
+  fTree->Branch("dilep_phi",&dilep_phi,"dilep_phi/F");
+  fTree->Branch("dilep_m",&dilep_m,"dilep_m/F");
+  fTree->Branch("l_charge2",&l_charge2,"l_charge2/F");
   fTree->Branch("ungroomed_jet_pt",&ungroomed_jet_pt,"ungroomed_jet_pt/F");
   fTree->Branch("ungroomed_jet_pt_jes_up",&ungroomed_jet_pt_jes_up,"ungroomed_jet_pt_jes_up/F");
   fTree->Branch("ungroomed_jet_pt_jes_dn",&ungroomed_jet_pt_jes_dn,"ungroomed_jet_pt_jes_dn/F");
