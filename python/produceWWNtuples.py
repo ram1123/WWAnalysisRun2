@@ -26,10 +26,19 @@ if __name__ == '__main__':
     parser.add_argument ('-exe', '--exe' , default = 'produceWWNtuples', help='location of the executable')
     args = parser.parse_args ()
 
-    if len(args.name) != 2:
-    	command = args.exe+' '+args.inputFolder+'/'+args.name+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+
+    amcatnloFolder = (args.inputFolder).find("amcatnlo")
+    amcatnloFile = (args.name).find("amcatnlo")
+    if (amcatnloFolder>0) or (amcatnloFile>0):
+    	amcatnlo = 1
+	print "==> aMC@NLO sample"
     else:
-    	command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    	amcatnlo = 0
+	print "==> Not a aMC@NLO sample"
+    if len(args.name) != 2:
+    	command = args.exe+' '+args.inputFolder+'/'+args.name+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+str(amcatnlo)+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    else:
+    	command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+str(amcatnlo)+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
     print "==> Name = ",len(args.name)
     print "==> ",command
     os.system(command)

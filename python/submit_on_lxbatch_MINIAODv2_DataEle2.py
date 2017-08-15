@@ -10,11 +10,12 @@ import subprocess
 currentDir = os.getcwd();
 CMSSWDir = currentDir+"/../";
 
-inputFolder = "/store/user/ksung/production/12a/";
+#inputFolder = "/store/user/ksung/production/12a/";
+inputFolder = "/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples";
 outputFolder = currentDir+"/WWAnalysisRun2/output/";
 exeName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
 
-dryRun = False;
+dryRun = True;
 doData = True;
 
 category = ["el"];		# run this only for electrons

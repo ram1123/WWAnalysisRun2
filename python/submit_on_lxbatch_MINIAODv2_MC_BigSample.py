@@ -17,12 +17,12 @@ outputFolder = currentDir+"/WWAnalysisRun2/output/";
 exeName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
 
 dryRun = False;
-doMC = True;
-doData = False;	# For data run another script
+doMC = False;
+doData = True;	# For data run another script
 
-category = ["EleMu"];
+#category = ["EleMu"];
 #category = ["el"];
-#category = ["mu"];
+category = ["mu"];
 
 
 
@@ -78,16 +78,15 @@ samples = [
     ]
 
 nameDataMu = [
-#"SingleMuonRun2016B_23Sep2016_v1",
-#"SingleMuonRun2016B_23Sep2016_v3",
-#"SingleMuonRun2016C_23Sep2016_v1",
-#"SingleMuonRun2016D_23Sep2016_v1",
-#"SingleMuonRun2016E_23Sep2016_v1",
-#"SingleMuonRun2016F_23Sep2016_v1",
-#"SingleMuonRun2016G_23Sep2016_v1",
-#"SingleMuonRun2016H_PromptReco_v1",
-#"SingleMuonRun2016H_PromptReco_v2",
-"SingleMuonRun2016H_PromptReco_v3_test"
+#"SingleMuonRun2016B_03Feb2017_ver1_v1",
+#"SingleMuonRun2016B_03Feb2017_ver2_v2",
+#"SingleMuonRun2016C_03Feb2017_v1",
+#"SingleMuonRun2016D_03Feb2017_v1",
+#"SingleMuonRun2016E_03Feb2017_v1",
+"SingleMuonRun2016F_03Feb2017_v1"
+#"SingleMuonRun2016G_03Feb2017_v1",
+#"SingleMuonRun2016H_03Feb2017_ver2_v1",
+#"SingleMuonRun2016H_03Feb2017_ver3_v1"
 ];
 
 nameDataEl = [
@@ -149,27 +148,39 @@ if( doMC ):
 
 #data
 if( doData ):
-    for i in range(len(nameData[category[a]])):
-        fn = "WWAnalysisRun2/Job_new/job_"+(nameData[category[a]])[i]+"_"+category[a];
-        outScript = open(fn+".sh","w");
-        command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+inputFolder+" -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+" -l "+category[a]+" -w 1. -no 1. -lumi "+lumi+ " --ismc 0 -trig 1";
-        print command;
-        outScript.write('#!/bin/bash');
-        outScript.write("\n"+'cd '+CMSSWDir);
-        outScript.write("\n"+'eval `scram runtime -sh`');
-        outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
-        outScript.write("\n"+command);
-        outScript.write("\n"+"echo \"====> LISTING ALL FILES..... \"");
-        #outScript.write("\n"+"ls");
-        outScript.write("\n"+"echo \"====> MOVING OUTPUT ROOT FILES\"");
-        outScript.write("\n"+"echo \"mv WWTree_"+(nameData[category[a]])[i]+".root "+outputFolder+"/output_"+category[a]+"\"");
-        outScript.write("\n"+"mv WWTree_"+(nameData[category[a]])[i]+".root "+outputFolder+"/output_"+category[a]);
-        outScript.write("\n"+"echo \"#########i########### Finishedi COPYING...\"");
-        outScript.write("\n");
-        outScript.close();
-        os.system("chmod 777 "+currentDir+"/"+fn+".sh");
-        command2 = "bsub -q 1nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
-        print command2
-        if( dryRun != True ):
-            os.system(command2);
-            time.sleep(1)
+    for a in range(len(category)):
+        for i in range(len(nameData[category[a]])):
+            command = "eos find -f "+inputFolder+"/"+(nameData[category[a]])[i]
+	    print command
+	    count=0
+	    with os.popen(command) as pipe:
+	          for line in pipe:
+		     if line.strip().find("log")==-1:
+		        if line.strip().find("fail")==-1:
+			   count+=1
+			   fn = "WWAnalysisRun2/Job_new/job_"+(nameData[category[a]])[i]+"_"+str(count);
+        		   outScript = open(fn+".sh","w");
+            		   command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+str(line.strip())+" -o WWTree_"+(nameData[category[a]])[i]+"_"+str(count)+" -l "+category[a]+" -w 1. -no 1. -lumi "+str(lumi)+" --ismc 0 -trig 1 -n tr";
+            		   print command;
+            		   outScript.write('#!/bin/bash');
+            		   outScript.write("\n"+'cd '+CMSSWDir);
+            		   outScript.write("\n"+'eval `scram runtime -sh`');
+	    		   outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
+            		   outScript.write("\n"+command);
+	    		   outScript.write("\n"+"echo \"====> LISTING ALL FILES..... \"");
+	    		   #outScript.write("\n"+"ls");
+	    		   outScript.write("\n"+"echo \"====> MOVING OUTPUT ROOT FILES\"");
+            		   outScript.write("\n"+"echo \"mv WWTree_"+(nameData[category[a]])[i]+"_"+str(count)+".root "+outputFolder+"/"+(nameData[category[a]])[i]+"\"");
+            		   outScript.write("\n"+"mv WWTree_"+(nameData[category[a]])[i]+"_"+str(count)+".root "+outputFolder+"/"+(nameData[category[a]])[i]);
+	    		   outScript.write("\n"+"echo \"#########i########### Finishedi COPYING...\"");
+            		   outScript.write("\n");
+            		   outScript.close();
+            		   os.system("chmod 777 "+currentDir+"/"+fn+".sh");
+            		   command2 = "bsub -q 1nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
+            		   print command2
+            		   if( dryRun != True ):
+			       print "\n======= JOB: ",count," ======="
+			       if count==1:
+			          dirCreate="mkdir "+outputFolder+"/"+(nameData[category[a]])[i]
+			       	  os.system(dirCreate);
+			       os.system(command2);

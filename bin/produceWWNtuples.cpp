@@ -67,6 +67,7 @@ int main (int argc, char** argv)
   std::string inputFile = argv[6];
   std::string xSecWeight = argv[7];
   //std::string TotalNumberOfEntries = argv[8];
+  int amcatnlo = atoi(argv[8]);
   float LUMI = atof(argv[9]);
   int applyTrigger = atoi(argv[10]);
   std::string jsonFileName = argv[11];
@@ -187,18 +188,27 @@ int main (int argc, char** argv)
      eventTree = (TTree*)infile->Get("Events");
      
      TotalNumberOfEvents+=eventTree->GetEntries();
+     //TH1F * h1 = new TH1F("h1","h1 title" , 100, 0, 4);
+     //h1 = (TH1F*)infile->Get("TotalEvents");
+     //cout<<"Hist Entry = "<<h1->GetEntries()<<"\t"<<eventTree->GetEntries()<<endl;
+     cout<<"File no. "<<i<<" Entries = "<<eventTree->GetEntries()<<endl;
+     if(amcatnlo == 1)
+     {
      if(isMC)
      { 
-  	TBranch *genBr=0;
+        TBranch *genBr=0;
      	eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
-	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
-	{
-	    eventTree->GetEntry(jentry);
-	    genBr->GetEntry(jentry);
-	    if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
-	    if (gen->weight<0)	nNegEvents++;
-	}
+        for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+        {
+            eventTree->GetEntry(jentry);
+            genBr->GetEntry(jentry);
+            if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
+            if (gen->weight<0)	nNegEvents++;
+        }
      }
+     }
+  delete infile;
+  infile=0, eventTree=0;
   }
   
   
