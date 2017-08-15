@@ -135,8 +135,8 @@ int main (int argc, char** argv)
 
   char command1[3000];
   //exit(0);
-  //sprintf(command1, "eos find -f %s  | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
-  sprintf(command1, "eos find -f %s/%s/  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  //sprintf(command1, "eos find -f %s/%s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   std::cout<<command1<<std::endl;
   system(command1);
   char list1[2000];
@@ -191,10 +191,11 @@ int main (int argc, char** argv)
      { 
   	TBranch *genBr=0;
      	eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
-	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++)
+	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
 	{
 	    eventTree->GetEntry(jentry);
 	    genBr->GetEntry(jentry);
+	    if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
 	    if (gen->weight<0)	nNegEvents++;
 	}
      }
@@ -208,6 +209,7 @@ int main (int argc, char** argv)
 
   //---------start loop on events------------
   std::cout << "---------start loop on events------------" << std::endl;
+  jentry2=0;
   for(int i=0;i<nInputFiles;i++)
   {
   cout<<"\n\n=====	Processing File Number : "<<i<<"\n\t"<<sampleName[i]<<"\n-------"<<endl;

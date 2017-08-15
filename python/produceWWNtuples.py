@@ -26,6 +26,10 @@ if __name__ == '__main__':
     parser.add_argument ('-exe', '--exe' , default = 'produceWWNtuples', help='location of the executable')
     args = parser.parse_args ()
 
-    command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
-    print command
+    if len(args.name) != 2:
+    	command = args.exe+' '+args.inputFolder+'/'+args.name+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    else:
+    	command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    print "==> Name = ",len(args.name)
+    print "==> ",command
     os.system(command)
