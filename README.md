@@ -27,7 +27,10 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 	* Go to directory:
 
 			CMSSW_8_0_26_patch1/src/WWAnalysis
-			python  WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2.py
+			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_MC.py
+			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_DataEle2.py
+			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_Data.py
+
 
 * To see the various options availabe with **produceWWNtuples.py** do,
 
@@ -57,3 +60,18 @@ Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Pi
 
 
 
+# General command
+
+	grep "time to run this code =" *.stdout | awk '{print $10,$7/60}'
+
+	voms-proxy-init
+
+	grep -r --exclude=\*.{root,o,exe,swp,bcup} genGravMass *
+
+# Command to generate aQGC parametres summary from reweight cards
+	
+	grep launch aQGC_WMhadZlepJJ_EWK_LO_NPle1_mjj100pt10_reweight_card.dat | awk -F "=" '{print $2}' | awk -F "_" '{ gsub("p",".",$2); gsub("m","-",$2); print $1,$2}'
+
+	grep launch aQGC_WMhadZlepJJ_EWK_LO_NPle1_mjj100pt10_reweight_card.dat | awk -F "=" '{print $2}' | awk -F "_" '{ gsub("p",".",$2); gsub("m","-",$2); print $1}'
+
+	grep launch aQGC_WMhadZlepJJ_EWK_LO_NPle1_mjj100pt10_reweight_card.dat | awk -F "=" '{print $2}' | awk -F "_" '{ gsub("p",".",$2); gsub("m","-",$2); print $2}'

@@ -37,6 +37,7 @@
 #include "BaconAna/DataFormats/interface/TJet.hh"
 #include "BaconAna/DataFormats/interface/TAddJet.hh"
 #include "BaconAna/Utils/interface/TTrigger.hh"
+#include "BaconAna/DataFormats/interface/TLHEWeight.hh"
 
 #include "../interface/setOutputTree.h"
 #include "../interface/METzCalculator.h"
@@ -49,60 +50,6 @@ using namespace std;
 void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, 
 					  TLorentzVector thep4Z2, 
 		  double& costheta1,  double& costhetastar, double& Phi1);
-
-float getPUPPIweight(float puppipt, float puppieta, TF1* puppisd_corrGEN, TF1* puppisd_corrRECO_cen, TF1* puppisd_corrRECO_for ){
-
-  float genCorr = 1.;
-  float recoCorr = 1.;
-  float totalWeight = 1.;
-
-  genCorr = puppisd_corrGEN->Eval( puppipt );
-
-  if( fabs(puppieta) <= 1.3 ) recoCorr = puppisd_corrRECO_cen->Eval( puppipt );
-  else recoCorr = puppisd_corrRECO_for->Eval( puppipt );
-
-  totalWeight = genCorr * recoCorr;
-  return totalWeight;
-
-}
-
-//*****PU WEIGHT***************
-
-vector<double> generate_weights(TH1* data_npu_estimated, int isForSynch){
-  // see https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_X/SimGeneral/MixingModule/python/mix_2016_25ns_Moriond17MC_PoissonOOTPU_cfi.py#L25 ; copy and paste from there: 
-  //
-  const double npu_probs[75] = {  1.78653e-05 ,2.56602e-05 ,5.27857e-05 ,8.88954e-05 ,0.000109362 ,0.000140973 ,0.000240998 ,0.00071209 ,0.00130121 ,0.00245255 ,0.00502589 ,0.00919534 ,0.0146697 ,0.0204126 ,0.0267586 ,0.0337697 ,0.0401478 ,0.0450159 ,0.0490577 ,0.0524855 ,0.0548159 ,0.0559937 ,0.0554468 ,0.0537687 ,0.0512055 ,0.0476713 ,0.0435312 ,0.0393107 ,0.0349812 ,0.0307413 ,0.0272425 ,0.0237115 ,0.0208329 ,0.0182459 ,0.0160712 ,0.0142498 ,0.012804 ,0.011571 ,0.010547 ,0.00959489 ,0.00891718 ,0.00829292 ,0.0076195 ,0.0069806 ,0.0062025 ,0.00546581 ,0.00484127 ,0.00407168 ,0.00337681 ,0.00269893 ,0.00212473 ,0.00160208 ,0.00117884 ,0.000859662 ,0.000569085 ,0.000365431 ,0.000243565 ,0.00015688 ,9.88128e-05 ,6.53783e-05 ,3.73924e-05 ,2.61382e-05 ,2.0307e-05 ,1.73032e-05 ,1.435e-05 ,1.36486e-05 ,1.35555e-05 ,1.37491e-05 ,1.34255e-05 ,1.33987e-05 ,1.34061e-05 ,1.34211e-05 ,1.34177e-05 ,1.32959e-05 ,1.33287e-05 };
-  
-  if (isForSynch==0) { //OFFICIAL RECIPE
-    vector<double> result(75);
-    double s = 0.0;
-    for(int npu=0; npu<75; ++npu){
-      double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
-      result[npu] = npu_estimated / npu_probs[npu];
-      //cout<<"npu_estimated = "<<npu_estimated<<"\t result[npu] = "<<result[npu]<<endl;
-      s += npu_estimated;
-    }
-    // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
-    for(int npu=0; npu<50; ++npu){
-      result[npu] /= s;
-    }
-    return result;
-  }
-
-  else { //THIS IS FOR THE SYNCH ONLY. THIS IS NOT THE OFFICIAL RECIPE!
-    vector<double> result(50);
-    for(int npu=0; npu<50; ++npu){
-      if (data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu))==0.)
-	result[npu] = 0.;
-      else {
-	double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));                              
-	result[npu] = npu_estimated;
-      }
-    }
-    return result;
-  }
-
-}
 
 
 //*******MAIN*******************************************************************
@@ -119,8 +66,8 @@ int main (int argc, char** argv)
   std::string inputTreeName = argv[5];
   std::string inputFile = argv[6];
   std::string xSecWeight = argv[7];
-  //std::string numberOfEntries = argv[8];
-  //float genMass = atof(argv[9]);
+  //std::string TotalNumberOfEntries = argv[8];
+  float LUMI = atof(argv[9]);
   int applyTrigger = atoi(argv[10]);
   std::string jsonFileName = argv[11];
   int isLocal = atoi(argv[12]);
@@ -128,15 +75,15 @@ int main (int argc, char** argv)
 
   if ( VBFSel==1)
     {
-      cout<<"VBF selection method 1"<<endl;
+      cout<<"==> VBF selection method : Select two highest pT jets"<<endl;
     }
   else if ( VBFSel==2)
     {
-      cout<<"VBF selection method 2"<<endl;
+      cout<<"==> VBF selection method : Select pair with highest mjj..."<<endl;
     }
   else if ( VBFSel==3)
     {
-      cout<<"VBF selection method 3"<<endl;
+      cout<<"==> VBF selection method : Select pair with highest DeltaEta..."<<endl;
     }
   else
     {
@@ -144,25 +91,11 @@ int main (int argc, char** argv)
       exit(0);
     }
   
-  if (strcmp(leptonName.c_str(),"el")!=0 && strcmp(leptonName.c_str(),"mu")!=0)
-    {
-      std::cout<<"Error: wrong lepton category"<<std::endl;
-      return(-1);
-    }
-  
-  jsonFileName="Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt";
-  std::map<int, std::vector<std::pair<int, int> > > jsonMap;
-  jsonMap = readJSONFile(jsonFileName);
-  std::cout<<"JSON file: "<<jsonFileName<<std::endl;
-
-  // define map with events                                                                                                                                     
-  std::map<std::pair<int,std::pair<int,int> >,int> eventsMap;
-//
-  applyTrigger=true;
+  //applyTrigger=true;
   const baconhep::TTrigger triggerMenu("../../BaconAna/DataFormats/data/HLTFile_25ns");  
   std::cout<<"apply trigger: "<<applyTrigger<<std::endl;
 
-  TLorentzVector W,W_puppi,LEP;
+  TLorentzVector W,W_puppi,LEP, LEP2;
   TLorentzVector NU0,NU1,NU2,NU0_puppi,NU1_puppi,NU2_puppi;
   TLorentzVector NU0_jes_up, NU0_jes_dn;
   TLorentzVector JET, JET_PuppiAK8, AK4;
@@ -197,38 +130,101 @@ int main (int argc, char** argv)
   TClonesArray *vjetArrPuppi  = new TClonesArray("baconhep::TJet");
   TClonesArray *vjetAddArrPuppi  = new TClonesArray("baconhep::TAddJet");
   TClonesArray *jetArrPuppi  = new TClonesArray("baconhep::TJet");
+  TClonesArray *lheWgtArr = new TClonesArray("baconhep::TLHEWeight");
   
-  TChain* eventTree = new TChain(inputTreeName.c_str());
 
   char command1[3000];
   //exit(0);
-  sprintf(command1, "xrd eoscms dirlist %s/%s/  | awk 'NF {print \"root://eoscms.cern.ch/\"$5}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  //sprintf(command1, "eos find -f %s/%s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   std::cout<<command1<<std::endl;
   system(command1);
   char list1[2000];
   sprintf (list1, "listTemp_%s.txt", outputFile.c_str());
   ifstream rootList (list1);
+  char command3[300];
+  sprintf(command3, "rm listTemp_%s.txt", outputFile.c_str());
+  system(command3);
 
   int fileCounter=0;
-  Long64_t totalEntries=0;
-  
-  if (isLocal==1) {
-    //eventTree->AddFile("root://eoscms.cern.ch//store/cmst3/group/monojet/production/12//WWToLNuQQ_13TeV_powheg_ext/WWToLNuQQ_13TeV_powheg_ext_0.root",-1,"Events");
-    eventTree->AddFile("root://eoscms.cern.ch//store/cmst3/group/monojet/production/12/SingleElectronRun2016B_23Sep2016_v2/SingleElectronRun2016B_23Sep2016_v2_0.root",-1,"Events");
-    cout<<" ====> Found local file."<<endl;
+  Long64_t TotalNumberOfEvents=0;
+
+  vector<TString>  sampleName; 
+
+  while (!rootList.eof())
+  {
+	char iRun_tW[700];
+	rootList >> iRun_tW;
+	if(!rootList.good())break;
+	sampleName.push_back(iRun_tW);
+	fileCounter++;
   }
-  else {
-    while (!rootList.eof())
-    {
-      char iRun_tW[700];
-      rootList >> iRun_tW;
-      if(!rootList.good())break;
-      cout<<"===> "<<iRun_tW<<endl;
-      eventTree->AddFile(iRun_tW,-1,"Events");
-      fileCounter++;
-    }
+
+
+  TFile *infile=0;
+  TTree *eventTree=0;
+  int cutEff[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+  //---------output tree----------------
+  TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
+  outROOT->cd();
+  TTree* outTree = new TTree("otree", "otree");
+  setOutputTree* WWTree = new setOutputTree(outTree);
+
+  int nEvents=0;	
+  Long64_t jentry2=0;
+  int count_genEvents=0;
+
+  int nInputFiles = sampleName.size();
+
+  if (isLocal==1) nInputFiles=2;
+  cout<<"==> Total number of input files : "<<nInputFiles<<endl;
+  
+  int nNegEvents=0; 
+  for(int i=0;i<nInputFiles;i++)
+  {
+     infile = TFile::Open(sampleName[i]);
+     eventTree = (TTree*)infile->Get("Events");
+     
+     TotalNumberOfEvents+=eventTree->GetEntries();
+     if(isMC)
+     { 
+  	TBranch *genBr=0;
+     	eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
+	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+	{
+	    eventTree->GetEntry(jentry);
+	    genBr->GetEntry(jentry);
+	    if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
+	    if (gen->weight<0)	nNegEvents++;
+	}
+     }
   }
   
+  
+  cout<<"==> Total number of events : "<<TotalNumberOfEvents<<endl;
+  cout<<"==> Total number of negative events : "<<nNegEvents<<endl;
+  float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
+  int totalEntries=0;
+
+  //---------start loop on events------------
+  std::cout << "---------start loop on events------------" << std::endl;
+  jentry2=0;
+  for(int i=0;i<nInputFiles;i++)
+  {
+  cout<<"\n\n=====	Processing File Number : "<<i<<"\n\t"<<sampleName[i]<<"\n-------"<<endl;
+
+  infile = TFile::Open(sampleName[i]);
+  eventTree = (TTree*)infile->Get("Events");
+  
+  totalEntries+=eventTree->GetEntries();
+
+  nEvents=eventTree->GetEntries();
+
+  cout<<"\t==> Entries = "<<nEvents<<endl;
+
+
+
   eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
   eventTree->SetBranchAddress("Muon", &muonArr); TBranch *muonBr = eventTree->GetBranch("Muon");
   eventTree->SetBranchAddress("Electron", &electronArr); TBranch *electronBr = eventTree->GetBranch("Electron");
@@ -239,76 +235,19 @@ int main (int argc, char** argv)
   eventTree->SetBranchAddress("AK8Puppi",   &vjetArrPuppi); TBranch *vjetBrPuppi = eventTree->GetBranch("AK8Puppi");  
   eventTree->SetBranchAddress("AddAK8Puppi",   &vjetAddArrPuppi); TBranch *vjetAddBrPuppi = eventTree->GetBranch("AddAK8Puppi");  
   eventTree->SetBranchAddress("AK4Puppi",   &jetArrPuppi); TBranch *jetBrPuppi = eventTree->GetBranch("AK4Puppi");  
-  TBranch *genBr=0, *genPartBr=0;
+  TBranch *genBr=0, *genPartBr=0, *lhePartBr=0;
   if(isMC)
      { 
        eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
        eventTree->SetBranchAddress("GenParticle",&genPartArr); genPartBr = eventTree->GetBranch("GenParticle");
+       if(eventTree->GetListOfBranches()->FindObject("LHEWeight"))
+       {
+       eventTree->SetBranchAddress("LHEWeight",&lheWgtArr); lhePartBr = eventTree->GetBranch("LHEWeight");	       }
      }
-  std::cout<<"number of files found: "<<fileCounter<<std::endl;
-  totalEntries=eventTree->GetEntries();
 
-  float numberOfEntries = eventTree->GetEntries();		// Get total number of entries
-
-
-  float weight = std::atof(xSecWeight.c_str())/numberOfEntries;
-  
-  char command3[300];
-  sprintf(command3, "rm listTemp_%s.txt", outputFile.c_str());
-  system(command3);
-
-  int cutEff[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  
-  
-  //--------pile up file -----------------
-  std::vector<double> weights_pu1; //these are made with our recipe
-  TFile* pileupFile1 = TFile::Open("PileUpData2016_23Sep2016ReReco_69200ub.root");
-  TH1F* pileupHisto1 = (TH1F*)pileupFile1->Get("pileup");  
-  weights_pu1 = generate_weights(pileupHisto1,0);
-  pileupFile1->Close();
-  
-  std::vector<double> weights_pu2; //these are made with the official recipe
-  TFile* pileupFile2 = TFile::Open("PUxSynch.root");  
-  TH1F* pileupHisto2 = (TH1F*)pileupFile2->Get("puweights");
-  weights_pu2 = generate_weights(pileupHisto2,1);
-  pileupFile2->Close();
-
-
-  //---------output tree----------------
-  TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
-  outROOT->cd();
-  TTree* outTree = new TTree("otree", "otree");
-  setOutputTree* WWTree = new setOutputTree(outTree);
-
-
-  std::ifstream badEventsFile;
-  std::multimap<int,int> badEventsList;
-  
-  int run, lumi, evt;
-  if (isMC==0) {
-    if (strcmp(leptonName.c_str(),"el")==0)
-      badEventsFile.open("SingleElectron_csc2015.txt");
-    else
-      badEventsFile.open("SingleMuon_csc2015.txt");      
-    while(!badEventsFile.eof()) 
-      {
-        badEventsFile >> run >> lumi >> evt;
-        badEventsList.insert(std::pair<int,int>(run,evt));
-      }      
-  }
-  badEventsFile.close();
-
-  int nNegEvents=0; 
-  int nEvents=0;	nEvents=eventTree->GetEntries();
-  Long64_t jentry2=0;
-  int count_genEvents=0;
-
-  //---------start loop on events------------
-  std::cout << "---------start loop on events------------" << std::endl;
-  //for (Long64_t jentry=0; jentry<191;jentry++,jentry2++)
   for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
   {
-    infoBr->GetEntry(jentry);
+    eventTree->GetEntry(jentry);
 
     int GenPassCut = 0;
 
@@ -318,19 +257,24 @@ int main (int argc, char** argv)
     looseEle.clear();
     
 
-    if (jentry2%100 == 0) std::cout << "read entry: " << jentry2 <<"/"<<totalEntries<<std:: endl;
+    if (jentry2%1000 == 0) std::cout << "\tread entry: " << jentry2 <<"/"<<totalEntries<<std:: endl;
+    
     //*********************************
-    // JSON FILE AND DUPLIACTES IN DATA
+    WWTree->initializeVariables(); //initialize all variables
+
     WWTree->run   = info->runNum;
     WWTree->event = info->evtNum;
     WWTree->lumi  = info->lumiSec;
 
-    WWTree->initializeVariables(); //initialize all variables
 
     /////////////////MC Info
     if (isMC==1)
     {
-      genBr->GetEntry(jentry);
+      lheWgtArr->Clear();
+      if(lhePartBr)
+	{
+	  lhePartBr->GetEntry(jentry);
+	}
       genPartArr->Clear();
       genBr->GetEntry(jentry);
       genPartBr->GetEntry(jentry);
@@ -339,16 +283,16 @@ int main (int argc, char** argv)
       std::vector<TLorentzVector> v_GEN_hadW, v_GEN_lepW, v_GEN_VBFJ1, v_GEN_VBFJ2, v_GEN_VBFJ, v_GEN_temp;
       std::vector<TLorentzVector> v_genLep, v_genNeutrino, v_genWquarks, v_genVBFquarks;
       
-      for (int i = 0; i<genPartArr->GetEntriesFast();i++)
+      for (int i = 0; i<genPartArr->GetEntries();i++)
 	{
 	  const baconhep::TGenParticle* genloop = (baconhep::TGenParticle*) ((*genPartArr)[i]);
 	  Int_t parentPdg=dynamic_cast<baconhep::TGenParticle *>(genPartArr->At(genloop->parent>-1 ? genloop->parent : 0))->pdgId;
-	  if( (abs(genloop->pdgId) == 11 ) && abs(parentPdg) == 24)
+	  if( (abs(genloop->pdgId) == 11 || abs(genloop->pdgId) == 13 ) && abs(parentPdg) == 24)
 	    {
 	      genLep.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
 	      v_genLep.push_back(genLep);
 	    }
-	  if( (abs(genloop->pdgId) == 12 ) && abs(parentPdg) == 24)
+	  if( (abs(genloop->pdgId) == 12 || abs(genloop->pdgId) == 14 ) && abs(parentPdg) == 24)
 	    {
 	      genNeutrino.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
 	      v_genNeutrino.push_back(genNeutrino);
@@ -403,16 +347,20 @@ int main (int argc, char** argv)
 	  
 	  count_genEvents++;
 	}
-      //else
-    	//cout<<"WW pt = "<<WWTree->WW_pT_gen<<endl;
-	if ( WWTree->lep_pt_gen > 30 && abs(WWTree->lep_eta_gen) < 2.5 && WWTree->hadW_m_gen>50 && WWTree->hadW_m_gen<110 && WWTree->AK4_jj_DeltaEta_gen>2 && WWTree->WW_mass_gen > 500 && WWTree->hadW_pt_gen>200 && WWTree->AK4_1_pt_gen >30 && WWTree->AK4_2_pt_gen>30 && WWTree->AK4_jj_mass_gen > 500 ){
+	if ( WWTree->lep_pt_gen > 30 && abs(WWTree->lep_eta_gen) < 2.5 && WWTree->AK4_jj_DeltaEta_gen>2 && WWTree->hadW_pt_gen>200 && WWTree->AK4_1_pt_gen >30 && WWTree->AK4_2_pt_gen>30 && WWTree->AK4_jj_mass_gen > 500 ){
 	        GenPassCut = 1;
-		//cout<<"In this loop......."<<endl;
 	 }
+    	for (int i = 0; i<lheWgtArr->GetEntries();i++)     // Note that i is starting from 446.
+	{
+		const baconhep::TLHEWeight *lhe = (baconhep::TLHEWeight*)((*lheWgtArr)[i]);
+		WWTree->LHEid.push_back(lhe->id);
+		WWTree->LHEWeight.push_back(lhe->weight);
+	}
     }
+
     
     WWTree->issignal = 0;
-    WWTree->wSampleWeight = weight; //xsec/numberOfEntries
+    WWTree->wSampleWeight = weight; //xsec/TotalNumberOfEntries
     WWTree->eff_and_pu_Weight = 1.; //temporary value
     WWTree->eff_and_pu_Weight_2 = 1.; //temporary value
     WWTree->eff_and_pu_Weight_3 = 1.; //temporary value
@@ -424,88 +372,145 @@ int main (int argc, char** argv)
       WWTree->genWeight=1.;
     else if (gen->weight<0) {
       WWTree->genWeight=-1.;
-      nNegEvents++;
+      //nNegEvents++;
     }
     cutEff[0]++;
 
-    //if (GenPassCut == 0)  continue;
     if (isMC==1)
     {
-    if (GenPassCut == 0)   cutEff[1]++;
+    if (GenPassCut == 1)   cutEff[1]++;
     }
     
     vertexArr->Clear();
     vertexBr->GetEntry(jentry);
     WWTree->nPV = vertexArr->GetEntries();
-    
-    
+  
+    if(applyTrigger==1)
+      if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits) ||  triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
+  
     /////////////////THE SELECTED LEPTON
-    int nTightLepton=0, nLooseLepton=0;
-    if (strcmp(leptonName.c_str(),"el")==0) { //electrons
-      //int passTrigger=0;
-      float tempPt=0.;
-      if(applyTrigger==1)
-	triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits);
-      electronArr->Clear();
-      electronBr->GetEntry(jentry);
-      for (int i=0; i<electronArr->GetEntriesFast(); i++) {
-	const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
-        if (ele->pt<=30) continue;
-        if (fabs(ele->eta)>=2.5) continue;
-	if(!passEleLooseSel(ele,info->rhoIso)) continue;
-	nLooseLepton++;
-	if(!passEleTightSel(ele,info->rhoIso)) continue;
-	if (ele->pt<tempPt) continue;
-	ELE.SetPtEtaPhiE(ele->pt,ele->eta,ele->phi,ele->ecalEnergy);
-	tightEle.push_back(ELE);
-	WWTree->l_pt  = ele->pt;
-	WWTree->l_eta = ele->eta;
-	WWTree->l_phi = ele->phi;	
-	WWTree->l_e= ele->ecalEnergy;	
-	WWTree->l_charge= ele->q;
-	tempPt = WWTree->l_pt;
-	nTightLepton++;
+    int nTightEle=0, nLooseEle=0;
+    int nTightMu=0, nLooseMu=0;
+    double pt_cut = 20;
+    double leadelept_cut = 30;
+    double leadmupt_cut = 27;
+    electronArr->Clear();
+    electronBr->GetEntry(jentry);
+    const baconhep::TElectron *leadele = NULL;
+    const baconhep::TElectron *subele = NULL;
+    for (int i=0; i<electronArr->GetEntries(); i++) {
+      const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
+      if (ele->pt<=pt_cut) continue;
+      if (fabs(ele->eta)>=2.5) continue;
+      if(!passEleLooseSel(ele,info->rhoIso)) continue;
+      nLooseEle++;
+      if(!passEleTightSel(ele,info->rhoIso)) continue;
+      ELE.SetPtEtaPhiE(ele->pt,ele->eta,ele->phi,ele->ecalEnergy);
+      tightEle.push_back(ELE);
+      nTightEle++;
+      if(!leadele || ele->pt>leadele->pt)
+	{
+	  if(!(ele->pt>leadelept_cut)) continue;
+	  subele = leadele;
+	  leadele = ele;
+	}
+      else if (!subele || ele->pt > subele->pt)
+	{
+	  subele = ele;
+	}
+    }
+    if(leadele)
+      {
+	WWTree->l_pt1  = leadele->pt;
+	WWTree->l_eta1 = leadele->eta;
+	WWTree->l_phi1 = leadele->phi;	
+	WWTree->l_e1 = leadele->ecalEnergy;	
+	WWTree->l_charge1 = leadele->q;
       }
-    } //end electrons
-    else if (strcmp(leptonName.c_str(),"mu")==0) { //Muon
-      //int passTrigger=0;
-      if(applyTrigger==1)
-	if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits))) continue;
-      float tempPt=0.;
-      muonArr->Clear();
-      muonBr->GetEntry(jentry);
-      for(Int_t i=0; i<muonArr->GetEntriesFast(); i++) {
-	const baconhep::TMuon *mu = (baconhep::TMuon*)((*muonArr)[i]);
-	if (mu->pt<27) continue;
-	if (fabs(mu->eta)>=2.4) continue;
-	if(!passMuonLooseSel(mu)) continue;
-	nLooseLepton++;
-	if(!passMuonTightSel(mu)) continue;
-	if (mu->pt<tempPt) continue;
-	MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1057);
-	tightMuon.push_back(MU);
-	WWTree->l_pt  = mu->pt;
-	WWTree->l_eta = mu->eta;
-	WWTree->l_phi = mu->phi;
-	WWTree->l_e = MU.E();
-	WWTree->l_charge= mu->q;
-	tempPt = WWTree->l_pt;
-	nTightLepton++;
-      }   
-    } //end Muon
+    if(subele)
+      {
+	WWTree->l_pt2  = subele->pt;
+	WWTree->l_eta2 = subele->eta;
+	WWTree->l_phi2 = subele->phi;	
+	WWTree->l_e2 = subele->ecalEnergy;	
+	WWTree->l_charge2 = subele->q;
+      }
+    muonArr->Clear();
+    muonBr->GetEntry(jentry);
+    const baconhep::TMuon *leadmu = NULL;
+    const baconhep::TMuon *submu = NULL;
+    double leadmue=-999, submue = -999;
+    for(Int_t i=0; i<muonArr->GetEntries(); i++) {
+      const baconhep::TMuon *mu = (baconhep::TMuon*)((*muonArr)[i]);
+      if (mu->pt<pt_cut) continue;
+      if (fabs(mu->eta)>=2.4) continue;
+      if(!passMuonLooseSel(mu)) continue;
+      nLooseMu++;
+      if(!passMuonTightSel(mu)) continue;
+      nTightMu++;
+      MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1057);
+      tightMuon.push_back(MU);
+      if(!leadmu || mu->pt>leadmu->pt)
+	{
+	  if(!(mu->pt>leadmupt_cut)) continue;
+	  submu = leadmu;
+	  leadmu = mu;
+	  leadmue = MU.E();
+	}
+      else if (!submu || mu->pt > submu->pt)
+	{
+	  submu = mu;
+	  submue = MU.E();
+	}
+    }   
+    if(leadmu)
+      {
+	WWTree->l_pt1  = leadmu->pt;
+	WWTree->l_eta1 = leadmu->eta;
+	WWTree->l_phi1 = leadmu->phi;	
+	WWTree->l_e1 = leadmue;	
+	WWTree->l_charge1 = leadmu->q;
+      }
+    if(submu)
+      {
+	WWTree->l_pt2  = submu->pt;
+	WWTree->l_eta2 = submu->eta;
+	WWTree->l_phi2 = submu->phi;	
+	WWTree->l_e2 = submue;	
+	WWTree->l_charge2 = submu->q;
+      }
+    //std::cout << nTightMu << " " << nTightEle << " " << " " << nLooseEle << " " << nLooseMu << " " << std::endl; 
+    //std::cout << leadele << " " << subele << " " << leadmu << " " << submu << std::endl;
+    if(!(WWTree->l_pt1>0)) continue;
+    if ((nTightMu+nTightEle)==0) continue; //no leptons with required ID
+    if((nLooseEle+nLooseMu)>2) continue;
+    if(nTightMu>0 && nLooseEle>0) continue;
+    if(nTightEle>0 && nLooseMu>0) continue;
+    if(nTightMu==1 && nLooseMu>1) continue;
+    if(nTightEle==1 && nLooseEle>1) continue;
+    if(nTightMu>0){
+      WWTree->type=0;
+      leptonName = "mu";	// Added this part for neutrino pz calculation in case there is w-boson.
+    }else{
+      WWTree->type=1;
+      leptonName = "el";
+    }
     
-    if (nTightLepton==0) continue; //no leptons with required ID
-    if(nLooseLepton>1) continue;
-    //if (nTightLepton!=1) continue; //no leptons with required ID
     cutEff[2]++;
     
-    LEP.SetPtEtaPhiE(WWTree->l_pt,WWTree->l_eta,WWTree->l_phi,WWTree->l_e);
-    
-    
+    LEP.SetPtEtaPhiE(WWTree->l_pt1,WWTree->l_eta1,WWTree->l_phi1,WWTree->l_e1);
+    LEP2.SetPtEtaPhiE(WWTree->l_pt2,WWTree->l_eta2,WWTree->l_phi2,WWTree->l_e2);
+    if(WWTree->l_pt2>0)
+      {
+	WWTree->dilep_pt  = (LEP+LEP2).Pt();
+	WWTree->dilep_eta = (LEP+LEP2).Eta();
+	WWTree->dilep_phi = (LEP+LEP2).Phi();	
+	WWTree->dilep_m = (LEP+LEP2).M();	
+      }
     //////////////THE MET
     
     // //preselection on met
-     if (info->pfMET < 0) continue;
+     //if (info->pfMET < 0) continue;
      cutEff[3]++;
     
     // Calculate Neutrino Pz using all the possible choices : 
@@ -672,7 +677,6 @@ int main (int argc, char** argv)
     // pz2_type0 = NeutrinoPz_type0.getOther();  // Default one
     
     pz1_run2 = NeutrinoPz_run2.Calculate();
-    //cout<<"pz1_run2 = "<<pz1_run2<<endl;
     
     //pz1_type0_jes_up = NeutrinoPz_type0_jes_up.Calculate(); // Default one -> according to type0
     //pz1_type0_jes_dn = NeutrinoPz_type0_jes_dn.Calculate(); // Default one -> according to type0
@@ -751,16 +755,15 @@ int main (int argc, char** argv)
       
     ///////////THE FAT JET - AK8
     //float tempPt=0.;
-    float tempMass=0.;
-    float tempMasss = 30.0;
+    float tempTTbarMass=0.;
+    float tempMassW = 3000.0;
     int nGoodAK8jets=0;
     //int ttb_jet_position=-1; //position of AK8 jet in ttbar-topology
-    // if (ReducedTree->AK8CHS_ < 1 ) continue; 
     vjetArr->Clear();
     vjetBr->GetEntry(jentry);
     vjetAddArr->Clear();
     vjetAddBr->GetEntry(jentry);
-    for ( int i=0; i<vjetArr->GetEntriesFast(); i++)
+    for ( int i=0; i<vjetArr->GetEntries(); i++)
     {
 	const baconhep::TJet *jet = (baconhep::TJet*)((*vjetArr)[i]);
 	const baconhep::TAddJet *addjet = (baconhep::TAddJet*)((*vjetAddArr)[i]);
@@ -768,15 +771,16 @@ int main (int argc, char** argv)
 	TempAK8.SetPtEtaPhiM(jet->pt,fabs(jet->eta),jet->phi,jet->mass);
 	bool isCleanedJet = true;
 	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
-	if (addjet->mass_prun>tempMass) {
-	  if ( (jet->eta>0 && WWTree->l_eta<0) || 
-	       (jet->eta<0 && WWTree->l_eta>0)) { //jet and lepton in opposite hemisphere for ttb
+	if (addjet->mass_prun>tempTTbarMass) {
+	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
+	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
 	    //ttb_jet_position=i; //save AK8 jet in ttbar topology
-	    tempMass=addjet->mass_prun;
+	    tempTTbarMass=addjet->mass_prun;
 	  }
 	}
 	//if (jet->pt<=tempPt) continue; //save the jet with the largest pt
-	if (abs(addjet->mass_sd0 - 80.385) > tempMasss ) continue; //save the jet which is closest to W-mass
+	//if (abs(addjet->mass_sd0 - 80.385) > tempMassW ) continue; //save the jet which is closest to W-mass
+	if (abs(jet->mass - 80.385) > tempMassW ) continue; //save the jet which is closest to W-mass
 	//if (ReducedTree->AK8Jets_AK8isLooseJetId[i]==false) continue; //fat jet must satisfy loose ID
 	
 	//CLEANING FROM LEPTONS
@@ -793,28 +797,28 @@ int main (int argc, char** argv)
       
 	if (isCleanedJet==false) continue; //jet is overlapped with a lepton
       
-	WWTree->ungroomed_jet_pt  = jet->pt;
-	WWTree->ungroomed_jet_eta = jet->eta;
-	WWTree->ungroomed_jet_phi = jet->phi;
-	WWTree->ungroomed_jet_e   = TempAK8.E();
+	WWTree->ungroomed_AK8jet_pt  = jet->pt;
+	WWTree->ungroomed_AK8jet_eta = jet->eta;
+	WWTree->ungroomed_AK8jet_phi = jet->phi;
+	WWTree->ungroomed_AK8jet_e   = TempAK8.E();
 	//WWTree->ungroomed_jet_pt_jes_up = (jet->pt[i]/ReducedTree->AK8Jets_AK8correction[i])*ReducedTree->AK8Jets_AK8correctionUp[i];
 	//WWTree->ungroomed_jet_pt_jes_dn = (ReducedTree->AK8CHS_pt[i]/ReducedTree->AK8Jets_AK8correction[i])*ReducedTree->AK8Jets_AK8correctionDown[i];
       
-	//WWTree->jet_pt_so    = ReducedTree->AK8Jets_softDropPt[i];
-	WWTree->jet_mass_pr  = addjet->mass_prun;
-	WWTree->jet_mass_so  = addjet->mass_sd0;
-	WWTree->jet_mass_tr  = addjet->mass_trim;
-	WWTree->jet_tau2tau1 = addjet->tau2/addjet->tau1;
+	WWTree->AK8jet_mass_pr  = addjet->mass_prun;
+	WWTree->AK8jet_mass_so  = addjet->mass_sd0;
+	WWTree->AK8jet_mass_tr  = addjet->mass_trim;
+	WWTree->AK8jet_tau2tau1 = addjet->tau2/addjet->tau1;
 	//WWTree->jet_mass_pr_jes_up = (ReducedTree->AddAK8CHS_mass_prun[i]/ReducedTree->AK8Jets_AK8massCorrection[i])*ReducedTree->AK8Jets_AK8massCorrectionUp[i];
 	//WWTree->jet_mass_pr_jes_dn = (ReducedTree->AddAK8CHS_mass_prun[i]/ReducedTree->AK8Jets_AK8massCorrection[i])*ReducedTree->AK8Jets_AK8massCorrectionDown[i];
       
 	//tempPt = WWTree->ungroomed_jet_pt;
-	tempMasss = abs(addjet->mass_sd0 - 80.385);
+	//tempMassW = abs(addjet->mass_sd0 - 80.385);
+	tempMassW = abs(jet->mass - 80.385);
 	nGoodAK8jets++;
       }
-    if(WWTree->ungroomed_jet_pt > 0)
+    if(WWTree->ungroomed_AK8jet_pt > 0)
       {
-	JET.SetPtEtaPhiE(WWTree->ungroomed_jet_pt,WWTree->ungroomed_jet_eta,WWTree->ungroomed_jet_phi,WWTree->ungroomed_jet_e);
+	JET.SetPtEtaPhiE(WWTree->ungroomed_AK8jet_pt,WWTree->ungroomed_AK8jet_eta,WWTree->ungroomed_AK8jet_phi,WWTree->ungroomed_AK8jet_e);
 	/* JET_jes_up.SetPtEtaPhiE(WWTree->ungroomed_jet_pt*(ReducedTree->AK8Jets_AK8correctionUp[hadWpos]/ReducedTree->AK8Jets_AK8correction[hadWpos]),
 	   WWTree->ungroomed_jet_eta,
 	   WWTree->ungroomed_jet_phi,
@@ -832,14 +836,13 @@ int main (int argc, char** argv)
     vjetBrPuppi->GetEntry(jentry);
     vjetAddArrPuppi->Clear();
     vjetAddBrPuppi->GetEntry(jentry);
-    //tempPt=0., 
-    tempMass=0.;
-    tempMasss = 30.0;
+    tempTTbarMass=0.;
+    tempMassW = 3000.0;
     int nGoodPuppiAK8jets=0;
     //int hadWPuppiAK8pos = -1;
-    //int ttb_PuppiAK8_jet_position=-1; //position of AK8 jet in ttbar-topology
+    int ttb_PuppiAK8_jet_position=-1; //position of AK8 jet in ttbar-topology
     
-    for ( int i=0; i<vjetArrPuppi->GetEntriesFast(); i++)
+    for ( int i=0; i<vjetArrPuppi->GetEntries(); i++)
       {
 	const baconhep::TJet *jet = (baconhep::TJet*)((*vjetArrPuppi)[i]);
 	const baconhep::TAddJet *addjet = (baconhep::TAddJet*)((*vjetAddArrPuppi)[i]);
@@ -847,15 +850,15 @@ int main (int argc, char** argv)
 	TempAK8.SetPtEtaPhiM(jet->pt,fabs(jet->eta),jet->phi,jet->mass);
 	bool isCleanedJet = true;
 	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
-	if (addjet->mass_prun>tempMass) {
-	  if ( (jet->eta>0 && WWTree->l_eta<0) || 
-	       (jet->eta<0 && WWTree->l_eta>0)) { //jet and lepton in opposite hemisphere for ttb
-	    //ttb_PuppiAK8_jet_position=i; //save AK8 jet in ttbar topology
-	    tempMass=addjet->mass_prun;
+	if (addjet->mass_prun>tempTTbarMass) {
+	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
+	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
+	    ttb_PuppiAK8_jet_position=i; //save AK8 jet in ttbar topology
+	    tempTTbarMass=addjet->mass_prun;
 	  }
 	}
 	//if (jet->pt<=tempPt) continue; //save the jet with the largest pt
-	if (abs(jet->mass - 80.385) > tempMasss) continue; //save the jet closest to w-mass
+	if (abs(jet->mass - 80.385) > tempMassW) continue; //save the jet closest to w-mass
 	//if (ReducedTree->PuppiAK8Jets_PuppiAK8isLooseJetId[i]==false) continue; //fat jet must satisfy loose ID
 	
 	//CLEANING FROM LEPTONS
@@ -887,7 +890,7 @@ int main (int argc, char** argv)
 	//   WWTree->PuppiAK8_jet_mass_pr_jes_dn = (addjet->mass_prun[i]/ReducedTree->PuppiAK8Jets_PuppiAK8massCorrection[i])*ReducedTree->PuppiAK8Jets_PuppiAK8massCorrectionDown[i];
 	
 	//tempPt = WWTree->ungroomed_PuppiAK8_jet_pt;
-	tempMasss = abs(jet->mass - 80.385);
+	tempMassW = abs(jet->mass - 80.385);
 	nGoodPuppiAK8jets++;
 	//hadWPuppiAK8pos = i;
       }
@@ -910,18 +913,19 @@ int main (int argc, char** argv)
     // FAT JET SELECTION
     bool isGoodFatJet = true;
     if (nGoodAK8jets==0 && nGoodPuppiAK8jets==0) isGoodFatJet = false; //not found a good hadronic W candidate
-    if (WWTree->ungroomed_jet_pt<200 && WWTree->ungroomed_PuppiAK8_jet_pt<200) isGoodFatJet = false;
+    if (WWTree->ungroomed_AK8jet_pt<200 && WWTree->ungroomed_PuppiAK8_jet_pt<200) isGoodFatJet = false;
     if (!isGoodFatJet) continue;
     cutEff[5]++;
     
     
+    #if 0
     //////////////////UNMERGED HADRONIC W
     jetArr->Clear();
     jetBr->GetEntry(jentry);
     float tempPt1 = 0.; int pos1 = -1;
     float tempPt2 = 0.; //int pos2 = -1;
     int nGoodAK4jets=0;
-    for ( int i=0; i<jetArr->GetEntriesFast(); i++) //loop on AK4 jet
+    for ( int i=0; i<jetArr->GetEntries(); i++) //loop on AK4 jet
     {
       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
       TLorentzVector TempAK4;
@@ -932,7 +936,7 @@ int main (int argc, char** argv)
       bool isCleanedJet = true;
       if (jet->pt<=30  || fabs(jet->eta)>=2.4)  continue;
       //if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
-      if (jet->csv>0.890) continue;
+      //if (jet->csv>0.890) continue;
       
       //CLEANING FROM LEPTONS
       for ( std::size_t j=0; j<tightEle.size(); j++) {
@@ -1031,7 +1035,7 @@ int main (int argc, char** argv)
     tempPt1 = 0.; int pos1Puppi = -1;
     tempPt2 = 0.; //int pos2Puppi = -1;
     int nGoodPuppiAK4jets=0;
-    for ( int i=0; i<jetArrPuppi->GetEntriesFast(); i++) //loop on PuppiAK4 jet
+    for ( int i=0; i<jetArrPuppi->GetEntries(); i++) //loop on PuppiAK4 jet
     {
       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArrPuppi)[i]);
       TLorentzVector TempAK4;
@@ -1039,9 +1043,9 @@ int main (int argc, char** argv)
       TempAK4.SetPtEtaPhiM(jet->pt,fabs(jet->eta),jet->phi,jet->mass);
       TempAK4array.push_back(TempAK4);
       bool isCleanedJet = true;
-      if ( jet->pt<=20 || fabs(jet->eta)>=2.4)  continue;
+      if ( jet->pt<=30 || fabs(jet->eta)>=2.4)  continue;
       //if (ReducedTree->JetsPuppi_isLooseJetId[i]==false) continue;
-      if (jet->csv>0.890) continue;
+      //if (jet->csv>0.890) continue;
       
       //CLEANING FROM LEPTONS
       for ( std::size_t j=0; j<tightEle.size(); j++) {
@@ -1142,7 +1146,8 @@ int main (int argc, char** argv)
     if (WWTree->AK4_jetjet_pt<150 && WWTree->PuppiAK4_jetjet_pt<150) isGoodUnmergedJets = false;
     if (isGoodUnmergedJets) cutEff[6]++;
     
-    if (!isGoodFatJet && !isGoodUnmergedJets)    cutEff[7]++;
+    if (isGoodFatJet && isGoodUnmergedJets)    cutEff[7]++;
+    #endif
     
     
     //////////////////ANGULAR VARIABLES
@@ -1184,12 +1189,12 @@ int main (int argc, char** argv)
     WWTree->mass_lvj_type0_met_jes_up = (LEP + NU0_jes_up + JET_jes_up).M();
     WWTree->mass_lvj_type0_met_jes_dn = (LEP + NU0_jes_dn + JET_jes_dn).M();
     
-    WWTree->TempLepWEta = (LEP + NU0_puppi ).Eta();
-    WWTree->TempLepWRapidity = (LEP + NU0_puppi ).Rapidity();
-    WWTree->TempHadWEta = (JET_PuppiAK8 ).Eta();
-    WWTree->TempHadWRapidity = (JET_PuppiAK8 ).Rapidity();
-    WWTree->TempWWEta = (LEP + NU0_puppi + JET_PuppiAK8 ).Eta();
-    WWTree->TempWWRapidity = (LEP + NU0_puppi + JET_PuppiAK8 ).Rapidity();
+    WWTree->LepWEta = (LEP + NU0_puppi ).Eta();
+    WWTree->LepWRapidity = (LEP + NU0_puppi ).Rapidity();
+    WWTree->HadWEta = (JET_PuppiAK8 ).Eta();
+    WWTree->HadWRapidity = (JET_PuppiAK8 ).Rapidity();
+    WWTree->WWEta = (LEP + NU0_puppi + JET_PuppiAK8 ).Eta();
+    WWTree->WWRapidity = (LEP + NU0_puppi + JET_PuppiAK8 ).Rapidity();
     WWTree->pt_lvj_type0_PuppiAK8 = (LEP + NU0_puppi + JET_PuppiAK8).Pt();
     WWTree->pt_lvj_type2_PuppiAK8 = (LEP + NU2_puppi + JET_PuppiAK8).Pt();
     WWTree->pt_lvj_run2_PuppiAK8  = (LEP + NU1_puppi + JET_PuppiAK8).Pt();
@@ -1225,29 +1230,27 @@ int main (int argc, char** argv)
     WWTree->mass_lvjj_run2_PuppiAK4  = (LEP + NU1 + PuppiAK4_JET1 + PuppiAK4_JET2).M();
     WWTree->mass_lvjj_type0_met_jes_up_PuppiAK4 = (LEP + NU0_jes_up + PuppiAK4_JET1_jes_up + PuppiAK4_JET2_jes_up).M();
     WWTree->mass_lvjj_type0_met_jes_dn_PuppiAK4 = (LEP + NU0_jes_dn + PuppiAK4_JET1_jes_dn + PuppiAK4_JET2_jes_dn).M();
+    WWTree->mass_llj_PuppiAK8 = (LEP + LEP2 + JET_PuppiAK8).M();
 
-    if (WWTree->mass_lvj_type0_PuppiAK8 < 500 || WWTree->mass_lvj_type2_PuppiAK8 < 500 || WWTree->mass_lvj_run2_PuppiAK8 < 500) continue;
+   // if (WWTree->mass_lvj_type0_PuppiAK8 < 500 || WWTree->mass_lvj_type2_PuppiAK8 < 500 || WWTree->mass_lvj_run2_PuppiAK8 < 500) continue;    // cut on WW invariant mass 
     cutEff[8]++;
     
 
     
     //--- ttbar topology ------
-    //if (ttb_PuppiAK8_jet_position>=0)
-    //{
-    //  const baconhep::TJet *jet = (baconhep::TJet*)((*vjetArrPuppi)[ttb_PuppiAK8_jet_position]);
-    //  WWTree->ttb_ungroomed_jet_pt  = ReducedTree->AK8CHS_pt;
-    // WWTree->ttb_ungroomed_jet_eta = ReducedTree->AK8CHS_eta;
-    //  WWTree->ttb_ungroomed_jet_phi = ReducedTree->AK8CHS_phi;
-    //  WWTree->ttb_ungroomed_jet_e   = ReducedTree->AK8CHS_ptRaw;
-    //  WWTree->ttb_jet_mass_pr   = ReducedTree->AddAK8CHS_mass_prun;
-    //  WWTree->ttb_jet_mass_so   = ReducedTree->AddAK8CHS_mass_sd0;
-//      WWTree->ttb_jet_pt_so   = ReducedTree->AK8Jets_softDropPt[ttb_PuppiAK8_jet_position];
-    //  WWTree->ttb_jet_mass_tr   = ReducedTree->AddAK8CHS_mass_trim];
-      //WWTree->ttb_jet_mass_fi   = ReducedTree->AK8Jets_filteredMass[ttb_PuppiAK8_jet_position];
-    //  WWTree->ttb_jet_tau2tau1   = ReducedTree->AddAK8CHS_tau2[ttb_PuppiAK8_jet_position]/ReducedTree->AddAK8CHS_tau1[ttb_PuppiAK8_jet_position];
-    //  
-    // WWTree->ttb_deltaeta_lak8jet = deltaEta(WWTree->ttb_ungroomed_jet_eta,WWTree->l_eta);
-    // }
+    if (ttb_PuppiAK8_jet_position>=0)
+    {
+      const baconhep::TJet *jet	= (baconhep::TJet*)((*vjetArrPuppi)[ttb_PuppiAK8_jet_position]);
+      const baconhep::TAddJet *addjet = (baconhep::TAddJet*)((*vjetAddArrPuppi)[ttb_PuppiAK8_jet_position]);
+      WWTree->ttb_ungroomed_jet_pt  = jet->pt;
+      WWTree->ttb_ungroomed_jet_eta = jet->eta;
+      WWTree->ttb_ungroomed_jet_phi = jet->phi;
+      WWTree->ttb_jet_mass_pr       = addjet->mass_prun;
+      WWTree->ttb_jet_mass_so       = addjet->mass_sd0;
+      WWTree->ttb_jet_mass_tr       = addjet->mass_trim;
+      WWTree->ttb_jet_tau2tau1      = addjet->tau2/addjet->tau1;
+      WWTree->ttb_deltaeta_lak8jet = deltaEta(WWTree->ttb_ungroomed_jet_eta,WWTree->l_eta1);
+    }
     
     
     /////////VBF and b-tag section
@@ -1268,10 +1271,11 @@ int main (int argc, char** argv)
     float deltaRbtag_prev=100.;
     float deltaRbtag_prev_loose=100.;
     
+    #if 0
     std::vector<int> indexGoodVBFJets;
 
 
-    for ( int i=0; i<jetArr->GetEntriesFast(); i++) //loop on AK4 jet
+    for ( int i=0; i<jetArr->GetEntries(); i++) //loop on AK4 jet
     {
       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
       bool isCleaned = true;
@@ -1283,22 +1287,19 @@ int main (int argc, char** argv)
       
       //CLEANING FROM FAT JET
       if (nGoodAK8jets > 0) {
-        if (deltaR(WWTree->ungroomed_jet_eta, WWTree->ungroomed_jet_phi,
+        if (deltaR(WWTree->ungroomed_AK8jet_eta, WWTree->ungroomed_AK8jet_phi,
                    jet->eta,jet->phi) < 0.8 )
           isCleanedFromFatJet = false;
-      }
-      
-      //CLEANING FROM UNMERGED JETS
-      if (nGoodAK4jets>0) {
-        if (deltaR(WWTree->AK4_jet1_eta, WWTree->AK4_jet1_phi,
-                   jet->eta,jet->phi) < 0.4 )
-          isCleanedFromUnmergedJets = false;
-      }
-      if (nGoodAK4jets>1) {
-        if (deltaR(WWTree->AK4_jet2_eta, WWTree->AK4_jet2_phi,
-                   jet->eta,jet->phi) < 0.4 )
-          isCleanedFromUnmergedJets = false;
-      }      
+      } 
+      //else if (nGoodAK4jets>0) {
+      //  if (deltaR(WWTree->AK4_jet1_eta, WWTree->AK4_jet1_phi,
+      //             jet->eta,jet->phi) < 0.4 )
+      //    isCleanedFromUnmergedJets = false;
+      //} else if (nGoodAK4jets>1) {
+      //  if (deltaR(WWTree->AK4_jet2_eta, WWTree->AK4_jet2_phi,
+      //             jet->eta,jet->phi) < 0.4 )
+      //    isCleanedFromUnmergedJets = false;
+      //}      
       
       //CLEANING FROM LEPTONS
       for ( std::size_t j=0; j<tightEle.size(); j++) {
@@ -1353,6 +1354,7 @@ int main (int argc, char** argv)
       // !!! VBF non-Puppi missing !!!
       //------------------------------
     }
+    #endif
     
     
     
@@ -1376,7 +1378,7 @@ int main (int argc, char** argv)
     
     std::vector<int> indexGoodVBFJetsPuppi;
     
-    for ( int i=0; i<jetArrPuppi->GetEntriesFast(); i++) //loop on PuppiAK4 jet
+    for ( int i=0; i<jetArrPuppi->GetEntries(); i++) //loop on PuppiAK4 jet
     {
       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArrPuppi)[i]);
       bool isCleaned = true;
@@ -1391,19 +1393,16 @@ int main (int argc, char** argv)
         if (deltaR(WWTree->ungroomed_PuppiAK8_jet_eta, WWTree->ungroomed_PuppiAK8_jet_phi,
                    jet->eta,jet->phi) < 0.8 )
           isCleanedFromFatJet = false;
-      }
-      
-      //CLEANING FROM UNMERGED JETS
-      if (nGoodPuppiAK4jets>0) {
-        if (deltaR(WWTree->PuppiAK4_jet1_eta, WWTree->PuppiAK4_jet1_phi,
-                   jet->eta,jet->phi) < 0.4 )
-          isCleanedFromUnmergedJets = false;
-      }
-      if (nGoodPuppiAK4jets>1) {
-        if (deltaR(WWTree->PuppiAK4_jet2_eta, WWTree->PuppiAK4_jet2_phi,
-                   jet->eta,jet->phi) < 0.4 )
-          isCleanedFromUnmergedJets = false;
-      }      
+      } 
+      //else if (nGoodPuppiAK4jets>0) {
+      //  if (deltaR(WWTree->PuppiAK4_jet1_eta, WWTree->PuppiAK4_jet1_phi,
+      //             jet->eta,jet->phi) < 0.4 )
+      //    isCleanedFromUnmergedJets = false;
+      //} else if (nGoodPuppiAK4jets>1) {
+      //  if (deltaR(WWTree->PuppiAK4_jet2_eta, WWTree->PuppiAK4_jet2_phi,
+      //             jet->eta,jet->phi) < 0.4 )
+      //    isCleanedFromUnmergedJets = false;
+      //}      
       
       //CLEANING FROM LEPTONS
       for ( std::size_t j=0; j<tightEle.size(); j++) {
@@ -1506,6 +1505,7 @@ int main (int argc, char** argv)
     }
     
     
+    int OnlyTwoVBFTypeJets = 0;
     if (indexGoodVBFJetsPuppi.size()>=2) 
     {
       cutEff[9]++;
@@ -1535,7 +1535,8 @@ int main (int argc, char** argv)
 	  }
 	  else if ( VBFSel==3)
 	  {
-	  	DRvbf = abs(deltaR(VBF1.Eta(), VBF1.Phi(), VBF2.Eta(), VBF2.Phi()));
+	  	//DRvbf = abs(deltaR(VBF1.Eta(), VBF1.Phi(), VBF2.Eta(), VBF2.Phi()));
+		DRvbf = abs(VBF1.Eta()-VBF2.Eta());
 		if (DRvbf < tempPtMax) continue;
 		tempPtMax = DRvbf; //take the jet pair with largest Pt
 		//cout<<"tempPtMax = "<<tempPtMax<<endl;
@@ -1549,10 +1550,10 @@ int main (int argc, char** argv)
           nVBF2 = indexGoodVBFJetsPuppi.at(ii); //save position of the 2nd vbf jet
         }
       }
+      if (nVBF1!=-1 && nVBF2 !=-1) OnlyTwoVBFTypeJets=1;
       
       if (nVBF1!=-1 && nVBF2!=-1) //save infos for vbf jet pair
       {
-        cutEff[10]++;
         // nVBF1=0; nVBF2=1;
 	//cout<<"nVBF1 = "<<nVBF1<<"\tnVBF2 = "<<nVBF2<<endl;
         const baconhep::TJet *jet1 = (baconhep::TJet*)((*jetArrPuppi)[nVBF1]);
@@ -1583,7 +1584,9 @@ int main (int argc, char** argv)
 	WWTree->AK4_DR_GENRECO_22 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
       }
     }
-    
+
+    if (OnlyTwoVBFTypeJets == 0) continue;
+        cutEff[10]++;
     
     WWTree->totalEventWeight = WWTree->genWeight*WWTree->eff_and_pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight;
     WWTree->totalEventWeight_2 = WWTree->genWeight*WWTree->eff_and_pu_Weight_2*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight;
@@ -1591,8 +1594,7 @@ int main (int argc, char** argv)
 
     
     
-    //    WWTree->wSampleWeight = std::atof(xSecWeight.c_str())/nEvents; //xsec/numberOfEntries
-    WWTree->nEvents = nEvents;
+    WWTree->nEvents = TotalNumberOfEvents;
     WWTree->nNegEvents = nNegEvents;
 
     double a_costheta1;// a_costheta2;
@@ -1635,9 +1637,11 @@ int main (int argc, char** argv)
      WWTree->LeptonProjection_type2 = (LEP.Pt()*cos(LEP.Theta()-(LEP + NU2_puppi).Theta()))/(LEP + NU2_puppi).Pt();
      WWTree->LeptonProjection_run2 = (LEP.Pt()*cos(LEP.Theta()-(LEP + NU1_puppi).Theta()))/(LEP + NU1_puppi).Pt();
 
-    
-    /////////////////FILL THE TREE
     outTree->Fill();
+    }
+    delete infile;
+    infile=0, eventTree=0;
+    /////////////////FILL THE TREE
   }
   std::cout << "---------end loop on events------------" << std::endl;
   std::cout << std::endl;
@@ -1652,27 +1656,30 @@ int main (int argc, char** argv)
   std::cout<<"MC matching: "<<(float)ok/(float)total<<std::endl;
   std::cout<<"negative events: "<<nNegEvents<<std::endl;
   std::cout << std::endl;
-  std::cout<<"(0) all events:        "<<cutEff[0]<<std::endl
-  	   <<"(1) Gen Events:        "<<cutEff[1]<<std::endl
-	   <<"(2) tight lepton:      "<<cutEff[2]<<std::endl
-	   <<"(3) MET:               "<<cutEff[3]<<std::endl
-	   <<"(4) negative lep-MET:  "<<cutEff[4]<<std::endl
-	   <<"(5) 1 good AK8:        "<<cutEff[5]<<std::endl
-	   <<"(6) 2 good AK4:        "<<cutEff[6]<<std::endl
-	   <<"(7) 1 AK8 & 2 good AK4:"<<cutEff[7]<<std::endl
-	   <<"(8) m(WV) > 500:       "<<cutEff[8]<<std::endl
-	   <<"(9) > 2 good VBF jets: "<<cutEff[9]<<std::endl
-	   <<"(10) Found VBF jets:   "<<cutEff[10]<<std::endl;
+  std::cout<<"(0) all events:        "<<cutEff[0]<<"\t:\t"<<((float)cutEff[0]*100.0)/(float)cutEff[0]<<std::endl
+  	   <<"(1) Gen Events:        "<<cutEff[1]<<"\t:\t"<<((float)cutEff[1]*100.0)/(float)cutEff[0]<<std::endl
+	   <<"(2) tight lepton:      "<<cutEff[2]<<"\t:\t"<<((float)cutEff[2]*100.0)/(float)cutEff[0]<<std::endl
+	   <<"(3) MET:               "<<cutEff[3]<<"\t:\t"<<((float)cutEff[3]*100.0)/(float)cutEff[2]<<std::endl
+	   <<"(4) negative lep-MET:  "<<cutEff[4]<<"\t:\t"<<((float)cutEff[4]*100.0)/(float)cutEff[3]<<std::endl
+	   <<"(5) 1 good AK8:        "<<cutEff[5]<<"\t:\t"<<((float)cutEff[5]*100.0)/(float)cutEff[4]<<std::endl
+//	   <<"(6) 2 good AK4:        "<<cutEff[6]<<"\t:\t"<<((float)cutEff[6]*100.0)/(float)cutEff[5]<<std::endl
+//	   <<"(7) 1 AK8 & 2 good AK4:"<<cutEff[7]<<"\t:\t"<<((float)cutEff[7]*100.0)/(float)cutEff[6]<<std::endl
+	   <<"(8) m(WV) > 500:       "<<cutEff[8]<<"\t:\t"<<((float)cutEff[8]*100.0)/(float)cutEff[5]<<std::endl
+	   <<"(9) >=2 good VBF jets: "<<cutEff[9]<<"\t:\t"<<((float)cutEff[9]*100.0)/(float)cutEff[8]<<std::endl
+	   <<"(10) Found VBF jets:  "<<cutEff[10]<<"\t:\t"<<((float)cutEff[10]*100.)/(float)cutEff[9]<<std::endl;
   
  
   //--------close everything-------------
   delete info; delete gen;
   delete genPartArr; delete muonArr; delete electronArr; delete vertexArr;
-  delete vjetArr; delete vjetAddArr; delete jetArr; delete vjetArrPuppi; delete vjetAddArrPuppi; delete jetArrPuppi;
-  outTree->Write();
+  delete vjetArr; delete vjetAddArr; delete jetArr; delete vjetArrPuppi; delete vjetAddArrPuppi; delete jetArrPuppi; delete lheWgtArr;
+  //TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
+  //outROOT->cd();
+  //outTree->Write();
+  outROOT->Write();
   outROOT->Close();
   int t1 = time(NULL);
-  printf ("time to run this code = %d secs\n", t1 - t0);
+  printf ("\n==> time to run this code = %0.3f min\n", (float)(t1 - t0)/60.0);
   return(0);
 }
 

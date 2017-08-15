@@ -3,13 +3,15 @@
 
 #include "TTree.h"
 #include "TChain.h"
+#include <vector>
 
 class setOutputTree {
 
  public:
 
   TTree* fTree;
-  
+  std::vector<int>      LHEid;
+  std::vector<float> LHEWeight;
   int run;
   int event;
   int nEvents;
@@ -54,31 +56,41 @@ class setOutputTree {
   float nu_pz_run2_oth;
   int nu_pz_run2_type;
   int nu_pz_isre;
-  float l_pt;
-  float l_eta;
-  float l_phi;
-  float l_e;
-  float l_charge;
-  float ungroomed_jet_pt;
-  float ungroomed_jet_pt_jes_up;
-  float ungroomed_jet_pt_jes_dn; 
-  float ungroomed_jet_pt_jer;
-  float ungroomed_jet_pt_jer_up;
-  float ungroomed_jet_pt_jer_dn;
-  float ungroomed_jet_eta;
-  float ungroomed_jet_phi;
-  float ungroomed_jet_e;
-  float jet_mass_pr;
-  float jet_mass_pr_jes_up;
-  float jet_mass_pr_jes_dn;
-  float jet_mass_pr_jer;
-  float jet_mass_pr_jer_up;
-  float jet_mass_pr_jer_dn;
-  float jet_mass_so;
-  float jet_pt_so;
-  float jet_mass_tr;
-  float jet_mass_fi;
-  float jet_tau2tau1;
+  int type;
+  float l_pt1;
+  float l_eta1;
+  float l_phi1;
+  float l_e1;
+  float l_charge1;
+  float l_pt2;
+  float l_eta2;
+  float l_phi2;
+  float l_e2;
+  float l_charge2;
+  float dilep_pt;
+  float dilep_eta;
+  float dilep_phi;
+  float dilep_m;
+  float ungroomed_AK8jet_pt;
+  float ungroomed_AK8jet_pt_jes_up;
+  float ungroomed_AK8jet_pt_jes_dn; 
+  float ungroomed_AK8jet_pt_jer;
+  float ungroomed_AK8jet_pt_jer_up;
+  float ungroomed_AK8jet_pt_jer_dn;
+  float ungroomed_AK8jet_eta;
+  float ungroomed_AK8jet_phi;
+  float ungroomed_AK8jet_e;
+  float AK8jet_mass_pr;
+  float AK8jet_mass_pr_jes_up;
+  float AK8jet_mass_pr_jes_dn;
+  float AK8jet_mass_pr_jer;
+  float AK8jet_mass_pr_jer_up;
+  float AK8jet_mass_pr_jer_dn;
+  float AK8jet_mass_so;
+  float AK8jet_pt_so;
+  float AK8jet_mass_tr;
+  float AK8jet_mass_fi;
+  float AK8jet_tau2tau1;
   float AK4_jetjet_pt;
   float AK4_jetjet_mass;
   float AK4_jetjet_deltaeta;
@@ -204,7 +216,6 @@ class setOutputTree {
   float AK4_DR_GENRECO_12;
   float AK4_DR_GENRECO_21;
   float AK4_DR_GENRECO_22;
-//  float AK4_BIG_gen_mass;
   float deltaR_lak8jet;
   float deltaphi_METak8jet;
   float deltaphi_Vak8jet;
@@ -268,6 +279,7 @@ class setOutputTree {
   float mass_lvjj_type0_met_jes_dn_PuppiAK4;
   float mass_lvjj_type2_PuppiAK4;
   float mass_lvjj_run2_PuppiAK4;
+  float mass_llj_PuppiAK8;
   float mass_leptonic_closerjet;
   float mass_ungroomedjet_closerjet;
   float AK8_closerjet_pt;
@@ -351,12 +363,12 @@ class setOutputTree {
   float phi1_run2;
   float costhetastar_run2;
   float VBSCentrality_run2;
-  float TempLepWEta;
-  float TempLepWRapidity;
-  float TempHadWEta;
-  float TempHadWRapidity;
-  float TempWWEta;
-  float TempWWRapidity;
+  float LepWEta;
+  float LepWRapidity;
+  float HadWEta;
+  float HadWRapidity;
+  float WWEta;
+  float WWRapidity;
   float ZeppenfeldWH;
   float RpT_type0;
   float ZeppenfeldWL_type0;
