@@ -67,7 +67,6 @@ int main (int argc, char** argv)
   std::string inputFile = argv[6];
   std::string xSecWeight = argv[7];
   //std::string TotalNumberOfEntries = argv[8];
-  int amcatnlo = atoi(argv[8]);
   float LUMI = atof(argv[9]);
   int applyTrigger = atoi(argv[10]);
   std::string jsonFileName = argv[11];
@@ -93,7 +92,15 @@ int main (int argc, char** argv)
     }
   
   //applyTrigger=true;
-  const baconhep::TTrigger triggerMenu("../../BaconAna/DataFormats/data/HLTFile_25ns");  
+  std::string iHLTFile="${CMSSW_BASE}/src/BaconAna/DataFormats/data/HLTFile_25ns";
+  const std::string cmssw_base = getenv("CMSSW_BASE");
+  std::string cmssw_base_env = "${CMSSW_BASE}";
+  size_t start_pos = iHLTFile.find(cmssw_base_env);
+  if(start_pos != std::string::npos) {
+  	iHLTFile.replace(start_pos, cmssw_base_env.length(), cmssw_base);
+  }
+
+  const baconhep::TTrigger triggerMenu(iHLTFile);  
   std::cout<<"apply trigger: "<<applyTrigger<<std::endl;
 
   TLorentzVector W,W_puppi,LEP, LEP2;
@@ -137,6 +144,7 @@ int main (int argc, char** argv)
   char command1[3000];
   //exit(0);
   sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  //sprintf(command1, "find  %s  | awk '!/log|fail/ {print $1}'  > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   //sprintf(command1, "eos find -f %s/%s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   std::cout<<command1<<std::endl;
   system(command1);
@@ -188,27 +196,20 @@ int main (int argc, char** argv)
      eventTree = (TTree*)infile->Get("Events");
      
      TotalNumberOfEvents+=eventTree->GetEntries();
-     //TH1F * h1 = new TH1F("h1","h1 title" , 100, 0, 4);
-     //h1 = (TH1F*)infile->Get("TotalEvents");
-     //cout<<"Hist Entry = "<<h1->GetEntries()<<"\t"<<eventTree->GetEntries()<<endl;
-     cout<<"File no. "<<i<<" Entries = "<<eventTree->GetEntries()<<endl;
-     if(amcatnlo == 1)
-     {
      if(isMC)
      { 
-        TBranch *genBr=0;
+  	TBranch *genBr=0;
      	eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
-        for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
-        {
-            eventTree->GetEntry(jentry);
-            genBr->GetEntry(jentry);
-            if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
-            if (gen->weight<0)	nNegEvents++;
-        }
+	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+	{
+	  //eventTree->GetEntry(jentry);
+	    genBr->GetEntry(jentry);
+	    if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
+	    if (gen->weight<0)	nNegEvents++;
+	}
      }
-     }
-  delete infile;
-  infile=0, eventTree=0;
+     delete infile;
+     infile=0, eventTree=0;
   }
   
   
@@ -257,7 +258,8 @@ int main (int argc, char** argv)
 
   for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
   {
-    eventTree->GetEntry(jentry);
+    //eventTree->GetEntry(jentry);
+    infoBr->GetEntry(jentry);	    
 
     int GenPassCut = 0;
 
@@ -1387,7 +1389,8 @@ int main (int argc, char** argv)
     deltaRbtag_prev_loose=100.;
     
     std::vector<int> indexGoodVBFJetsPuppi;
-    
+    jetArrPuppi->Clear();
+    jetBrPuppi->GetEntry(jentry);
     for ( int i=0; i<jetArrPuppi->GetEntries(); i++) //loop on PuppiAK4 jet
     {
       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArrPuppi)[i]);

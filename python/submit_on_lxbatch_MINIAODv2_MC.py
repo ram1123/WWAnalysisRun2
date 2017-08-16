@@ -16,8 +16,8 @@ inputFolder = "/store/cmst3/group/monojet/production/12a/";	# Path of data files
 outputFolder = currentDir+"/WWAnalysisRun2/output/";
 exeName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
 
-MCs = 2 # 1 for signal and 2 for bkg
-dryRun = True;
+MCs = 1 # 1 for signal and 2 for bkg
+dryRun = False;
 doMC = True;
 doData = False;	# For data run another script
 
@@ -67,53 +67,52 @@ if MCs==2:
 	inputFolder = "/store/cmst3/group/monojet/production/12/";	# Path of MC files
 	samples = [
 	    #( , "QCD_HT50to100_13TeV",		0),
-	    #( 27990000,	"QCD_HT100to200_13TeV",		0),
-	    #( 1712000,	"QCD_HT200to300_13TeV",		0),
-	    #( 1712000,	"QCD_HT200to300_13TeV_ext",	0),
-	    #( 347700,	"QCD_HT300to500_13TeV",		0),
-	    #( 347700,	"QCD_HT300to500_13TeV_ext",	0),
-	    #( 32100,	"QCD_HT500to700_13TeV",		0),
-	    #( 32100,	"QCD_HT500to700_13TeV_ext",	0),
-	    #( 6831,	"QCD_HT700to1000_13TeV",	0),
-	    #( 6831,	"QCD_HT700to1000_13TeV_ext",	0),
-	    #( 1207,	"QCD_HT1000to1500_13TeV",	0),
-	    #( 1207,	"QCD_HT1000to1500_13TeV_ext",	0),
-	    #( 119.9,	"QCD_HT1500to2000_13TeV",	0),
-	    #( 119.9,	"QCD_HT1500to2000_13TeV_ext",	0),
-	    #( 25.24,	"QCD_HT2000toInf_13TeV",	0),
-	    #( 25.24,	"QCD_HT2000toInf_13TeV_ext",	0),
-	    #( 49.997,		"WWToLNuQQ_13TeV_powheg",			0),
-	    #( 49.997,		"WWToLNuQQ_13TeV_powheg_ext",			0),
-	    #( 61526.7,		"WJetsToLNu_13TeV",				0),
-	    ##( 			"WJetsToLNu_HT_70To100_13TeV"
-	    #( 1506.4,		"WJetsToLNu_HT_100To200_13TeV", 		0),
-	    #( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext1",		0),
-	    #( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext2",		0),
-	    #( 435.237,		"WJetsToLNu_HT_200To400_13TeV",			0),
-	    #( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext1",		0),
-	    #( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext2",		0),
-	    #( 59.1811,		"WJetsToLNu_HT_400To600_13TeV",			0),
-	    #( 59.1811,		"WJetsToLNu_HT_400To600_13TeV_ext1",		0),
-	    #( 14.5805,		"WJetsToLNu_HT_600To800_13TeV",			0),
-	    #( 14.5805,		"WJetsToLNu_HT_600To800_13TeV_ext1",		0),
-	    #( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV",		0),
-	    ##( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV_ext1",	
-	    #( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV",		0),
-	    #( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV_ext1",		0),
-	    #( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV",		0),
-	    #( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV_ext1",		0),
-	    #( 49.997,		"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",0),
-	    #( 49.997,		"WWToLNuQQ_13TeV_powheg",			0),
-	    #( 49.997,		"WWToLNuQQ_13TeV_powheg_ext",			0),
-	    #( 10.71,		"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",0),
-	    #( 3.22,		"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
-	    ( 831.76,		"TTToSemilepton_powheg",			0)
-	    #( 11.36,		"ST_s_channel_4f_leptonDecays_13TeV_amcatnlo_pythia8_TuneCUETP8M1",	0),
-	    #( 80.95,		"ST_t_channel_antitop_4f_inclusiveDecays_13TeV_powhegV2_madspin_pythia8_TuneCUETP8M1",	0),
-	    ##( 136.02,		"ST_t_channel_top_4f_inclusiveDecays_13TeV_powhegV2_madspin_pythia8_TuneCUETP8M1",	0),
-	    ##( 136.02,		"ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4_13TeV_powhegV2_madspin",	0)
-	    #( 19.46,		"ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1",	0),
-	    #( 19.46,		"ST_tW_top_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1",		0)
+	    ( 27990000,	"QCD_HT100to200_13TeV",		0),
+	    ( 1712000,	"QCD_HT200to300_13TeV",		0),
+	    ( 1712000,	"QCD_HT200to300_13TeV_ext",	0),
+	    ( 347700,	"QCD_HT300to500_13TeV",		0),
+	    ( 347700,	"QCD_HT300to500_13TeV_ext",	0),
+	    ( 32100,	"QCD_HT500to700_13TeV",		0),
+	    ( 32100,	"QCD_HT500to700_13TeV_ext",	0),
+	    ( 6831,	"QCD_HT700to1000_13TeV",	0),
+	    ( 6831,	"QCD_HT700to1000_13TeV_ext",	0),
+	    ( 1207,	"QCD_HT1000to1500_13TeV",	0),
+	    ( 1207,	"QCD_HT1000to1500_13TeV_ext",	0),
+	    ( 119.9,	"QCD_HT1500to2000_13TeV",	0),
+	    ( 119.9,	"QCD_HT1500to2000_13TeV_ext",	0),
+	    ( 25.24,	"QCD_HT2000toInf_13TeV",	0),
+	    ( 25.24,	"QCD_HT2000toInf_13TeV_ext",	0),
+	    ( 49.997,		"WWToLNuQQ_13TeV_powheg",			0),
+	    ( 49.997,		"WWToLNuQQ_13TeV_powheg_ext",			0),
+	    ( 61526.7,		"WJetsToLNu_13TeV",				0),
+	    #( 			"WJetsToLNu_HT_70To100_13TeV"
+	    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV", 		0),
+	    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext1",		0),
+	    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext2",		0),
+	    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV",			0),
+	    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext1",		0),
+	    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext2",		0),
+	    ( 59.1811,		"WJetsToLNu_HT_400To600_13TeV",			0),
+	    ( 59.1811,		"WJetsToLNu_HT_400To600_13TeV_ext1",		0),
+	    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV",			0),
+	    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV_ext1",		0),
+	    ( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV",		0),
+	    #( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV_ext1",	
+	    ( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV",		0),
+	    ( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV_ext1",		0),
+	    ( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV",		0),
+	    ( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV_ext1",		0),
+	    ( 49.997,		"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",0),
+	    ( 49.997,		"WWToLNuQQ_13TeV_powheg",			0),
+	    ( 49.997,		"WWToLNuQQ_13TeV_powheg_ext",			0),
+	    ( 10.71,		"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",0),
+	    ( 3.22,		"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
+	    ( 542.00,		"TTToSemilepton_powheg",			0),
+	    ( 11.36,		"ST_s_channel_4f_leptonDecays_13TeV_amcatnlo_pythia8_TuneCUETP8M1",	0),
+	    ( 80.95,		"ST_t_channel_antitop_4f_inclusiveDecays_13TeV_powhegV2_madspin_pythia8_TuneCUETP8M1",	0),
+	    ( 136.02,		"ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4_13TeV_powhegV2_madspin",	0),
+	    ( 19.46,		"ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1",	0),
+	    ( 19.46,		"ST_tW_top_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1",		0)
 	    ]
 
 nameDataMu = [
@@ -148,12 +147,17 @@ for a in range(len(category)):
         for i in range(len(samples)):
             fn = "WWAnalysisRun2/Job/job_"+samples[i][1]+"_"+category[a];
             outScript = open(fn+".sh","w");
-            command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+inputFolder+" -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+category[a]+" -l "+category[a]+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 0";
+            command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+inputFolder+" -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+category[a]+" -l "+category[a]+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1";
             print command;
             outScript.write('#!/bin/bash');
+	    outScript.write("\n"+"workDir=`pwd`");
+	    outScript.write("\n"+"echo `hostname`");
+	    outScript.write("\n"+"echo $workDir");
             outScript.write("\n"+'cd '+CMSSWDir);
             outScript.write("\n"+'eval `scram runtime -sh`');
-            outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
+            #outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
+	    outScript.write("\n"+"cp WWAnalysis/WWAnalysisRun2/python/produceWWNtuples.py ${workDir}");
+	    outScript.write("\n"+"cd ${workDir}");
             outScript.write("\n"+command);
 	    outScript.write("\n"+"echo \"====> LISTING ALL FILES..... \"");
 	    #outScript.write("\n"+"ls");
@@ -164,7 +168,7 @@ for a in range(len(category)):
             outScript.write("\n");
             outScript.close();
             os.system("chmod 777 "+currentDir+"/"+fn+".sh");
-            command2 = "bsub -q 1nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
+            command2 = "bsub -o out.%J -q 2nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh  -J "+str(samples[i][1][0:9]);
             print command2
             if( dryRun != True ):
                 os.system(command2);
@@ -191,7 +195,7 @@ for a in range(len(category)):
             outScript.write("\n");
             outScript.close();
             os.system("chmod 777 "+currentDir+"/"+fn+".sh");
-            command2 = "bsub -q 1nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
+            command2 = "bsub -q 2nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
             print command2
             if( dryRun != True ):
                 os.system(command2);
