@@ -62,7 +62,7 @@ int main (int argc, char** argv)
   std::string inputFolder = argv[1];
   std::string outputFile = argv[2];
   int isMC = atoi(argv[3]);
-  std::string leptonName = argv[4];
+  std::string cluster = argv[4];
   std::string inputTreeName = argv[5];
   std::string inputFile = argv[6];
   std::string xSecWeight = argv[7];
@@ -72,6 +72,8 @@ int main (int argc, char** argv)
   std::string jsonFileName = argv[11];
   int isLocal = atoi(argv[12]);
   int VBFSel  = atoi(argv[13]);
+  
+  std::string leptonName;
 
   if ( VBFSel==1)
     {
@@ -92,7 +94,15 @@ int main (int argc, char** argv)
     }
   
   //applyTrigger=true;
-  const baconhep::TTrigger triggerMenu("../../BaconAna/DataFormats/data/HLTFile_25ns");  
+  std::string iHLTFile="${CMSSW_BASE}/src/BaconAna/DataFormats/data/HLTFile_25ns";
+  const std::string cmssw_base = getenv("CMSSW_BASE");
+  std::string cmssw_base_env = "${CMSSW_BASE}";
+  size_t start_pos = iHLTFile.find(cmssw_base_env);
+  if(start_pos != std::string::npos) {
+  	iHLTFile.replace(start_pos, cmssw_base_env.length(), cmssw_base);
+  }
+
+  const baconhep::TTrigger triggerMenu(iHLTFile);  
   std::cout<<"apply trigger: "<<applyTrigger<<std::endl;
 
   TLorentzVector W,W_puppi,LEP, LEP2;
@@ -135,8 +145,11 @@ int main (int argc, char** argv)
 
   char command1[3000];
   //exit(0);
-  sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
-  //sprintf(command1, "eos find -f %s/%s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  if ( cluster == "lxplus")
+  	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  else 
+  	sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
+
   std::cout<<command1<<std::endl;
   system(command1);
   char list1[2000];
@@ -193,12 +206,14 @@ int main (int argc, char** argv)
      	eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
 	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
 	{
-	    eventTree->GetEntry(jentry);
+	  //eventTree->GetEntry(jentry);
 	    genBr->GetEntry(jentry);
 	    if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
 	    if (gen->weight<0)	nNegEvents++;
 	}
      }
+     delete infile;
+     infile=0, eventTree=0;
   }
   
   
@@ -247,7 +262,8 @@ int main (int argc, char** argv)
 
   for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
   {
-    eventTree->GetEntry(jentry);
+    //eventTree->GetEntry(jentry);
+    infoBr->GetEntry(jentry);	    
 
     int GenPassCut = 0;
 
@@ -1377,7 +1393,8 @@ int main (int argc, char** argv)
     deltaRbtag_prev_loose=100.;
     
     std::vector<int> indexGoodVBFJetsPuppi;
-    
+    jetArrPuppi->Clear();
+    jetBrPuppi->GetEntry(jentry);
     for ( int i=0; i<jetArrPuppi->GetEntries(); i++) //loop on PuppiAK4 jet
     {
       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArrPuppi)[i]);

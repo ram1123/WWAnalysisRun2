@@ -17,9 +17,9 @@ exeName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
 dryRun = False;
 doData = True;
 
-category = ["mu","el"];
+#category = ["mu","el"];
 #category = ["el"];
-#category = ["mu"];
+category = ["mu"];
 
 
 
@@ -54,12 +54,17 @@ for a in range(len(category)):
         for i in range(len(nameData[category[a]])):
             fn = "WWAnalysisRun2/Job/job_"+(nameData[category[a]])[i]+"_"+category[a];
             outScript = open(fn+".sh","w");
-            command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+inputFolder+" -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+" -l "+category[a]+" -w 1. -no 1.  --ismc 0 -trig 1";
+            command = "python produceWWNtuples.py -i "+inputFolder+" -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+" -l "+category[a]+" -w 1. -no 1.  --ismc 0 -trig 1";
             print command;
             outScript.write('#!/bin/bash');
+            outScript.write("\n"+"workDir=`pwd`");
+	    outScript.write("\n"+"echo `hostname`");
+	    outScript.write("\n"+"echo $workDir");
             outScript.write("\n"+'cd '+CMSSWDir);
             outScript.write("\n"+'eval `scram runtime -sh`');
-	    outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
+            outScript.write("\n"+"cp WWAnalysis/WWAnalysisRun2/python/produceWWNtuples.py ${workDir}");
+	    outScript.write("\n"+"cd ${workDir}");
+	    #outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
             outScript.write("\n"+command);
 	    outScript.write("\n"+"echo \"====> LISTING ALL FILES..... \"");
 	    #outScript.write("\n"+"ls");
@@ -70,7 +75,7 @@ for a in range(len(category)):
             outScript.write("\n");
             outScript.close();
             os.system("chmod 777 "+currentDir+"/"+fn+".sh");
-            command2 = "bsub -q 1nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
+            command2 = "bsub  -o out.%J -q 2nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh -J "+str(nameData[category[a]][i][0:9]);
             print command2
             if( dryRun != True ):
                 os.system(command2);

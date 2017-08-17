@@ -14,7 +14,7 @@ inputFolder = "/store/user/ksung/production/12a/";
 outputFolder = currentDir+"/WWAnalysisRun2/output/";
 exeName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
 
-dryRun = False;
+dryRun = True;
 doData = True;
 
 category = ["el"];		# run this only for electrons
