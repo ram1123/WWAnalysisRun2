@@ -10,8 +10,7 @@ import subprocess
 currentDir = os.getcwd();
 CMSSWDir = currentDir+"/../";
 
-#inputFolder = "/store/user/ksung/production/12a/";
-inputFolder = "/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples";
+inputFolder = "/store/user/ksung/production/12a/";
 outputFolder = currentDir+"/WWAnalysisRun2/output/";
 exeName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
 

@@ -23,7 +23,7 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 	scramv1 b -j 8
 	python python/produceWWNtuples.py -l el
 
-* To submit the batch job:
+* To submit the batch job (**LXPLUS**):
 	* Go to directory:
 
 			CMSSW_8_0_26_patch1/src/WWAnalysis
@@ -31,6 +31,19 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_DataEle2.py
 			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_Data.py
 
+* To submit the condor job (**LPC FNAL**):
+
+		cd {...}/CMSSW_8_0_26_patch1/src/WWAnalysis/WWAnalysisRun2
+		python python/submit_on_lpcCondor_MINIAODv2.py
+
+This will give you two files named ==runstep2condor.jdl== and ==runstep2condor.sh==. To submit the condor job do 
+
+		voms-proxy-init --voms cms --valid 168:00  # if proxy was not set
+		condor_submit runstep2condor.jdl
+
+Monitor the status of jobs using:
+
+		condor_q -submitter rasharma
 
 * To see the various options availabe with **produceWWNtuples.py** do,
 

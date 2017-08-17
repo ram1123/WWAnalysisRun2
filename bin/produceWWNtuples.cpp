@@ -62,7 +62,7 @@ int main (int argc, char** argv)
   std::string inputFolder = argv[1];
   std::string outputFile = argv[2];
   int isMC = atoi(argv[3]);
-  std::string leptonName = argv[4];
+  std::string cluster = argv[4];
   std::string inputTreeName = argv[5];
   std::string inputFile = argv[6];
   std::string xSecWeight = argv[7];
@@ -72,6 +72,8 @@ int main (int argc, char** argv)
   std::string jsonFileName = argv[11];
   int isLocal = atoi(argv[12]);
   int VBFSel  = atoi(argv[13]);
+  
+  std::string leptonName;
 
   if ( VBFSel==1)
     {
@@ -143,9 +145,11 @@ int main (int argc, char** argv)
 
   char command1[3000];
   //exit(0);
-  sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
-  //sprintf(command1, "find  %s  | awk '!/log|fail/ {print $1}'  > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
-  //sprintf(command1, "eos find -f %s/%s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), (inputFile).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  if ( cluster == "lxplus")
+  	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  else 
+  	sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
+
   std::cout<<command1<<std::endl;
   system(command1);
   char list1[2000];

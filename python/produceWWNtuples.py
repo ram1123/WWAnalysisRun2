@@ -9,12 +9,10 @@ import string
 if __name__ == '__main__':
     parser = argparse.ArgumentParser (description = 'produce ntuples with WW semileptonic final state')
     parser.add_argument ('-i', '--inputFolder' , default = '/store/user/arapyan/Run2/' , help='input folder with the reduced trees')
-    #parser.add_argument ('-i', '--inputFolder' , default = '/store/user/arapyan/Run2/WWJJToLNuQQ_LT_13TeV-madgraph-pythia8/Samples/170503_175158/' , help='input folder with the reduced trees')
-    #parser.add_argument ('-i', '--inputFolder' , default = '/store/cmst3/group/monojet/production/' , help='input folder with the reduced trees')
     parser.add_argument ('-o', '--output' , default = 'OutPutRootFile', help='output file')
     parser.add_argument ('-v', '--vbfsel' , default = '2', help='1 = select highest pt jet pair, 2 = select highest mjj, 3 = select highest DEta_jj VBF Jets')
     parser.add_argument ('-mc', '--ismc' , default = '0', help='is MC or not')
-    parser.add_argument ('-l', '--lepton' , default = 'el', help='lepton category (mu or el)')
+    parser.add_argument ('-c', '--cluster' , default = 'lxplus', help='cluster can be lxplus or lpc')
     parser.add_argument ('-t', '--tree' , default = 'Events', help='name of the input tree')
     parser.add_argument ('-n', '--name' , default = 'WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8' , help='input file')
     parser.add_argument ('-w', '--xsecWeight' , default = '0.0002739' , help='xsec (pb)')
@@ -36,9 +34,9 @@ if __name__ == '__main__':
     	amcatnlo = 0
 	print "==> Not a aMC@NLO sample"
     if len(args.name) != 2:
-    	command = args.exe+' '+args.inputFolder+'/'+args.name+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+str(amcatnlo)+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    	command = args.exe+' '+args.inputFolder+'/'+args.name+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
     else:
-    	command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.lepton+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+str(amcatnlo)+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    	command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
     print "==> Name = ",len(args.name)
     print "==> ",command
     os.system(command)
