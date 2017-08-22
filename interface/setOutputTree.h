@@ -227,6 +227,7 @@ class setOutputTree {
   float AK4_DR_GENRECO_12;
   float AK4_DR_GENRECO_21;
   float AK4_DR_GENRECO_22;
+  float deltaR_Wjet_GenReco;
   float deltaR_lak8jet;
   float deltaphi_METak8jet;
   float deltaphi_Vak8jet;
@@ -299,6 +300,7 @@ class setOutputTree {
   float AK8_closerjet_e;
   int njets;
   int njetsPuppi;
+  int nGoodAK8jets;
   int njets_unmerged;
   int njetsPuppi_unmerged;
   int nBTagJet_loose;

@@ -274,7 +274,7 @@ int main (int argc, char** argv)
     looseEle.clear();
     
 
-    if (jentry2%1000 == 0) std::cout << "\tread entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
+    if (jentry2%5000 == 0) std::cout << "\tread entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
     
     //*********************************
     WWTree->initializeVariables(); //initialize all variables
@@ -774,7 +774,7 @@ int main (int argc, char** argv)
     //float tempPt=0.;
     float tempTTbarMass=0.;
     float tempMassW = 3000.0;
-    int nGoodAK8jets=0;
+    //int nGoodAK8jets=0;
     //int ttb_jet_position=-1; //position of AK8 jet in ttbar-topology
     vjetArr->Clear();
     vjetBr->GetEntry(jentry);
@@ -832,7 +832,7 @@ int main (int argc, char** argv)
 	//tempPt = WWTree->ungroomed_jet_pt;
 	//tempMassW = abs(addjet->mass_sd0 - 80.385);
 	tempMassW = abs(jet->mass - 80.385);
-	nGoodAK8jets++;
+	WWTree->nGoodAK8jets++;
       }
     if(WWTree->ungroomed_AK8jet_pt > 0)
       {
@@ -943,7 +943,7 @@ int main (int argc, char** argv)
     
     // FAT JET SELECTION
     bool isGoodFatJet = true;
-    if (nGoodAK8jets==0 && nGoodPuppiAK8jets==0) isGoodFatJet = false; //not found a good hadronic W candidate
+    if (WWTree->nGoodAK8jets==0 && nGoodPuppiAK8jets==0) isGoodFatJet = false; //not found a good hadronic W candidate
     if (WWTree->ungroomed_AK8jet_pt<200 && WWTree->ungroomed_PuppiAK8_jet_pt<200) isGoodFatJet = false;
     if (!isGoodFatJet) continue;
     cutEff[5]++;
@@ -1182,13 +1182,14 @@ int main (int argc, char** argv)
     
     
     //////////////////ANGULAR VARIABLES
+    WWTree->deltaR_Wjet_GenReco = deltaR(WWTree->hadW_eta_gen,WWTree->hadW_phi_gen,JET.Eta(),JET.Phi());
     WWTree->deltaR_lak8jet = deltaR(JET.Eta(),JET.Phi(),LEP.Eta(),LEP.Phi());
     WWTree->deltaphi_METak8jet = deltaPhi(JET.Phi(),NU2.Phi());
     WWTree->deltaphi_Vak8jet = deltaPhi(JET.Phi(),W.Phi());
     WWTree->deltaR_lPuppiak8jet = deltaR(JET_PuppiAK8.Eta(),JET_PuppiAK8.Phi(),LEP.Eta(),LEP.Phi());
     WWTree->deltaphi_METPuppiak8jet = deltaPhi(JET_PuppiAK8.Phi(),NU2_puppi.Phi());
     WWTree->deltaphi_VPuppiak8jet = deltaPhi(JET_PuppiAK8.Phi(),W_puppi.Phi());
-    if (WWTree->deltaR_lak8jet>(TMath::Pi()/2.0) && fabs(WWTree->deltaphi_METak8jet)>2.0 && fabs(WWTree->deltaphi_Vak8jet)>2.0 && nGoodAK8jets>0)
+    if (WWTree->deltaR_lak8jet>(TMath::Pi()/2.0) && fabs(WWTree->deltaphi_METak8jet)>2.0 && fabs(WWTree->deltaphi_Vak8jet)>2.0 && WWTree->nGoodAK8jets>0)
       WWTree->issignal=1;
     if (WWTree->deltaR_lPuppiak8jet>(TMath::Pi()/2.0) && fabs(WWTree->deltaphi_METPuppiak8jet)>2.0 && fabs(WWTree->deltaphi_VPuppiak8jet)>2.0 && nGoodPuppiAK8jets>0)
       WWTree->issignal_PuppiAK8=1;
@@ -1317,7 +1318,7 @@ int main (int argc, char** argv)
       //if (ReducedTree->Jets_isLooseJetId[i]==false) continue;
       
       //CLEANING FROM FAT JET
-      if (nGoodAK8jets > 0) {
+      if (WWTree->nGoodAK8jets > 0) {
         if (deltaR(WWTree->ungroomed_AK8jet_eta, WWTree->ungroomed_AK8jet_phi,
                    jet->eta,jet->phi) < 0.8 )
           isCleanedFromFatJet = false;
@@ -1594,13 +1595,9 @@ int main (int argc, char** argv)
         VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
         TOT = VBF1 + VBF2;
 	
-	WWTree->AK4_DR_GENRECO_11 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
-	WWTree->AK4_DR_GENRECO_12 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
-	WWTree->AK4_DR_GENRECO_21 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
-	WWTree->AK4_DR_GENRECO_22 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
 
-	//if (WWTree->AK4_DR_GENRECO_11 < WWTree->AK4_DR_GENRECO_12)
-	//{
+	if (WWTree->AK4_DR_GENRECO_11 < WWTree->AK4_DR_GENRECO_12)
+	{
         	WWTree->vbf_maxpt_j1_pt = jet1->pt;
         	WWTree->vbf_maxpt_j1_eta = jet1->eta;
         	WWTree->vbf_maxpt_j1_phi = jet1->phi;
@@ -1611,7 +1608,7 @@ int main (int argc, char** argv)
         	WWTree->vbf_maxpt_j2_phi = jet2->phi;
         	WWTree->vbf_maxpt_j2_e = VBF2.E();
         	WWTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
-	/*} else
+	} else
 	{
         	WWTree->vbf_maxpt_j2_pt = jet1->pt;
         	WWTree->vbf_maxpt_j2_eta = jet1->eta;
@@ -1623,15 +1620,16 @@ int main (int argc, char** argv)
         	WWTree->vbf_maxpt_j1_phi = jet2->phi;
         	WWTree->vbf_maxpt_j1_e = VBF2.E();
         	WWTree->vbf_maxpt_j1_bDiscriminatorCSV = jet2->csv;
-	}*/
+	}
         WWTree->vbf_maxpt_jj_pt = TOT.Pt();
         WWTree->vbf_maxpt_jj_eta = TOT.Eta();
         WWTree->vbf_maxpt_jj_phi = TOT.Phi();
         WWTree->vbf_maxpt_jj_m = TOT.M();	
 	WWTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
-
-
-
+	WWTree->AK4_DR_GENRECO_11 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
+	WWTree->AK4_DR_GENRECO_12 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
+	WWTree->AK4_DR_GENRECO_21 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
+	WWTree->AK4_DR_GENRECO_22 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
       }
     }
 
