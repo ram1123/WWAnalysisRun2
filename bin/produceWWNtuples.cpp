@@ -48,8 +48,9 @@
 
 using namespace std;
 void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, 
-					  TLorentzVector thep4Z2, 
-		  double& costheta1,  double& costhetastar, double& Phi1);
+		  TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22,
+		  double& costheta1,  double& costheta2,  double& Phi,
+		  double& costhetastar, double& Phi1);
 
 
 //*******MAIN*******************************************************************
@@ -105,7 +106,7 @@ int main (int argc, char** argv)
   const baconhep::TTrigger triggerMenu(iHLTFile);  
   std::cout<<"apply trigger: "<<applyTrigger<<std::endl;
 
-  TLorentzVector W,W_puppi,LEP, LEP2;
+  TLorentzVector W,W_puppi,LEP, LEP2, SJ1, SJ2;
   TLorentzVector NU0,NU1,NU2,NU0_puppi,NU1_puppi,NU2_puppi;
   TLorentzVector NU0_jes_up, NU0_jes_dn;
   TLorentzVector JET, JET_PuppiAK8, AK4;
@@ -273,7 +274,7 @@ int main (int argc, char** argv)
     looseEle.clear();
     
 
-    if (jentry2%1000 == 0) std::cout << "\tread entry: " << jentry2 <<"/"<<totalEntries<<std:: endl;
+    if (jentry2%1000 == 0) std::cout << "\tread entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
     
     //*********************************
     WWTree->initializeVariables(); //initialize all variables
@@ -820,6 +821,7 @@ int main (int argc, char** argv)
 	//WWTree->ungroomed_jet_pt_jes_up = (jet->pt[i]/ReducedTree->AK8Jets_AK8correction[i])*ReducedTree->AK8Jets_AK8correctionUp[i];
 	//WWTree->ungroomed_jet_pt_jes_dn = (ReducedTree->AK8CHS_pt[i]/ReducedTree->AK8Jets_AK8correction[i])*ReducedTree->AK8Jets_AK8correctionDown[i];
       
+	WWTree->AK8jet_mass     = jet->mass;
 	WWTree->AK8jet_mass_pr  = addjet->mass_prun;
 	WWTree->AK8jet_mass_so  = addjet->mass_sd0;
 	WWTree->AK8jet_mass_tr  = addjet->mass_trim;
@@ -898,10 +900,21 @@ int main (int argc, char** argv)
 	//WWTree->ungroomed_PuppiAK8_jet_pt_jes_up = (jet->pt[i]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[i])*ReducedTree->PuppiAK8Jets_PuppiAK8correctionUp[i];
 	//WWTree->ungroomed_PuppiAK8_jet_pt_jes_dn = (jet->pt[i]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[i])*ReducedTree->PuppiAK8Jets_PuppiAK8correctionDown[i];
       
+	WWTree->PuppiAK8_jet_mass  = jet->mass;
 	WWTree->PuppiAK8_jet_mass_pr  = addjet->mass_prun;
 	WWTree->PuppiAK8_jet_mass_so  = addjet->mass_sd0;
 	WWTree->PuppiAK8_jet_mass_tr  = addjet->mass_trim;
 	WWTree->PuppiAK8_jet_tau2tau1 = addjet->tau2/addjet->tau1;
+	WWTree->PuppiAK8_jet_sj1_pt   = addjet->sj1_pt;
+	WWTree->PuppiAK8_jet_sj1_eta  = addjet->sj1_eta;
+	WWTree->PuppiAK8_jet_sj1_phi  = addjet->sj1_phi;
+	WWTree->PuppiAK8_jet_sj1_m    = addjet->sj1_m;
+	WWTree->PuppiAK8_jet_sj1_q    = addjet->sj1_q;
+	WWTree->PuppiAK8_jet_sj2_pt   = addjet->sj2_pt;
+	WWTree->PuppiAK8_jet_sj2_eta  = addjet->sj2_eta;
+	WWTree->PuppiAK8_jet_sj2_phi  = addjet->sj2_phi;
+	WWTree->PuppiAK8_jet_sj2_m    = addjet->sj2_m;
+	WWTree->PuppiAK8_jet_sj2_q    = addjet->sj2_q;
 	//     WWTree->PuppiAK8_jet_mass_pr_jes_up = (addjet->mass_prun[i]/ReducedTree->PuppiAK8Jets_PuppiAK8massCorrection[i])*ReducedTree->PuppiAK8Jets_PuppiAK8massCorrectionUp[i];
 	//   WWTree->PuppiAK8_jet_mass_pr_jes_dn = (addjet->mass_prun[i]/ReducedTree->PuppiAK8Jets_PuppiAK8massCorrection[i])*ReducedTree->PuppiAK8Jets_PuppiAK8massCorrectionDown[i];
 	
@@ -913,6 +926,8 @@ int main (int argc, char** argv)
     if (WWTree->ungroomed_PuppiAK8_jet_pt > 0.)
       {
 	JET_PuppiAK8.SetPtEtaPhiE(WWTree->ungroomed_PuppiAK8_jet_pt,WWTree->ungroomed_PuppiAK8_jet_eta,WWTree->ungroomed_PuppiAK8_jet_phi,WWTree->ungroomed_PuppiAK8_jet_e);
+	SJ1.SetPtEtaPhiM(WWTree->PuppiAK8_jet_sj1_pt, WWTree->PuppiAK8_jet_sj1_eta, WWTree->PuppiAK8_jet_sj1_phi, WWTree->PuppiAK8_jet_sj1_m);
+	SJ2.SetPtEtaPhiM(WWTree->PuppiAK8_jet_sj2_pt, WWTree->PuppiAK8_jet_sj2_eta, WWTree->PuppiAK8_jet_sj2_phi, WWTree->PuppiAK8_jet_sj2_m);
 	/* 
 	   JET_PuppiAK8_jes_up.SetPtEtaPhiE(WWTree->ungroomed_PuppiAK8_jet_pt*(ReducedTree->PuppiAK8Jets_PuppiAK8correctionUp[hadWPuppiAK8pos]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[hadWPuppiAK8pos]),
 	   WWTree->ungroomed_PuppiAK8_jet_eta,
@@ -1579,26 +1594,44 @@ int main (int argc, char** argv)
         VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
         TOT = VBF1 + VBF2;
 	
-        WWTree->vbf_maxpt_j1_pt = jet1->pt;
-        WWTree->vbf_maxpt_j1_eta = jet1->eta;
-        WWTree->vbf_maxpt_j1_phi = jet1->phi;
-        WWTree->vbf_maxpt_j1_e = VBF1.E();
-        WWTree->vbf_maxpt_j1_bDiscriminatorCSV = jet1->csv;
-        WWTree->vbf_maxpt_j2_pt = jet2->pt;
-        WWTree->vbf_maxpt_j2_eta = jet2->eta;
-        WWTree->vbf_maxpt_j2_phi = jet2->phi;
-        WWTree->vbf_maxpt_j2_e = VBF2.E();
-        WWTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
+	WWTree->AK4_DR_GENRECO_11 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
+	WWTree->AK4_DR_GENRECO_12 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
+	WWTree->AK4_DR_GENRECO_21 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
+	WWTree->AK4_DR_GENRECO_22 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
+
+	//if (WWTree->AK4_DR_GENRECO_11 < WWTree->AK4_DR_GENRECO_12)
+	//{
+        	WWTree->vbf_maxpt_j1_pt = jet1->pt;
+        	WWTree->vbf_maxpt_j1_eta = jet1->eta;
+        	WWTree->vbf_maxpt_j1_phi = jet1->phi;
+        	WWTree->vbf_maxpt_j1_e = VBF1.E();
+        	WWTree->vbf_maxpt_j1_bDiscriminatorCSV = jet1->csv;
+        	WWTree->vbf_maxpt_j2_pt = jet2->pt;
+        	WWTree->vbf_maxpt_j2_eta = jet2->eta;
+        	WWTree->vbf_maxpt_j2_phi = jet2->phi;
+        	WWTree->vbf_maxpt_j2_e = VBF2.E();
+        	WWTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
+	/*} else
+	{
+        	WWTree->vbf_maxpt_j2_pt = jet1->pt;
+        	WWTree->vbf_maxpt_j2_eta = jet1->eta;
+        	WWTree->vbf_maxpt_j2_phi = jet1->phi;
+        	WWTree->vbf_maxpt_j2_e = VBF1.E();
+        	WWTree->vbf_maxpt_j2_bDiscriminatorCSV = jet1->csv;
+        	WWTree->vbf_maxpt_j1_pt = jet2->pt;
+        	WWTree->vbf_maxpt_j1_eta = jet2->eta;
+        	WWTree->vbf_maxpt_j1_phi = jet2->phi;
+        	WWTree->vbf_maxpt_j1_e = VBF2.E();
+        	WWTree->vbf_maxpt_j1_bDiscriminatorCSV = jet2->csv;
+	}*/
         WWTree->vbf_maxpt_jj_pt = TOT.Pt();
         WWTree->vbf_maxpt_jj_eta = TOT.Eta();
         WWTree->vbf_maxpt_jj_phi = TOT.Phi();
         WWTree->vbf_maxpt_jj_m = TOT.M();	
 	WWTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
 
-	WWTree->AK4_DR_GENRECO_11 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
-	WWTree->AK4_DR_GENRECO_12 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
-	WWTree->AK4_DR_GENRECO_21 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
-	WWTree->AK4_DR_GENRECO_22 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
+
+
       }
     }
 
@@ -1614,21 +1647,27 @@ int main (int argc, char** argv)
     WWTree->nEvents = TotalNumberOfEvents;
     WWTree->nNegEvents = nNegEvents;
 
-    double a_costheta1;// a_costheta2;
-    double a_costhetastar, a_Phi1;
-    computeAngles( LEP + NU0_puppi + JET_PuppiAK8, LEP + NU0_puppi, LEP, NU0_puppi, JET_PuppiAK8,  a_costheta1, a_costhetastar, a_Phi1);
+    double a_costheta1, a_costheta2, a_costhetastar, a_Phi, a_Phi1;
+
+    computeAngles( LEP + NU0_puppi + JET_PuppiAK8, LEP + NU0_puppi, LEP, NU0_puppi, JET_PuppiAK8,  SJ1, SJ2, a_costheta1, a_costheta2, a_Phi, a_costhetastar, a_Phi1 );
     WWTree->costheta1_type0 = (float) a_costheta1;                
+    WWTree->costheta2_type0 = (float) a_costheta2;
     WWTree->costhetastar_type0 = (float) a_costhetastar;
+    WWTree->phi_type0 = (float) a_Phi;
     WWTree->phi1_type0 = (float) a_Phi1;
 
-    computeAngles( LEP + NU2_puppi + JET_PuppiAK8, LEP + NU2_puppi, LEP, NU2_puppi, JET_PuppiAK8,  a_costheta1, a_costhetastar, a_Phi1);
+    computeAngles( LEP + NU2_puppi + JET_PuppiAK8, LEP + NU2_puppi, LEP, NU2_puppi, JET_PuppiAK8,  SJ1, SJ2, a_costheta1, a_costheta2, a_Phi, a_costhetastar, a_Phi1);
     WWTree->costheta1_type2 = (float) a_costheta1;                
+    WWTree->costheta2_type2 = (float) a_costheta2;
     WWTree->costhetastar_type2 = (float) a_costhetastar;
+    WWTree->phi_type2 = (float) a_Phi;
     WWTree->phi1_type2 = (float) a_Phi1;
 
-    computeAngles( LEP + NU1_puppi + JET_PuppiAK8, LEP + NU1_puppi, LEP, NU1_puppi, JET_PuppiAK8,  a_costheta1, a_costhetastar, a_Phi1);
+    computeAngles( LEP + NU1_puppi + JET_PuppiAK8, LEP + NU1_puppi, LEP, NU1_puppi, JET_PuppiAK8,  SJ1, SJ2, a_costheta1, a_costheta2, a_Phi, a_costhetastar, a_Phi1);
     WWTree->costheta1_run2 = (float) a_costheta1;                
+    WWTree->costheta2_run2 = (float) a_costheta2;                
     WWTree->costhetastar_run2 = (float) a_costhetastar;
+    WWTree->phi_run2 = (float) a_Phi;
     WWTree->phi1_run2 = (float) a_Phi1;
 
     if (fabs(VBF1.Eta() - VBF2.Eta()) == 0.0)
@@ -1705,18 +1744,16 @@ int main (int argc, char** argv)
 //Ref: https://github.com/ram1123/LHEAnalyzer/blob/LHEanalyzer/LHEanalyzer.cpp
 //////////////////////////////////
 
-void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, 
-					  TLorentzVector thep4Z2, 
-		  double& costheta1,  double& costhetastar, double& Phi1)
-{
+void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22, double& costheta1, double& costheta2, double& Phi, double& costhetastar, double& Phi1){
+    
     ///////////////////////////////////////////////
     // check for z1/z2 convention, redefine all 4 vectors with convention
     ///////////////////////////////////////////////	
-    TLorentzVector p4H, p4Z1, p4M11, p4M12, p4Z2;
+    TLorentzVector p4H, p4Z1, p4M11, p4M12, p4Z2, p4M21, p4M22;
     p4H = thep4H;
     
     p4Z1 = thep4Z1; p4M11 = thep4M11; p4M12 = thep4M12;
-    p4Z2 = thep4Z2;
+    p4Z2 = thep4Z2; p4M21 = thep4M21; p4M22 = thep4M22;
     //// costhetastar
 	TVector3 boostX = -(thep4H.BoostVector());
 	TLorentzVector thep4Z1inXFrame( p4Z1 );
@@ -1725,65 +1762,61 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
 	thep4Z2inXFrame.Boost( boostX );
 	TVector3 theZ1X_p3 = TVector3( thep4Z1inXFrame.X(), thep4Z1inXFrame.Y(), thep4Z1inXFrame.Z() );
 	TVector3 theZ2X_p3 = TVector3( thep4Z2inXFrame.X(), thep4Z2inXFrame.Y(), thep4Z2inXFrame.Z() );    
-    
-    	costhetastar = theZ1X_p3.CosTheta();
+    costhetastar = theZ1X_p3.CosTheta();
     
     //// --------------------------- costheta1
     TVector3 boostV1 = -(thep4Z1.BoostVector());
     TLorentzVector p4M11_BV1( p4M11 );
 	TLorentzVector p4M12_BV1( p4M12 );	
-    	p4M11_BV1.Boost( boostV1 );
+    TLorentzVector p4M21_BV1( p4M21 );
+	TLorentzVector p4M22_BV1( p4M22 );
+    p4M11_BV1.Boost( boostV1 );
 	p4M12_BV1.Boost( boostV1 );
-    	TLorentzVector p4V2_BV1 (p4Z2);
-	p4V2_BV1.Boost(boostV1);
-	//cout<<"Boost = "<<p4V2_BV1.Vect().Mag()<<endl;
-    //// costheta1
+	p4M21_BV1.Boost( boostV1 );
+	p4M22_BV1.Boost( boostV1 );
     
-    	costheta1 = -p4V2_BV1.Vect().Dot( p4M11_BV1.Vect() )/p4V2_BV1.Vect().Mag()/p4M11_BV1.Vect().Mag();
-	//cout<<costheta1<<endl;
-
-    /* 
+    TLorentzVector p4V2_BV1 = p4M21_BV1 + p4M22_BV1;
+    //// costheta1
+    costheta1 = -p4V2_BV1.Vect().Dot( p4M11_BV1.Vect() )/p4V2_BV1.Vect().Mag()/p4M11_BV1.Vect().Mag();
+    
     //// --------------------------- costheta2
     TVector3 boostV2 = -(thep4Z2.BoostVector());
     TLorentzVector p4M11_BV2( p4M11 );
 	TLorentzVector p4M12_BV2( p4M12 );	
-    //TLorentzVector p4M21_BV2( p4M21 );
-//	TLorentzVector p4M22_BV2( p4M22 );
+    TLorentzVector p4M21_BV2( p4M21 );
+	TLorentzVector p4M22_BV2( p4M22 );
     p4M11_BV2.Boost( boostV2 );
 	p4M12_BV2.Boost( boostV2 );
-//	p4M21_BV2.Boost( boostV2 );
-//	p4M22_BV2.Boost( boostV2 );
+	p4M21_BV2.Boost( boostV2 );
+	p4M22_BV2.Boost( boostV2 );
     
     TLorentzVector p4V1_BV2 = p4M11_BV2 + p4M12_BV2;
     //// costheta2
-//    costheta2 = -p4V1_BV2.Vect().Dot( p4M21_BV2.Vect() )/p4V1_BV2.Vect().Mag()/p4M21_BV2.Vect().Mag();
-    */
-
-
+    costheta2 = -p4V1_BV2.Vect().Dot( p4M21_BV2.Vect() )/p4V1_BV2.Vect().Mag()/p4M21_BV2.Vect().Mag();
+    
     //// --------------------------- Phi and Phi1
     //    TVector3 boostX = -(thep4H.BoostVector());
     TLorentzVector p4M11_BX( p4M11 );
 	TLorentzVector p4M12_BX( p4M12 );	
- //   TLorentzVector p4M21_BX( p4M21 );
-//	TLorentzVector p4M22_BX( p4M22 );	
+    TLorentzVector p4M21_BX( p4M21 );
+	TLorentzVector p4M22_BX( p4M22 );	
     
 	p4M11_BX.Boost( boostX );
 	p4M12_BX.Boost( boostX );
-//	p4M21_BX.Boost( boostX );
-//	p4M22_BX.Boost( boostX );
+	p4M21_BX.Boost( boostX );
+	p4M22_BX.Boost( boostX );
     
     TVector3 tmp1 = p4M11_BX.Vect().Cross( p4M12_BX.Vect() );
-    //TVector3 tmp2 = tmp1;
-  //  TVector3 tmp2 = p4M21_BX.Vect().Cross( p4M22_BX.Vect() );    
+    TVector3 tmp2 = p4M21_BX.Vect().Cross( p4M22_BX.Vect() );    
     
     TVector3 normal1_BX( tmp1.X()/tmp1.Mag(), tmp1.Y()/tmp1.Mag(), tmp1.Z()/tmp1.Mag() ); 
-    //TVector3 normal2_BX( tmp2.X()/tmp2.Mag(), tmp2.Y()/tmp2.Mag(), tmp2.Z()/tmp2.Mag() ); 
+    TVector3 normal2_BX( tmp2.X()/tmp2.Mag(), tmp2.Y()/tmp2.Mag(), tmp2.Z()/tmp2.Mag() ); 
     
     //// Phi
     TLorentzVector p4Z1_BX = p4M11_BX + p4M12_BX;    
-   // double tmpSgnPhi = p4Z1_BX.Vect().Dot( normal1_BX.Cross( normal2_BX) );
-    //double sgnPhi = tmpSgnPhi/fabs(tmpSgnPhi);
-    //Phi = sgnPhi * acos( -1.*normal1_BX.Dot( normal2_BX) );
+    double tmpSgnPhi = p4Z1_BX.Vect().Dot( normal1_BX.Cross( normal2_BX) );
+    double sgnPhi = tmpSgnPhi/fabs(tmpSgnPhi);
+    Phi = sgnPhi * acos( -1.*normal1_BX.Dot( normal2_BX) );
     
     
     //////////////
