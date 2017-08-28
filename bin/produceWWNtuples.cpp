@@ -53,6 +53,27 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
 		  double& costhetastar, double& Phi1);
 
 
+//*****PU WEIGHT***************
+
+vector<double> generate_weights(TH1* data_npu_estimated){
+  // see https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_X/SimGeneral/MixingModule/python/mix_2016_25ns_Moriond17MC_PoissonOOTPU_cfi.py#L25; copy and paste from here:
+  const double npu_probs[75] = {  1.78653e-05 ,2.56602e-05 ,5.27857e-05 ,8.88954e-05 ,0.000109362 ,0.000140973 ,0.000240998 ,0.00071209 ,0.00130121 ,0.00245255 ,0.00502589 ,0.00919534 ,0.0146697 ,0.0204126 ,0.0267586 ,0.0337697 ,0.0401478 ,0.0450159 ,0.0490577 ,0.0524855 ,0.0548159 ,0.0559937 ,0.0554468 ,0.0537687 ,0.0512055 ,0.0476713 ,0.0435312 ,0.0393107 ,0.0349812 ,0.0307413 ,0.0272425 ,0.0237115 ,0.0208329 ,0.0182459 ,0.0160712 ,0.0142498 ,0.012804 ,0.011571 ,0.010547 ,0.00959489 ,0.00891718 ,0.00829292 ,0.0076195 ,0.0069806 ,0.0062025 ,0.00546581 ,0.00484127 ,0.00407168 ,0.00337681 ,0.00269893 ,0.00212473 ,0.00160208 ,0.00117884 ,0.000859662 ,0.000569085 ,0.000365431 ,0.000243565 ,0.00015688 ,9.88128e-05 ,6.53783e-05 ,3.73924e-05 ,2.61382e-05 ,2.0307e-05 ,1.73032e-05 ,1.435e-05 ,1.36486e-05 ,1.35555e-05 ,1.37491e-05 ,1.34255e-05 ,1.33987e-05 ,1.34061e-05 ,1.34211e-05 ,1.34177e-05 ,1.32959e-05 ,1.33287e-05 };
+  vector<double> result(75);
+  double s = 0.0;
+  for(int npu=0; npu<75; ++npu){
+      double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
+      result[npu] = npu_estimated / npu_probs[npu];
+      //cout<<"npu_estimated = "<<npu_estimated<<"\t result[npu] = "<<result[npu]<<endl;
+      s += npu_estimated;
+    }
+    // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
+    for(int npu=0; npu<75; ++npu){
+      result[npu] /= s;
+    }
+    return result;
+
+}
+
 //*******MAIN*******************************************************************
 
 int main (int argc, char** argv)
@@ -179,6 +200,11 @@ int main (int argc, char** argv)
   TTree *eventTree=0;
   int cutEff[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+  std::vector<double> weights_pu; //these are made with the official recipe
+  TFile* pileupFile = TFile::Open("MyDataPileupHistogram.root");  
+  TH1D* pileupHisto = (TH1D*)pileupFile->Get("pileup");
+  weights_pu = generate_weights(pileupHisto);
+
   //---------output tree----------------
   TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
   outROOT->cd();
@@ -191,8 +217,10 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles=2;
+  if (isLocal==1) nInputFiles=1;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
+
+  TH1D *MCpu = new TH1D("MCpu","",75,0,75);
   
   int nNegEvents=0; 
   for(int i=0;i<nInputFiles;i++)
@@ -203,12 +231,15 @@ int main (int argc, char** argv)
      TotalNumberOfEvents+=eventTree->GetEntries();
      if(isMC)
      { 
+        eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
   	TBranch *genBr=0;
      	eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
 	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
 	{
 	  //eventTree->GetEntry(jentry);
 	    genBr->GetEntry(jentry);
+    	    infoBr->GetEntry(jentry);	    
+	    MCpu->Fill(info->nPU);
 	    if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
 	    if (gen->weight<0)	nNegEvents++;
 	}
@@ -220,6 +251,7 @@ int main (int argc, char** argv)
   
   cout<<"==> Total number of events : "<<TotalNumberOfEvents<<endl;
   cout<<"==> Total number of negative events : "<<nNegEvents<<endl;
+  pileupHisto->Divide(MCpu);
   float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
   int totalEntries=0;
 
@@ -274,7 +306,7 @@ int main (int argc, char** argv)
     looseEle.clear();
     
 
-    if (jentry2%5000 == 0) std::cout << "\tread entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
+    if (jentry2%10000 == 0) std::cout << "\tread entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
     
     //*********************************
     WWTree->initializeVariables(); //initialize all variables
@@ -397,11 +429,27 @@ int main (int argc, char** argv)
     {
     if (GenPassCut == 1)   cutEff[1]++;
     }
+
     
     vertexArr->Clear();
     vertexBr->GetEntry(jentry);
     WWTree->nPV = vertexArr->GetEntries();
   
+    //PILE-UP WEIGHT
+    if (isMC==1) {
+       if(int(info->nPU)<int(weights_pu.size())){
+           WWTree->eff_and_pu_Weight = weights_pu[info->nPU]; //our pu recipe
+           //WWTree->eff_and_pu_Weight_2 = ; //our pu recipe
+       }
+       else{ //should not happen as we have a weight for all simulated n_pu multiplicities!
+           std::cout<<"Warning! n_pu too big"<<std::endl;
+	   // throw logic_error("n_pu too big");
+	   WWTree->eff_and_pu_Weight = 0.;
+       } 
+    }
+
+
+
     if(applyTrigger==1)
       if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits) ||  triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
   
@@ -787,7 +835,8 @@ int main (int argc, char** argv)
 	TLorentzVector TempAK8;
 	TempAK8.SetPtEtaPhiM(jet->pt,fabs(jet->eta),jet->phi,jet->mass);
 	bool isCleanedJet = true;
-	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
+	//if (jet->pt<200 )  continue;
+	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue;
 	if (addjet->mass_prun>tempTTbarMass) {
 	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
 	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
@@ -867,6 +916,7 @@ int main (int argc, char** argv)
 	TLorentzVector TempAK8;
 	TempAK8.SetPtEtaPhiM(jet->pt,fabs(jet->eta),jet->phi,jet->mass);
 	bool isCleanedJet = true;
+	//if (jet->pt<200)  continue; //be careful: this is not inside the synchntuple code
 	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
 	if (addjet->mass_prun>tempTTbarMass) {
 	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
@@ -1697,6 +1747,7 @@ int main (int argc, char** argv)
     infile=0, eventTree=0;
     /////////////////FILL THE TREE
   }
+  pileupFile->Close();
   std::cout << "---------end loop on events------------" << std::endl;
   std::cout << std::endl;
   std::cout << "GEN events = " << count_genEvents << std::endl;
