@@ -21,24 +21,63 @@ dryRun = False;
 doMC = True;
 doData = False;
 
-category = ["el"];
 #category = ["el"];
-#category = ["mu"];
+#category = ["el","mu"];
+category = ["EleMu"];
 
 samples = [
-    #( 542.00,           "TTToSemilepton_powheg",                        0)
-    ( 5765.40,	"DYJetsToLL_M-50_amcatnlo",	0)
+    ( 542.00,	"TTToSemilepton_powheg",	0),
+    ( 0.01398,	"ZZZ_13TeV_amcatnlo_pythia8",	0),
+    ( 0.1651,	"WWZ_13TeV_amcatnlo_pythia8",	0),
+    ( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
+    ( 3.22,	"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
+    ( 5.595,	"WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
+    ( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
+    ( 5765.40,	"DYJetsToLL_M-50_amcatnlo",	0),
+    ( 1.68,	"DYJetsToLL_M-50_HT-600to800",	0),
+    #( 			"WJetsToLNu_HT_70To100_13TeV"
+    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV", 		0),
+    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext1",		0),
+    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext2",		0),
+    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV",			0),
+    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext1",		0),
+    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext2",		0),
+    ( 59.1811,		"WJetsToLNu_HT_400To600_13TeV",			0),
+    ( 59.1811,		"WJetsToLNu_HT_400To600_13TeV_ext1",		0),
+    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV",			0),
+    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV_ext1",		0),
+    ( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV",		0),
+    ( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV_ext1",		0),
+    ( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV",		0),
+    ( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV_ext1",		0),
+    ( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV",		0),
+    ( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV_ext1",		0),
+    ( 19.47,		"ST_tW_top_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1",	0),
+    ( 19.47,		"ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1",	0)
     ]
 
 nameDataMu = [
-"data_mu_2016_runH_v2_9"
+    "SingleMuonRun2016B_03Feb2017_ver1_v1",
+    "SingleMuonRun2016B_03Feb2017_ver2_v2",
+    "SingleMuonRun2016C_03Feb2017_v1",
+    "SingleMuonRun2016D_03Feb2017_v1",
+    "SingleMuonRun2016E_03Feb2017_v1",
+    "SingleMuonRun2016F_03Feb2017_v1",
+    "SingleMuonRun2016G_03Feb2017_v1",
+    "SingleMuonRun2016H_03Feb2017_ver2_v1",
+    "SingleMuonRun2016H_03Feb2017_ver3_v1"
     ];
 
 nameDataEl = [
 "SingleElectron_Run2016B-03Feb2017_ver1-v1",
 "SingleElectron_Run2016B-03Feb2017_ver2-v2",
 "SingleElectron_Run2016C-03Feb2017-v1",
-"SingleElectron_Run2016D-03Feb2017-v1"
+"SingleElectron_Run2016D-03Feb2017-v1",
+"SingleElectron_Run2016E-03Feb2017-v1",
+"SingleElectronRun2016F_03Feb2017_v1",
+"SingleElectron_Run2016G-03Feb2017-v1",
+"SingleElectronRun2016H_03Feb2017_ver2_v1",
+"SingleElectronRun2016H_03Feb2017_ver3_v1"
 ];
 
 
