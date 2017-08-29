@@ -89,7 +89,7 @@ int main (int argc, char** argv)
   std::string inputFile = argv[6];
   std::string xSecWeight = argv[7];
   //std::string TotalNumberOfEntries = argv[8];
-  float LUMI = atof(argv[9]);
+  //float LUMI = atof(argv[9]);
   int applyTrigger = atoi(argv[10]);
   std::string jsonFileName = argv[11];
   int isLocal = atoi(argv[12]);
@@ -200,10 +200,39 @@ int main (int argc, char** argv)
   TTree *eventTree=0;
   int cutEff[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+  //--------pile up file -----------------
   std::vector<double> weights_pu; //these are made with the official recipe
-  TFile* pileupFile = TFile::Open("MyDataPileupHistogram.root");  
+  TFile* pileupFile = TFile::Open("PileUpData2016_23Sep2016ReReco_69200ub.root");  
   TH1D* pileupHisto = (TH1D*)pileupFile->Get("pileup");
   weights_pu = generate_weights(pileupHisto);
+
+  //---------------- Root Files for ID, ISO, Trigger, GSF correctiosn for ELE and MU both: Starts -------------
+  TFile* IDIsoEle = TFile::Open("egammaEffi_EGM2D_TightCutBasedIDSF.root","READ");
+  TH1F *hIDIsoEle = (TH1F*)IDIsoEle->Get("EGamma_SF2D");
+
+  TFile* GSFCorrEle = TFile::Open("egammaEffi_SF2D_GSF_tracking.root","READ");
+  TH1F *hGSFCorrEle = (TH1F*)GSFCorrEle->Get("EGamma_SF2D");
+
+  TFile* IDMuA = TFile::Open("MuonID_RunBCDEF_23SepReReco_19p72fb.root","READ");
+  TH1F *hIDMuA = (TH1F*)IDMuA->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio");
+
+  TFile* IDMuB = TFile::Open("MuonID_RunGH_23SepReReco_16p146fb.root","READ");
+  TH1F *hIDMuB = (TH1F*)IDMuB->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio");
+
+  TFile* IsoMuA = TFile::Open("MuonIso_RunBCDEF_23SepReReco_19p72fb.root","READ");
+  TH1F *hIsoMuA = (TH1F*)IsoMuA->Get("TightISO_TightID_pt_eta/abseta_pt_ratio");
+
+  TFile* IsoMuB = TFile::Open("MuonIso_RunGH_23SepReReco_16p146fb.root","READ");
+  TH1F *hIsoMuB = (TH1F*)IsoMuB->Get("TightISO_TightID_pt_eta/abseta_pt_ratio");
+
+  double TempPt, TempEta;
+  int binPt, binEta;
+  double MuIsoScaleA, MuIsoScaleB, MuIDScaleA, MuIDScaleB;
+  double hIdIsoMu_A_Lumi = 19.72;
+  double hIdIsoMu_B_Lumi = 16.146;	
+
+  //---------------- Root Files for ID, ISO, Trigger, GSF correctiosn for ELE and MU both: ENDS -------------
+
 
   //---------output tree----------------
   TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
@@ -221,8 +250,18 @@ int main (int argc, char** argv)
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
+  TH1D *MCpu_up = new TH1D("MCpu_up","",75,0,75);
+  TH1D *MCpu_down = new TH1D("MCpu_down","",75,0,75);
+  TH1D *puWeight = (TH1D*) pileupHisto->Clone();
+  TH1D *puWeight_up = (TH1D*) pileupHisto->Clone();
+  TH1D *puWeight_down = (TH1D*) pileupHisto->Clone();
+  puWeight->SetBins(75,0,75);
+  puWeight_up->SetBins(75,0,75);
+  puWeight_down->SetBins(75,0,75);
+
   
   int nNegEvents=0; 
+  int RunEntry = 500000;
   for(int i=0;i<nInputFiles;i++)
   {
      infile = TFile::Open(sampleName[i]);
@@ -234,12 +273,15 @@ int main (int argc, char** argv)
         eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
   	TBranch *genBr=0;
      	eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
-	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+	//for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+	for (Long64_t jentry=0; jentry<RunEntry;jentry++,jentry2++)
 	{
 	  //eventTree->GetEntry(jentry);
 	    genBr->GetEntry(jentry);
     	    infoBr->GetEntry(jentry);	    
-	    MCpu->Fill(info->nPU);
+	    MCpu->Fill(info->nPUmean);
+	    MCpu_up->Fill(info->nPUmeanp);
+	    MCpu_down->Fill(info->nPUmeanm);
 	    if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
 	    if (gen->weight<0)	nNegEvents++;
 	}
@@ -251,7 +293,10 @@ int main (int argc, char** argv)
   
   cout<<"==> Total number of events : "<<TotalNumberOfEvents<<endl;
   cout<<"==> Total number of negative events : "<<nNegEvents<<endl;
-  pileupHisto->Divide(MCpu);
+  puWeight->Divide(MCpu);
+  puWeight_up->Divide(MCpu_up);
+  puWeight_down->Divide(MCpu_down);
+  cout<<"puWeight = "<<puWeight->GetEntries()<<endl;
   float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
   int totalEntries=0;
 
@@ -293,7 +338,8 @@ int main (int argc, char** argv)
        eventTree->SetBranchAddress("LHEWeight",&lheWgtArr); lhePartBr = eventTree->GetBranch("LHEWeight");	       }
      }
 
-  for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+  //for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+  for (Long64_t jentry=0; jentry<RunEntry;jentry++,jentry2++)
   {
     //eventTree->GetEntry(jentry);
     infoBr->GetEntry(jentry);	    
@@ -437,14 +483,23 @@ int main (int argc, char** argv)
   
     //PILE-UP WEIGHT
     if (isMC==1) {
-       if(int(info->nPU)<int(weights_pu.size())){
-           WWTree->eff_and_pu_Weight = weights_pu[info->nPU]; //our pu recipe
+       if(int(info->nPUmean)<int(weights_pu.size())){
+           WWTree->eff_and_pu_Weight = weights_pu[info->nPUmean]; //our pu recipe
            //WWTree->eff_and_pu_Weight_2 = ; //our pu recipe
        }
        else{ //should not happen as we have a weight for all simulated n_pu multiplicities!
            std::cout<<"Warning! n_pu too big"<<std::endl;
 	   // throw logic_error("n_pu too big");
 	   WWTree->eff_and_pu_Weight = 0.;
+       } 
+       if(int(info->nPUmean)<75){
+           WWTree->eff_and_pu_Weight_2 = puWeight->GetBinContent(info->nPUmean); //our pu recipe
+           //WWTree->eff_and_pu_Weight_2 = ; //our pu recipe
+       }
+       else{ //should not happen as we have a weight for all simulated n_pu multiplicities!
+           std::cout<<"Warning! n_pu too big"<<std::endl;
+	   // throw logic_error("n_pu too big");
+	   WWTree->eff_and_pu_Weight_2 = 0.;
        } 
     }
 
@@ -572,6 +627,87 @@ int main (int argc, char** argv)
 	WWTree->dilep_phi = (LEP+LEP2).Phi();	
 	WWTree->dilep_m = (LEP+LEP2).M();	
       }
+
+    //ID & GSF efficiency SF for electrons (https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Electron_efficiencies_and_scale)
+    if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {
+    //----------- Start Applying ID, ISO SF's for electrons	--------------------
+    	TempPt = WWTree->l_pt1;
+	TempEta= WWTree->l_eta1;
+	if (TempPt > hIDIsoEle->GetYaxis()->GetXmax())		// Check if pt is not ouside upper limit; if so then to assign same SF as the last bin to high pt resacle tempPt to less then maximum range of pt defined in histo.
+		TempPt = hIDIsoEle->GetYaxis()->GetXmax() - 1.0;	
+	if (TempPt < hIDIsoEle->GetYaxis()->GetXmin())		// Check if pt is not ouside lower limit; if so then to assign same SF as the first bin to low pt resacle tempPt to greater then minimum range of pt defined in histo.
+		TempPt = hIDIsoEle->GetYaxis()->GetXmin() + 1.0;
+	binEta = hIDIsoEle->GetXaxis()->FindFixBin(TempEta);	// Get Eta bin 
+	binPt  = hIDIsoEle->GetYaxis()->FindFixBin(TempPt);	// Get Pt Bin
+
+	WWTree->id_eff_Weight = hIDIsoEle->GetBinContent( binEta, binPt );	// Get Scale factor corresponding to the pt and eta.
+	//----------- END: Applying ID, ISO SF's for electrons	--------------------
+
+    	//----------- Start Applying GSF/RECO SF's for electrons	--------------------
+	// Reset TempPt & TempEta to the pt of eta and pt of selected electron
+	if (TempPt > hGSFCorrEle->GetYaxis()->GetXmax())
+		TempPt = hGSFCorrEle->GetYaxis()->GetXmax() - 1.0;
+	if (TempPt < hGSFCorrEle->GetYaxis()->GetXmin())
+		TempPt = hGSFCorrEle->GetYaxis()->GetXmax() + 1.0;
+	binEta = hGSFCorrEle->GetXaxis()->FindFixBin(TempEta);
+	binPt  = hGSFCorrEle->GetYaxis()->FindFixBin(TempPt);
+
+	WWTree->id_eff_Weight = WWTree->id_eff_Weight*hGSFCorrEle->GetBinContent(binEta, binPt);
+    	//----------- END: Applying GSF/RECO SF's for electrons	--------------------
+    }
+
+    //ID&ISO efficiency SF for muons (https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults)
+    if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
+    	//----------- Start Applying ID SF's for Muons	--------------------
+	TempPt = WWTree->l_pt1;
+	TempEta= fabs(WWTree->l_eta1);
+	if (TempPt > hIDMuA->GetYaxis()->GetXmax())		// Check if pt is not ouside upper limit; if so then to assign same SF as the last bin to high pt resacle tempPt to less then maximum range of pt defined in histo.
+		TempPt = hIDMuA->GetYaxis()->GetXmax() - 1.0;	
+	if (TempPt < hIDMuA->GetYaxis()->GetXmin())		// Check if pt is not ouside lower limit; if so then to assign same SF as the first bin to low pt resacle tempPt to greater then minimum range of pt defined in histo.
+		TempPt = hIDMuA->GetYaxis()->GetXmin() + 1.0;
+	binEta = hIDMuA->GetXaxis()->FindFixBin(TempEta);	// Get Eta bin 
+	binPt  = hIDMuA->GetYaxis()->FindFixBin(TempPt);	// Get Pt Bin
+
+	MuIDScaleA = hIDMuA->GetBinContent(binEta, binPt);
+
+	TempPt = WWTree->l_pt1;
+	TempEta= fabs(WWTree->l_eta1);
+	if (TempPt > hIDMuB->GetYaxis()->GetXmax())		// Check if pt is not ouside upper limit; if so then to assign same SF as the last bin to high pt resacle tempPt to less then maximum range of pt defined in histo.
+		TempPt = hIDMuB->GetYaxis()->GetXmax() - 1.0;	
+	if (TempPt < hIDMuB->GetYaxis()->GetXmin())		// Check if pt is not ouside lower limit; if so then to assign same SF as the first bin to low pt resacle tempPt to greater then minimum range of pt defined in histo.
+		TempPt = hIDMuB->GetYaxis()->GetXmin() + 1.0;
+	binEta = hIDMuB->GetXaxis()->FindFixBin(TempEta);	// Get Eta bin 
+	binPt  = hIDMuB->GetYaxis()->FindFixBin(TempPt);	// Get Pt Bin
+
+	MuIDScaleB = hIDMuB->GetBinContent(binEta, binPt);
+
+	WWTree->id_eff_Weight = WWTree->id_eff_Weight*((MuIDScaleA * hIdIsoMu_A_Lumi + MuIDScaleB * hIdIsoMu_B_Lumi) / (hIdIsoMu_A_Lumi + hIdIsoMu_B_Lumi));
+
+    	//----------- Start Applying ISO SF's for Muons	--------------------
+	TempPt = WWTree->l_pt1;
+	TempEta= fabs(WWTree->l_eta1);
+	if (TempPt > hIsoMuA->GetYaxis()->GetXmax())		// Check if pt is not ouside upper limit; if so then to assign same SF as the last bin to high pt resacle tempPt to less then maximum range of pt defined in histo.
+		TempPt = hIsoMuA->GetYaxis()->GetXmax() - 1.0;	
+	if (TempPt < hIsoMuA->GetYaxis()->GetXmin())		// Check if pt is not ouside lower limit; if so then to assign same SF as the first bin to low pt resacle tempPt to greater then minimum range of pt defined in histo.
+		TempPt = hIsoMuA->GetYaxis()->GetXmin() + 1.0;
+	binEta = hIsoMuA->GetXaxis()->FindFixBin(TempEta);	// Get Eta bin 
+	binPt  = hIsoMuA->GetYaxis()->FindFixBin(TempPt);	// Get Pt Bin
+
+	MuIsoScaleA = hIsoMuA->GetBinContent(binEta, binPt);
+	//////
+	TempPt = WWTree->l_pt1;
+	TempEta= fabs(WWTree->l_eta1);
+	if (TempPt > hIsoMuB->GetYaxis()->GetXmax())		// Check if pt is not ouside upper limit; if so then to assign same SF as the last bin to high pt resacle tempPt to less then maximum range of pt defined in histo.
+		TempPt = hIsoMuB->GetYaxis()->GetXmax() - 1.0;	
+	if (TempPt < hIsoMuB->GetYaxis()->GetXmin())		// Check if pt is not ouside lower limit; if so then to assign same SF as the first bin to low pt resacle tempPt to greater then minimum range of pt defined in histo.
+		TempPt = hIsoMuB->GetYaxis()->GetXmin() + 1.0;
+	binEta = hIsoMuB->GetXaxis()->FindFixBin(TempEta);	// Get Eta bin 
+	binPt  = hIsoMuB->GetYaxis()->FindFixBin(TempPt);	// Get Pt Bin
+
+	MuIsoScaleB = hIsoMuB->GetBinContent(binEta, binPt);
+	WWTree->id_eff_Weight = WWTree->id_eff_Weight*((MuIsoScaleA * hIdIsoMu_A_Lumi + MuIsoScaleB * hIdIsoMu_B_Lumi) / (hIdIsoMu_A_Lumi + hIdIsoMu_B_Lumi));
+    }
+	
     //////////////THE MET
     
     // //preselection on met
