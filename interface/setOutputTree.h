@@ -33,9 +33,9 @@ class setOutputTree {
   float totalEventWeight;
   float totalEventWeight_2;
   float totalEventWeight_3;
-  float eff_and_pu_Weight;
-  float eff_and_pu_Weight_2;
-  float eff_and_pu_Weight_3;
+  float pu_Weight;
+  float pu_Weight_up;
+  float pu_Weight_down;
   float pfMET;
   float pfMET_jes_up;
   float pfMET_jes_dn;

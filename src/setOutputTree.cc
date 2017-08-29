@@ -35,9 +35,9 @@ void setOutputTree::initializeVariables()
   totalEventWeight	=-999;
   totalEventWeight_2	=-999;
   totalEventWeight_3	=-999;
-  eff_and_pu_Weight	=-999;
-  eff_and_pu_Weight_2	=-999;
-  eff_and_pu_Weight_3	=-999;
+  pu_Weight	=-999;
+  pu_Weight_up	=-999;
+  pu_Weight_down	=-999;
   pfMET		=-999;
   pfMET_jes_up	=-999;
   pfMET_jes_dn	=-999;
@@ -421,11 +421,11 @@ void setOutputTree::setBranches()
   fTree->Branch("trig_eff_Weight",&trig_eff_Weight,"trig_eff_Weight/F");
   fTree->Branch("id_eff_Weight",&id_eff_Weight,"id_eff_Weight/F");
   fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
-  fTree->Branch("eff_and_pu_Weight",&eff_and_pu_Weight,"eff_and_pu_Weight/F");
+  fTree->Branch("pu_Weight",&pu_Weight,"pu_Weight/F");
   fTree->Branch("totalEventWeight_2",&totalEventWeight_2,"totalEventWeight_2/F");
-  fTree->Branch("eff_and_pu_Weight_2",&eff_and_pu_Weight_2,"eff_and_pu_Weight_2/F");
+  fTree->Branch("pu_Weight_up",&pu_Weight_up,"pu_Weight_up/F");
   fTree->Branch("totalEventWeight_3",&totalEventWeight_3,"totalEventWeight_3/F");
-  fTree->Branch("eff_and_pu_Weight_3",&eff_and_pu_Weight_3,"eff_and_pu_Weight_3/F");
+  fTree->Branch("pu_Weight_down",&pu_Weight_down,"pu_Weight_down/F");
   fTree->Branch("pfMET",&pfMET,"pfMET/F");
   fTree->Branch("pfMET_jes_up",&pfMET_jes_up,"pfMET_jes_up/F");
   fTree->Branch("pfMET_jes_dn",&pfMET_jes_dn,"pfMET_jes_dn/F");
