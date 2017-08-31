@@ -18,14 +18,16 @@ exePathName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
 lumi = 35900.0
 
 dryRun = False;
-doMC = True;
-doData = False;
+doMC = False;
+doData = True;
 
 #category = ["el"];
-#category = ["el","mu"];
-category = ["EleMu"];
+category = ["el","mu"];
+#category = ["EleMu"];
 
 samples = [
+    ( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
+    ( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
     ( 542.00,	"TTToSemilepton_powheg",	0),
     ( 0.01398,	"ZZZ_13TeV_amcatnlo_pythia8",	0),
     ( 0.1651,	"WWZ_13TeV_amcatnlo_pythia8",	0),
@@ -81,7 +83,7 @@ nameDataEl = [
 ];
 
 
-inputlist="python/produceWWNtuples.py"
+inputlist="python/produceWWNtuples.py, ElectronTrigger_SF.root,  MuonTrigger_RunGH_23SepReReco_16p146fb.root, MuonID_RunBCDEF_23SepReReco_19p72fb.root, PileUpData2016_23Sep2016ReReco_69200ub.root, MuonID_RunGH_23SepReReco_16p146fb.root, egammaEffi_EGM2D_TightCutBasedIDSF.root, MuonIso_RunBCDEF_23SepReReco_19p72fb.root, egammaEffi_SF2D_GSF_tracking.root, MuonIso_RunGH_23SepReReco_16p146fb.root, puWeights_80x_37ifb.root, MuonTrigger_RunBCDEF_23SepReReco_19p72fb.root"
 
 nameData = {"el": nameDataEl, "mu":nameDataMu};
 
@@ -117,7 +119,7 @@ for a in range(len(category)):
         for i in range(len(samples)):
             outJDL.write("Output = "+str(samples[i][1])+"_"+category[a]+".stdout\n");
             outJDL.write("Error = "+str(samples[i][1])+"_"+category[a]+".stdout\n");
-            outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+category[a]+"_"+category[a]+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc\n");
+            outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+category[a]+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc\n");
             outJDL.write("Queue\n");
     
     #data
