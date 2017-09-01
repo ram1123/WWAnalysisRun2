@@ -750,6 +750,28 @@ int main (int argc, char** argv)
     //WWTree->pfMET_jes_up = sqrt(ReducedTree->METPtUp*ReducedTree->METPtUp);
     //WWTree->pfMET_jes_dn = sqrt(ReducedTree->METPtDown*ReducedTree->METPtDown);
     WWTree->pfMET_Phi = info->pfMETphi;
+    WWTree->pfMET_Corr = info->pfMETC;
+    WWTree->pfMET_Corr_phi = info->pfMETCphi;
+    WWTree->pfMET_Corr_Cov00 = info->pfMETCCov00;
+    WWTree->pfMET_Corr_Cov01 = info->pfMETCCov01;
+    WWTree->pfMET_Corr_Cov11 = info->pfMETCCov11;
+    WWTree->pfMET_Corr_jerup = info->pfMETCjerup;
+    WWTree->pfMET_Corr_jerdn = info->pfMETCjerdn;
+    WWTree->pfMET_Corr_jenup = info->pfMETCjenup;
+    WWTree->pfMET_Corr_jendn = info->pfMETCjendn;
+    WWTree->pfMET_Corr_uncup = info->pfMETCuncup;
+    WWTree->pfMET_Corr_uncdn = info->pfMETCuncdn;
+    WWTree->pfMET_Corr_jrsup = info->pfMETCjrsup;
+    WWTree->pfMET_Corr_jrsdn = info->pfMETCjrsdn;
+    WWTree->pfMET_Corr_phijerup = info->pfMETCphijerup;
+    WWTree->pfMET_Corr_phijerdn = info->pfMETCphijerdn;
+    WWTree->pfMET_Corr_phijenup = info->pfMETCphijenup;
+    WWTree->pfMET_Corr_phijendn = info->pfMETCphijendn;
+    WWTree->pfMET_Corr_phiuncup = info->pfMETCphiuncup;
+    WWTree->pfMET_Corr_phiuncdn = info->pfMETCphiuncdn;
+    WWTree->pfMET_Corr_phijrsup = info->pfMETCphijrsup;
+    WWTree->pfMET_Corr_phijrsdn = info->pfMETCphijrsdn;
+
     WWTree->nu_pz_type0 = pz1_type0;
     WWTree->nu_pz_type2 = pz1_type2;
     WWTree->nu_pz_run2 = pz1_run2;
@@ -869,6 +891,14 @@ int main (int argc, char** argv)
     //WWTree->pfMETpuppi_jes_up = sqrt(info->METpuppiPtUp*info->METpuppiPtUp);
     //WWTree->pfMETpuppi_jes_dn = sqrt(info->METpuppiPtDown*info->METpuppiPtDown);
     WWTree->pfMETpuppi_Phi = info->puppETphi;
+    WWTree->pfMETpuppi_Cov00 = info->puppETCov00;
+    WWTree->pfMETpuppi_Cov01 = info->puppETCov01;
+    WWTree->pfMETpuppi_Cov11 = info->puppETCov11;
+    WWTree->pfMETpuppi_Corr = info->puppETC;
+    WWTree->pfMETpuppi_Corr_phi = info->puppETCphi;
+    WWTree->pfMETpuppi_Corr_Cov00 = info->puppETCCov00;
+    WWTree->pfMETpuppi_Corr_Cov01 = info->puppETCCov01;
+    WWTree->pfMETpuppi_Corr_Cov11 = info->puppETCCov11;
     WWTree->nu_pz_type0 = pz1_type0;
     WWTree->nu_pz_type2 = pz1_type2;
     WWTree->nu_pz_run2 = pz1_run2;
@@ -950,6 +980,7 @@ int main (int argc, char** argv)
 	WWTree->AK8jet_mass_so  = addjet->mass_sd0;
 	WWTree->AK8jet_mass_tr  = addjet->mass_trim;
 	WWTree->AK8jet_tau2tau1 = addjet->tau2/addjet->tau1;
+	WWTree->AK8_jetID_loose = passJetLooseSel(jet);
 	//WWTree->jet_mass_pr_jes_up = (ReducedTree->AddAK8CHS_mass_prun[i]/ReducedTree->AK8Jets_AK8massCorrection[i])*ReducedTree->AK8Jets_AK8massCorrectionUp[i];
 	//WWTree->jet_mass_pr_jes_dn = (ReducedTree->AddAK8CHS_mass_prun[i]/ReducedTree->AK8Jets_AK8massCorrection[i])*ReducedTree->AK8Jets_AK8massCorrectionDown[i];
       
@@ -993,6 +1024,7 @@ int main (int argc, char** argv)
 	bool isCleanedJet = true;
 	//if (jet->pt<200)  continue; //be careful: this is not inside the synchntuple code
 	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
+        //if (!passJetLooseSel(jet)) continue;
 	if (addjet->mass_prun>tempTTbarMass) {
 	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
 	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
@@ -1040,6 +1072,7 @@ int main (int argc, char** argv)
 	WWTree->PuppiAK8_jet_sj2_phi  = addjet->sj2_phi;
 	WWTree->PuppiAK8_jet_sj2_m    = addjet->sj2_m;
 	WWTree->PuppiAK8_jet_sj2_q    = addjet->sj2_q;
+	WWTree->PuppiAK8_jetID_loose  = passJetLooseSel(jet);
 	//     WWTree->PuppiAK8_jet_mass_pr_jes_up = (addjet->mass_prun[i]/ReducedTree->PuppiAK8Jets_PuppiAK8massCorrection[i])*ReducedTree->PuppiAK8Jets_PuppiAK8massCorrectionUp[i];
 	//   WWTree->PuppiAK8_jet_mass_pr_jes_dn = (addjet->mass_prun[i]/ReducedTree->PuppiAK8Jets_PuppiAK8massCorrection[i])*ReducedTree->PuppiAK8Jets_PuppiAK8massCorrectionDown[i];
 	
@@ -1544,7 +1577,7 @@ int main (int argc, char** argv)
       bool isCleanedFromUnmergedJets = true;
       
       if (jet->pt<=30 || jet->pt<=20) continue;
-      //if (ReducedTree->JetsPuppi_isLooseJetId[i]==false) continue;
+      if (!passJetLooseSel(jet)) continue;
       
       //CLEANING FROM FAT JET
       if (nGoodPuppiAK8jets > 0) {
