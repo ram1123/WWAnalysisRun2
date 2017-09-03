@@ -28,14 +28,23 @@ category = ["el","mu"];
 samples = [
     ( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
     ( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 542.00,	"TTToSemilepton_powheg",	0),
+    ( 542.00,	"TTToSemilepton_powheg_1",	0),
+    ( 542.00,	"TTToSemilepton_powheg_2",	0),
+    ( 542.00,	"TTToSemilepton_powheg_3",	0),
+    ( 542.00,	"TTToSemilepton_powheg_4",	0),
+    ( 542.00,	"TTToSemilepton_powheg_5",	0),
+    ( 542.00,	"TTToSemilepton_powheg_6",	0),
     ( 0.01398,	"ZZZ_13TeV_amcatnlo_pythia8",	0),
     ( 0.1651,	"WWZ_13TeV_amcatnlo_pythia8",	0),
     ( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
     ( 3.22,	"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
     ( 5.595,	"WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
     ( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
-    ( 5765.40,	"DYJetsToLL_M-50_amcatnlo",	0),
+    ( 5765.40,	"DYJetsToLL_M-50_amcatnlo_1",	0),
+    ( 5765.40,	"DYJetsToLL_M-50_amcatnlo_2",	0),
+    ( 5765.40,	"DYJetsToLL_M-50_amcatnlo_3",	0),
+    ( 5765.40,	"DYJetsToLL_M-50_amcatnlo_4",	0),
+    ( 5765.40,	"DYJetsToLL_M-50_amcatnlo_5",	0),
     ( 1.68,	"DYJetsToLL_M-50_HT-600to800",	0),
     #( 			"WJetsToLNu_HT_70To100_13TeV"
     ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV", 		0),
@@ -117,17 +126,17 @@ for a in range(len(category)):
     #MC
     if( doMC ):
         for i in range(len(samples)):
-            outJDL.write("Output = "+str(samples[i][1])+"_"+category[a]+".stdout\n");
-            outJDL.write("Error = "+str(samples[i][1])+"_"+category[a]+".stdout\n");
+            outJDL.write("Output = "+str(samples[i][1])+"_"+category[a]+"_New.stdout\n");
+            outJDL.write("Error = "+str(samples[i][1])+"_"+category[a]+"_New.stdout\n");
             outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+category[a]+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc\n");
             outJDL.write("Queue\n");
     
     #data
     if( doData ):
         for i in range(len(nameData[category[a]])):
-            outJDL.write("Output = "+(nameData[category[a]])[i]+".stdout\n");
-            outJDL.write("Error = "+(nameData[category[a]])[i]+".stdout\n");
-            outJDL.write("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc\n");
+            outJDL.write("Output = "+(nameData[category[a]])[i]+"_New.stdout\n");
+            outJDL.write("Error = "+(nameData[category[a]])[i]+"_New.stdout\n");
+            outJDL.write("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+"_New"+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc\n");
             outJDL.write("Queue\n");
 
 outJDL.close();

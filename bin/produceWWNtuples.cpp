@@ -630,21 +630,21 @@ int main (int argc, char** argv)
     if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
 	//  apply ID SF's
 	if (WWTree->run<278820)
-		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIDMuA);
+		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuA);
 	else
-		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIDMuB);
+		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuB);
 
 	//  apply ISO SF's
 	if (WWTree->run<278820)
-		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIsoMuA);
+		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuA);
 	else
-		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIsoMuB);
+		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuB);
 	
 	// apply Trigger SF's
 	if (WWTree->run<278820)
-		WWTree->trig_eff_Weight = WWTree->trig_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hTriggerMuA);
+		WWTree->trig_eff_Weight = WWTree->trig_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuA);
 	else
-		WWTree->trig_eff_Weight = WWTree->trig_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hTriggerMuB);
+		WWTree->trig_eff_Weight = WWTree->trig_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuB);
     }
 	
     //////////////THE MET
