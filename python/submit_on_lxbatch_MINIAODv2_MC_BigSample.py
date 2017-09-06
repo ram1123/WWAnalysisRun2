@@ -1,4 +1,7 @@
 #! /usr/bin/env python
+
+# submit batch job for each file in the directory
+
 import os
 import glob
 import math

@@ -1794,7 +1794,7 @@ int main (int argc, char** argv)
     if (OnlyTwoVBFTypeJets == 0) continue;
         cutEff[10]++;
     
-    WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight;
+    WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight;
     
     
     WWTree->nEvents = TotalNumberOfEvents;
