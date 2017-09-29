@@ -181,8 +181,8 @@ int main (int argc, char** argv)
   int cutEff[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
   //--------pile up file -----------------
-  TFile* pileupFile = TFile::Open("PileUpData2016_23Sep2016ReReco_69200ub.root");  
-  TH1D* pileupHisto = (TH1D*)pileupFile->Get("pileup");
+  //TFile* pileupFile = TFile::Open("PileUpData2016_23Sep2016ReReco_69200ub.root");  
+  //TH1D* pileupHisto = (TH1D*)pileupFile->Get("pileup");
 
   TFile* pileupFileMC = TFile::Open("puWeights_80x_37ifb.root");
   TH1D* puWeights = (TH1D*)pileupFileMC->Get("puWeights");
@@ -241,16 +241,6 @@ int main (int argc, char** argv)
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
   TH1D *MCpu_up = new TH1D("MCpu_up","",75,0,75);
   TH1D *MCpu_down = new TH1D("MCpu_down","",75,0,75);
-  TH1D *puWeight = (TH1D*) pileupHisto->Clone();
-  puWeight->SetName("puWeight");
-  TH1D *puWeight_up = (TH1D*) pileupHisto->Clone();
-  puWeight_up->SetName("puWeight_up");
-  TH1D *puWeight_down = (TH1D*) pileupHisto->Clone();
-  puWeight_down->SetName("puWeight_down");
-  puWeight->SetBins(75,0,75);
-  puWeight_up->SetBins(75,0,75);
-  puWeight_down->SetBins(75,0,75);
-
   
   int nNegEvents=0; 
   int RunEntry = 500000;
@@ -286,9 +276,7 @@ int main (int argc, char** argv)
   cout<<"==> Total number of events : "<<TotalNumberOfEvents<<endl;
   cout<<"==> Total number of negative events : "<<nNegEvents<<endl;
   //puWeight->Divide(MCpu);
-  puWeight->Divide(puWeights);
-  puWeight_up->Divide(puWeightsUp);
-  puWeight_down->Divide(puWeightsDown);
+
   float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
   int totalEntries=0;
 
@@ -477,9 +465,9 @@ int main (int argc, char** argv)
     //PILE-UP WEIGHT
     if (isMC==1) {
        if(int(info->nPUmean)<75){
-           WWTree->pu_Weight = puWeight->GetBinContent(info->nPUmean); //our pu recipe
-           WWTree->pu_Weight_up = puWeight_up->GetBinContent(info->nPUmean); //our pu recipe
-           WWTree->pu_Weight_down = puWeight_down->GetBinContent(info->nPUmean); //our pu recipe
+           WWTree->pu_Weight = puWeights->GetBinContent(info->nPUmean); //our pu recipe
+           WWTree->pu_Weight_up = puWeightsUp->GetBinContent(info->nPUmean); //our pu recipe
+           WWTree->pu_Weight_down = puWeightsDown->GetBinContent(info->nPUmean); //our pu recipe
        }
        else{ //should not happen as we have a weight for all simulated n_pu multiplicities!
            std::cout<<"Warning! n_pu too big"<<std::endl;
@@ -630,21 +618,21 @@ int main (int argc, char** argv)
     if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
 	//  apply ID SF's
 	if (WWTree->run<278820)
-		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIDMuA);
+		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuA);
 	else
-		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIDMuB);
+		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuB);
 
 	//  apply ISO SF's
 	if (WWTree->run<278820)
-		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIsoMuA);
+		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuA);
 	else
-		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIsoMuB);
+		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuB);
 	
 	// apply Trigger SF's
 	if (WWTree->run<278820)
-		WWTree->trig_eff_Weight = WWTree->trig_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hTriggerMuA);
+		WWTree->trig_eff_Weight = WWTree->trig_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuA);
 	else
-		WWTree->trig_eff_Weight = WWTree->trig_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hTriggerMuB);
+		WWTree->trig_eff_Weight = WWTree->trig_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuB);
     }
 	
     //////////////THE MET
@@ -750,6 +738,28 @@ int main (int argc, char** argv)
     //WWTree->pfMET_jes_up = sqrt(ReducedTree->METPtUp*ReducedTree->METPtUp);
     //WWTree->pfMET_jes_dn = sqrt(ReducedTree->METPtDown*ReducedTree->METPtDown);
     WWTree->pfMET_Phi = info->pfMETphi;
+    WWTree->pfMET_Corr = info->pfMETC;
+    WWTree->pfMET_Corr_phi = info->pfMETCphi;
+    WWTree->pfMET_Corr_Cov00 = info->pfMETCCov00;
+    WWTree->pfMET_Corr_Cov01 = info->pfMETCCov01;
+    WWTree->pfMET_Corr_Cov11 = info->pfMETCCov11;
+    WWTree->pfMET_Corr_jerup = info->pfMETCjerup;
+    WWTree->pfMET_Corr_jerdn = info->pfMETCjerdn;
+    WWTree->pfMET_Corr_jenup = info->pfMETCjenup;
+    WWTree->pfMET_Corr_jendn = info->pfMETCjendn;
+    WWTree->pfMET_Corr_uncup = info->pfMETCuncup;
+    WWTree->pfMET_Corr_uncdn = info->pfMETCuncdn;
+    WWTree->pfMET_Corr_jrsup = info->pfMETCjrsup;
+    WWTree->pfMET_Corr_jrsdn = info->pfMETCjrsdn;
+    WWTree->pfMET_Corr_phijerup = info->pfMETCphijerup;
+    WWTree->pfMET_Corr_phijerdn = info->pfMETCphijerdn;
+    WWTree->pfMET_Corr_phijenup = info->pfMETCphijenup;
+    WWTree->pfMET_Corr_phijendn = info->pfMETCphijendn;
+    WWTree->pfMET_Corr_phiuncup = info->pfMETCphiuncup;
+    WWTree->pfMET_Corr_phiuncdn = info->pfMETCphiuncdn;
+    WWTree->pfMET_Corr_phijrsup = info->pfMETCphijrsup;
+    WWTree->pfMET_Corr_phijrsdn = info->pfMETCphijrsdn;
+
     WWTree->nu_pz_type0 = pz1_type0;
     WWTree->nu_pz_type2 = pz1_type2;
     WWTree->nu_pz_run2 = pz1_run2;
@@ -869,6 +879,14 @@ int main (int argc, char** argv)
     //WWTree->pfMETpuppi_jes_up = sqrt(info->METpuppiPtUp*info->METpuppiPtUp);
     //WWTree->pfMETpuppi_jes_dn = sqrt(info->METpuppiPtDown*info->METpuppiPtDown);
     WWTree->pfMETpuppi_Phi = info->puppETphi;
+    WWTree->pfMETpuppi_Cov00 = info->puppETCov00;
+    WWTree->pfMETpuppi_Cov01 = info->puppETCov01;
+    WWTree->pfMETpuppi_Cov11 = info->puppETCov11;
+    WWTree->pfMETpuppi_Corr = info->puppETC;
+    WWTree->pfMETpuppi_Corr_phi = info->puppETCphi;
+    WWTree->pfMETpuppi_Corr_Cov00 = info->puppETCCov00;
+    WWTree->pfMETpuppi_Corr_Cov01 = info->puppETCCov01;
+    WWTree->pfMETpuppi_Corr_Cov11 = info->puppETCCov11;
     WWTree->nu_pz_type0 = pz1_type0;
     WWTree->nu_pz_type2 = pz1_type2;
     WWTree->nu_pz_run2 = pz1_run2;
@@ -950,6 +968,7 @@ int main (int argc, char** argv)
 	WWTree->AK8jet_mass_so  = addjet->mass_sd0;
 	WWTree->AK8jet_mass_tr  = addjet->mass_trim;
 	WWTree->AK8jet_tau2tau1 = addjet->tau2/addjet->tau1;
+	WWTree->AK8_jetID_loose = passJetLooseSel(jet);
 	//WWTree->jet_mass_pr_jes_up = (ReducedTree->AddAK8CHS_mass_prun[i]/ReducedTree->AK8Jets_AK8massCorrection[i])*ReducedTree->AK8Jets_AK8massCorrectionUp[i];
 	//WWTree->jet_mass_pr_jes_dn = (ReducedTree->AddAK8CHS_mass_prun[i]/ReducedTree->AK8Jets_AK8massCorrection[i])*ReducedTree->AK8Jets_AK8massCorrectionDown[i];
       
@@ -993,6 +1012,7 @@ int main (int argc, char** argv)
 	bool isCleanedJet = true;
 	//if (jet->pt<200)  continue; //be careful: this is not inside the synchntuple code
 	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
+        //if (!passJetLooseSel(jet)) continue;
 	if (addjet->mass_prun>tempTTbarMass) {
 	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
 	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
@@ -1040,6 +1060,7 @@ int main (int argc, char** argv)
 	WWTree->PuppiAK8_jet_sj2_phi  = addjet->sj2_phi;
 	WWTree->PuppiAK8_jet_sj2_m    = addjet->sj2_m;
 	WWTree->PuppiAK8_jet_sj2_q    = addjet->sj2_q;
+	WWTree->PuppiAK8_jetID_loose  = passJetLooseSel(jet);
 	//     WWTree->PuppiAK8_jet_mass_pr_jes_up = (addjet->mass_prun[i]/ReducedTree->PuppiAK8Jets_PuppiAK8massCorrection[i])*ReducedTree->PuppiAK8Jets_PuppiAK8massCorrectionUp[i];
 	//   WWTree->PuppiAK8_jet_mass_pr_jes_dn = (addjet->mass_prun[i]/ReducedTree->PuppiAK8Jets_PuppiAK8massCorrection[i])*ReducedTree->PuppiAK8Jets_PuppiAK8massCorrectionDown[i];
 	
@@ -1544,7 +1565,7 @@ int main (int argc, char** argv)
       bool isCleanedFromUnmergedJets = true;
       
       if (jet->pt<=30 || jet->pt<=20) continue;
-      //if (ReducedTree->JetsPuppi_isLooseJetId[i]==false) continue;
+      if (!passJetLooseSel(jet)) continue;
       
       //CLEANING FROM FAT JET
       if (nGoodPuppiAK8jets > 0) {
@@ -1590,10 +1611,10 @@ int main (int argc, char** argv)
       if (isCleanedFromFatJet==false) continue;
       
       indexGoodVBFJetsPuppi.push_back(i); //save index of the "good" vbf jets candidates
+      WWTree->njetsPuppi++;
       
       if (fabs(jet->eta)>=2.4) continue;
       
-      WWTree->njetsPuppi++;
       AK4.SetPtEtaPhiM(jet->pt,jet->eta,jet->phi,jet->mass);
       
       
@@ -1721,8 +1742,8 @@ int main (int argc, char** argv)
         TOT = VBF1 + VBF2;
 	
 
-	if (WWTree->AK4_DR_GENRECO_11 < WWTree->AK4_DR_GENRECO_12)
-	{
+//	if (WWTree->AK4_DR_GENRECO_11 < WWTree->AK4_DR_GENRECO_12)
+//	{
         	WWTree->vbf_maxpt_j1_pt = jet1->pt;
         	WWTree->vbf_maxpt_j1_eta = jet1->eta;
         	WWTree->vbf_maxpt_j1_phi = jet1->phi;
@@ -1733,7 +1754,7 @@ int main (int argc, char** argv)
         	WWTree->vbf_maxpt_j2_phi = jet2->phi;
         	WWTree->vbf_maxpt_j2_e = VBF2.E();
         	WWTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
-	} else
+/*	} else
 	{
         	WWTree->vbf_maxpt_j2_pt = jet1->pt;
         	WWTree->vbf_maxpt_j2_eta = jet1->eta;
@@ -1745,7 +1766,7 @@ int main (int argc, char** argv)
         	WWTree->vbf_maxpt_j1_phi = jet2->phi;
         	WWTree->vbf_maxpt_j1_e = VBF2.E();
         	WWTree->vbf_maxpt_j1_bDiscriminatorCSV = jet2->csv;
-	}
+	}*/
         WWTree->vbf_maxpt_jj_pt = TOT.Pt();
         WWTree->vbf_maxpt_jj_eta = TOT.Eta();
         WWTree->vbf_maxpt_jj_phi = TOT.Phi();
@@ -1761,8 +1782,8 @@ int main (int argc, char** argv)
     if (OnlyTwoVBFTypeJets == 0) continue;
         cutEff[10]++;
     
-    WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight;
-    
+    WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight;
+   
     
     WWTree->nEvents = TotalNumberOfEvents;
     WWTree->nNegEvents = nNegEvents;
@@ -1819,11 +1840,11 @@ int main (int argc, char** argv)
     infile=0, eventTree=0;
     /////////////////FILL THE TREE
   }
-  delete puWeight;	delete puWeight_up;	delete puWeight_down;
+  //delete puWeight;	delete puWeight_up;	delete puWeight_down;
   delete MCpu;	delete MCpu_up;	delete MCpu_down;
   delete puWeightsDown;	delete puWeightsUp;	delete puWeights;
-  delete pileupHisto;
-  pileupFile->Close();
+  //delete pileupHisto;
+  //pileupFile->Close();
   pileupFileMC->Close();
   std::cout << "---------end loop on events------------" << std::endl;
   std::cout << std::endl;

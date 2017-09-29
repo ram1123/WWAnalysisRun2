@@ -21,7 +21,7 @@ dryRun = False;
 doMC = True;
 doData = False;	# For data run another script
 
-category = ["EleMu"];
+category = ["EleMu_new"];
 #category = ["el"];
 #category = ["mu"];
 
@@ -59,14 +59,24 @@ if MCs==1:
 	( 0.5686,	"WplusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
 	( 0.7414,	"WminusToLNuZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
 	( 0.2223,	"WminusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-	( 3.361,	"ZTo2LZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-	( 5765.40,	"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",				0)
+	( 3.361,	"ZTo2LZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0)
 	]
 
 if MCs==2:
 	inputFolder = "/store/cmst3/group/monojet/production/12/";	# Path of MC files
 	samples = [
 	    #( , "QCD_HT50to100_13TeV",		0),
+	    ( 208.98,	"DYJetsToLL_M-50_HT-70to100",	0),
+	    ( 181.30,	"DYJetsToLL_M-50_HT-100to200",	0),
+	    ( 181.30,	"DYJetsToLL_M-50_HT-100to200_ext1",	0),
+	    ( 50.42,	"DYJetsToLL_M-50_HT-200to400",	0),
+	    ( 50.42,	"DYJetsToLL_M-50_HT-200to400_ext1",	0),
+	    ( 6.98,	"DYJetsToLL_M-50_HT-400to600",	0),
+	    ( 6.98,	"DYJetsToLL_M-50_HT-400to600_ext1",	0),
+	    ( 1.68,	"DYJetsToLL_M-50_HT-600to800",	0),
+	    ( 0.78,	"DYJetsToLL_M-50_HT-800to1200",	0),
+	    ( 0.19,	"DYJetsToLL_M-50_HT-1200to2500",	0),
+	    ( 0.0044,	"DYJetsToLL_M-50_HT-2500toInf",	0),
 	    ( 27990000,	"QCD_HT100to200_13TeV",		0),
 	    ( 1712000,	"QCD_HT200to300_13TeV",		0),
 	    ( 1712000,	"QCD_HT200to300_13TeV_ext",	0),
@@ -85,29 +95,27 @@ if MCs==2:
 	    ( 49.997,		"WWToLNuQQ_13TeV_powheg",			0),
 	    ( 49.997,		"WWToLNuQQ_13TeV_powheg_ext",			0),
 	    ( 61526.7,		"WJetsToLNu_13TeV",				0),
-	    #( 			"WJetsToLNu_HT_70To100_13TeV"
-	    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV", 		0),
-	    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext1",		0),
-	    ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext2",		0),
-	    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV",			0),
-	    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext1",		0),
-	    ( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext2",		0),
-	    ( 59.1811,		"WJetsToLNu_HT_400To600_13TeV",			0),
-	    ( 59.1811,		"WJetsToLNu_HT_400To600_13TeV_ext1",		0),
-	    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV",			0),
-	    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV_ext1",		0),
-	    ( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV",		0),
-	    #( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV_ext1",	
-	    ( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV",		0),
-	    ( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV_ext1",		0),
-	    ( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV",		0),
-	    ( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV_ext1",		0),
-	    ( 49.997,		"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",0),
-	    ( 49.997,		"WWToLNuQQ_13TeV_powheg",			0),
-	    ( 49.997,		"WWToLNuQQ_13TeV_powheg_ext",			0),
-	    ( 10.71,		"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",0),
-	    ( 3.22,		"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
-	    ( 542.00,		"TTToSemilepton_powheg",			0),
+	    ##( 			"WJetsToLNu_HT_70To100_13TeV"
+	    #( 1506.4,		"WJetsToLNu_HT_100To200_13TeV", 		0),
+	    #( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext1",		0),
+	    #( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext2",		0),
+	    #( 435.237,		"WJetsToLNu_HT_200To400_13TeV",			0),
+	    #( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext1",		0),
+	    #( 435.237,		"WJetsToLNu_HT_200To400_13TeV_ext2",		0),
+	    #( 59.1811,		"WJetsToLNu_HT_400To600_13TeV",			0),
+	    #( 59.1811,		"WJetsToLNu_HT_400To600_13TeV_ext1",		0),
+	    #( 14.5805,		"WJetsToLNu_HT_600To800_13TeV",			0),
+	    #( 14.5805,		"WJetsToLNu_HT_600To800_13TeV_ext1",		0),
+	    #( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV",		0),
+	    ##( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV_ext1",	
+	    #( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV",		0),
+	    #( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV_ext1",		0),
+	    #( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV",		0),
+	    #( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV_ext1",		0),
+	    #( 49.997,		"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",0),
+	    #( 10.71,		"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",0),
+	    #( 3.22,		"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	0),
+	    #( 542.00,		"TTToSemilepton_powheg",			0),
 	    ( 11.36,		"ST_s_channel_4f_leptonDecays_13TeV_amcatnlo_pythia8_TuneCUETP8M1",	0),
 	    ( 80.95,		"ST_t_channel_antitop_4f_inclusiveDecays_13TeV_powhegV2_madspin_pythia8_TuneCUETP8M1",	0),
 	    ( 136.02,		"ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4_13TeV_powhegV2_madspin",	0),
@@ -147,7 +155,7 @@ for a in range(len(category)):
         for i in range(len(samples)):
             fn = "WWAnalysisRun2/Job/job_"+samples[i][1]+"_"+category[a];
             outScript = open(fn+".sh","w");
-            command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+inputFolder+" -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+category[a]+" -l "+category[a]+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1";
+            command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+inputFolder+" -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+category[a]+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1";
             print command;
             outScript.write('#!/bin/bash');
 	    outScript.write("\n"+"workDir=`pwd`");
@@ -156,7 +164,7 @@ for a in range(len(category)):
             outScript.write("\n"+'cd '+CMSSWDir);
             outScript.write("\n"+'eval `scram runtime -sh`');
             #outScript.write("\n"+"cd WWAnalysis/WWAnalysisRun2");
-	    outScript.write("\n"+"cp WWAnalysis/WWAnalysisRun2/python/produceWWNtuples.py ${workDir}");
+	    outScript.write("\n"+"cp WWAnalysis/WWAnalysisRun2/python/produceWWNtuples.py WWAnalysis/WWAnalysisRun2/*.root ${workDir}");
 	    outScript.write("\n"+"cd ${workDir}");
             outScript.write("\n"+command);
 	    outScript.write("\n"+"echo \"====> LISTING ALL FILES..... \"");
@@ -168,7 +176,7 @@ for a in range(len(category)):
             outScript.write("\n");
             outScript.close();
             os.system("chmod 777 "+currentDir+"/"+fn+".sh");
-            command2 = "bsub -o out.%J -q 2nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh  -J "+str(samples[i][1][0:9]);
+            command2 = "bsub -o out.%J -q 2nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh  -J "+str(samples[i][1][18:27]);
             print command2
             if( dryRun != True ):
                 os.system(command2);
