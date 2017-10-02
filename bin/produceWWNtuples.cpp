@@ -291,6 +291,7 @@ int main (int argc, char** argv)
   //puWeight->Divide(puWeights);
   //puWeight_up->Divide(puWeightsUp);
   //puWeight_down->Divide(puWeightsDown);
+
   float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
   int totalEntries=0;
 
@@ -1649,8 +1650,9 @@ int main (int argc, char** argv)
         	WWTree->vbfPuppi_maxpt_j2_phi = jet2->phi;
         	WWTree->vbfPuppi_maxpt_j2_e = VBF2.E();
         	WWTree->vbfPuppi_maxpt_j2_bDiscriminatorCSV = jet2->csv;
-		WWTree->vbfPuppi_maxpt_j1_ID = passJetLooseSel(jet1);
-		WWTree->vbfPuppi_maxpt_j2_ID = passJetLooseSel(jet2);
+		      WWTree->vbfPuppi_maxpt_j1_ID = passJetLooseSel(jet1);
+		      WWTree->vbfPuppi_maxpt_j2_ID = passJetLooseSel(jet2);
+
 /*	} else
 	{
         	WWTree->vbf_maxpt_j2_pt = jet1->pt;
@@ -1680,7 +1682,7 @@ int main (int argc, char** argv)
         cutEff[10]++;
     
     WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight;
-    
+
     
     WWTree->nEvents = TotalNumberOfEvents;
     WWTree->nNegEvents = nNegEvents;
@@ -1711,7 +1713,6 @@ int main (int argc, char** argv)
     //if (isnan(WWTree->costhetastar_type0) == 1) cout<<"===========	a_costhetastar is nan"<<endl;
     //if (isnan(WWTree->phi_type0) == 1) cout<<"===========	a_Phi is nan"<<endl;
     //if (isnan(WWTree->phi1_type0) == 1) cout<<"===========	a_Phi1 is nan"<<endl;
-
 
     computeAngles( LEP + NU2_puppi + JET_PuppiAK8, LEP + NU2_puppi, LEP, NU2_puppi, JET_PuppiAK8,  SJ1, SJ2, a_costheta1, a_costheta2, a_Phi, a_costhetastar, a_Phi1);
     WWTree->costheta1_type2 = (float) a_costheta1;                
