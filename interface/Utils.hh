@@ -19,6 +19,7 @@
 #include <iostream>
 
 bool   passJetLooseSel        (const baconhep::TJet *jet);
+bool   passPuppiJetLooseSel   (const baconhep::TJet *jet);
 bool   passJetTightSel        (const baconhep::TJet *jet);
 bool   passJetTightLepVetoSel (const baconhep::TJet *jet);
 bool   passEleVetoSel         (const baconhep::TElectron *electron, const double rho);

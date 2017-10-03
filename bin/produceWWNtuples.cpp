@@ -1462,6 +1462,7 @@ int main (int argc, char** argv)
       bool isCleanedFromUnmergedJets = true;
       
       if (jet->pt<=30 ) continue;
+      if (!passPuppiJetLooseSel(jet)) continue;
       
       //CLEANING FROM FAT JET
       if (nGoodPuppiAK8jets > 0) {
@@ -1580,7 +1581,7 @@ int main (int argc, char** argv)
     }
     
     
-    OnlyTwoVBFTypeJets = 0;
+    int OnlyTwoVBFTypePuppiJets = 0;
     if (indexGoodVBFJetsPuppi.size()>=2) 
     {
       cutEff[9]++;
@@ -1625,7 +1626,7 @@ int main (int argc, char** argv)
           nVBF2 = indexGoodVBFJetsPuppi.at(ii); //save position of the 2nd vbf jet
         }
       }
-      if (nVBF1!=-1 && nVBF2 !=-1) OnlyTwoVBFTypeJets=1;
+      if (nVBF1!=-1 && nVBF2 !=-1) OnlyTwoVBFTypePuppiJets=1;
       
       if (nVBF1!=-1 && nVBF2!=-1) //save infos for vbf jet pair
       {
@@ -1678,7 +1679,9 @@ int main (int argc, char** argv)
       }
     }
 
-    if (OnlyTwoVBFTypeJets == 0) continue;
+    if (OnlyTwoVBFTypeJets == 1) WWTree->isVBF=1;
+    if (OnlyTwoVBFTypePuppiJets == 1) WWTree->isPuppiVBF=1;
+    if (OnlyTwoVBFTypeJets == 0 && OnlyTwoVBFTypePuppiJets == 0 ) continue;
         cutEff[10]++;
     
     WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight;
@@ -1700,6 +1703,7 @@ int main (int argc, char** argv)
     WWTree->BosonCentralityPuppi_type2 = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP+NU2_puppi).Eta())-GetMin(WWTree->vbfPuppi_maxpt_j1_eta, WWTree->vbfPuppi_maxpt_j2_eta) , GetMax(WWTree->vbfPuppi_maxpt_j1_eta,WWTree->vbfPuppi_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP+NU2_puppi).Eta())  );
     WWTree->BosonCentralityPuppi_run2 = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP+NU1_puppi).Eta())-GetMin(WWTree->vbfPuppi_maxpt_j1_eta, WWTree->vbfPuppi_maxpt_j2_eta) , GetMax(WWTree->vbfPuppi_maxpt_j1_eta,WWTree->vbfPuppi_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP+NU1_puppi).Eta())  );
 
+    if (JET_PuppiAK8.Pt()>0){
     double a_costheta1, a_costheta2, a_costhetastar, a_Phi, a_Phi1;
 
     computeAngles( LEP + NU0_puppi + JET_PuppiAK8, LEP + NU0_puppi, LEP, NU0_puppi, JET_PuppiAK8,  SJ1, SJ2, a_costheta1, a_costheta2, a_Phi, a_costhetastar, a_Phi1 );
@@ -1708,11 +1712,6 @@ int main (int argc, char** argv)
     WWTree->costhetastar_type0 = (float) a_costhetastar;
     WWTree->phi_type0 = (float) a_Phi;
     WWTree->phi1_type0 = (float) a_Phi1;
-    //if (isnan(WWTree->costheta1_type0) == 1) cout<<"===========	costheta1 is nan"<<endl;
-    //if (isnan(WWTree->costheta2_type0) == 1) cout<<"===========	costheta2 is nan"<<endl;
-    //if (isnan(WWTree->costhetastar_type0) == 1) cout<<"===========	a_costhetastar is nan"<<endl;
-    //if (isnan(WWTree->phi_type0) == 1) cout<<"===========	a_Phi is nan"<<endl;
-    //if (isnan(WWTree->phi1_type0) == 1) cout<<"===========	a_Phi1 is nan"<<endl;
 
     computeAngles( LEP + NU2_puppi + JET_PuppiAK8, LEP + NU2_puppi, LEP, NU2_puppi, JET_PuppiAK8,  SJ1, SJ2, a_costheta1, a_costheta2, a_Phi, a_costhetastar, a_Phi1);
     WWTree->costheta1_type2 = (float) a_costheta1;                
@@ -1744,6 +1743,7 @@ int main (int argc, char** argv)
      WWTree->RpT_type2 = (JET_PuppiAK8.Pt()*(LEP + NU2_puppi).Pt())/(VBF1.Pt()*VBF2.Pt());
      WWTree->RpT_run2 = (JET_PuppiAK8.Pt()*(LEP + NU1_puppi).Pt())/(VBF1.Pt()*VBF2.Pt());
      WWTree->ZeppenfeldWH = JET_PuppiAK8.Rapidity() - (VBF1.Eta() + VBF2.Eta())/2.0;
+     }
      WWTree->ZeppenfeldWL_type0 = (LEP + NU0_puppi).Rapidity() - (VBF1.Eta() + VBF2.Eta())/2.0;
      WWTree->ZeppenfeldWL_type2 = (LEP + NU2_puppi).Rapidity() - (VBF1.Eta() + VBF2.Eta())/2.0;
      WWTree->ZeppenfeldWL_run2 = (LEP + NU1_puppi).Rapidity() - (VBF1.Eta() + VBF2.Eta())/2.0;
@@ -1834,7 +1834,7 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
 	TLorentzVector p4M12_BV1( p4M12 );	
     TLorentzVector p4M21_BV1( p4M21 );
 	TLorentzVector p4M22_BV1( p4M22 );
-    p4M11_BV1.Boost( boostV1 );
+    	p4M11_BV1.Boost( boostV1 );
 	p4M12_BV1.Boost( boostV1 );
 	p4M21_BV1.Boost( boostV1 );
 	p4M22_BV1.Boost( boostV1 );
@@ -1843,16 +1843,6 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
     //// costheta1
     costheta1 = -p4V2_BV1.Vect().Dot( p4M11_BV1.Vect() )/p4V2_BV1.Vect().Mag()/p4M11_BV1.Vect().Mag();
 
-    //if (costheta1 != costheta1) cout<<"Sub Cause *******************"<<endl;
-    //if (p4M11_BV1.Vect().Mag() != p4M11_BV1.Vect().Mag()) cout<<"Cause1 ***********"<<endl;
-    //if (p4V2_BV1.Vect().Mag() != p4V2_BV1.Vect().Mag()) cout<<"Cause2 ******************"<<endl;
-    //if (p4V2_BV1.Vect().Dot( p4M11_BV1.Vect() ) != p4V2_BV1.Vect().Dot( p4M11_BV1.Vect() )) cout<<"Cause3 *************"<<endl;
-    
-
-    //if () cout<<"Cause2 ******************"<<endl;
-//    if (isnan(-p4V2_BV1.Vect().Dot( p4M11_BV1.Vect() )/p4V2_BV1.Vect().Mag()/p4M11_BV1.Vect().Mag())==1) cout<<"************** NAN"<<endl;
-    //  if (isnan(p4M11_BV1.Vect().Mag())==1) cout<<"********************************"<<endl;
-    
     //// --------------------------- costheta2
     TVector3 boostV2 = -(thep4Z2.BoostVector());
     TLorentzVector p4M11_BV2( p4M11 );

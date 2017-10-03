@@ -22,6 +22,8 @@ class setOutputTree {
   int issignal_PuppiAK8;
   int issignal_AK4jetjet;
   int issignal_PuppiAK4jetjet;
+  int isVBF;
+  int isPuppiVBF;
   float wSampleWeight;
   float genWeight;
   float top1_NNLO_Weight;

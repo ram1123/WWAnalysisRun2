@@ -24,6 +24,8 @@ void setOutputTree::initializeVariables()
   issignal_PuppiAK8	=0;
   issignal_AK4jetjet	=0;
   issignal_PuppiAK4jetjet=0;
+  isVBF		= 0;
+  isPuppiVBF	= 0;
   wSampleWeight	=-999;
   genWeight	=1;
   top1_NNLO_Weight	=1.;
@@ -518,6 +520,8 @@ void setOutputTree::setBranches()
   fTree->Branch("issignal_PuppiAK8",&issignal_PuppiAK8,"issignal_PuppiAK8/I");
   fTree->Branch("issignal_AK4jetjet",&issignal_AK4jetjet,"issignal_AK4jetjet/I");
   fTree->Branch("issignal_PuppiAK4jetjet",&issignal_PuppiAK4jetjet,"issignal_PuppiAK4jetjet/I");
+  fTree->Branch("isVBF",&isVBF,"isVBF/I");
+  fTree->Branch("isPuppiVBF",&isPuppiVBF,"isPuppiVBF/I");
   fTree->Branch("wSampleWeight",&wSampleWeight,"wSampleWeight/F");
   fTree->Branch("genWeight",&genWeight,"genWeight/F");
   fTree->Branch("top1_NNLO_Weight",&top1_NNLO_Weight,"top1_NNLO_Weight/F");

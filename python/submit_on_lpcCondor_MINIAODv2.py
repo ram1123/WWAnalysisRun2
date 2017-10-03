@@ -14,17 +14,17 @@ CMSSWDir =  currentDir+"/../";
 inputFolder = "/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/";
 outputFolder = currentDir+"/output/";
 exePathName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
-LogOutputPath = "OutPut_2Oct/Logs/";
+LogOutputPath = "OutPut_3Oct/Logs/";
 
 lumi = 35900.0
 
 dryRun = False;
-doMC = False;
-doData = True;
+doMC = True;
+doData = False;
 
 #category = ["el"];
-category = ["el","mu"];
-#category = ["EleMu"];
+#category = ["el","mu"];
+category = ["EleMu"];
 
 samples = [
     ( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
@@ -112,7 +112,8 @@ samples = [
     ( 59.1811,		"WJetsToLNu_HT_400To600_13TeV",			0),
     ( 59.1811,		"WJetsToLNu_HT_400To600_13TeV_ext1",		0),
     ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV",			0),
-    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV_ext1",		0),
+    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV_ext1_1",		0),
+    ( 14.5805,		"WJetsToLNu_HT_600To800_13TeV_ext1_2",		0),
     ( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV",		0),
     ( 6.65621,		"WJetsToLNu_HT_800To1200_13TeV_ext1",		0),
     ( 1.60809,		"WJetsToLNu_HT_1200To2500_13TeV",		0),
@@ -127,7 +128,8 @@ samples = [
     ( 27990000,		"QCD_HT100to200_13TeV_5",		0),
     ( 27990000,		"QCD_HT100to200_13TeV_6",		0),
     ( 1712000,		"QCD_HT200to300_13TeV",		0),
-    ( 1712000,		"QCD_HT200to300_13TeV_ext",	0),
+    ( 1712000,		"QCD_HT200to300_13TeV_ext_1",	0),
+    ( 1712000,		"QCD_HT200to300_13TeV_ext_2",	0),
     ( 347700,		"QCD_HT300to500_13TeV",		0),
     ( 347700,		"QCD_HT300to500_13TeV_ext",	0),
     ( 32100,		"QCD_HT500to700_13TeV",		0),

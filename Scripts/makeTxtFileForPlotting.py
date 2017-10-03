@@ -19,8 +19,9 @@ from pprint import pprint
 #print "name of samples:"
 #pprint(Name)
 
-#source = "../Output_4Sep"
-source = "../OutPut_6Sep"
+source = "../OutPut_2Oct_New"
+
+ifhaddOnly = 1
 
 Arrayfilepath = []
 for root, dirs, filenames in os.walk(source):
@@ -68,14 +69,17 @@ for sample in crossSections.keys():
 					nEvents=1
 					nNegEvents=0
 				else:
-					h1 = ROOT.TH1F("h1","", 999999999, 0 , 999999999)
-					h2 = ROOT.TH1F("h2","", 999999999, 0 , 999999999)
-					tree.Draw("nEvents>>h1","","",10)
-					tree.Draw("nNegEvents>>h2","","",10)
-					nEvents+=h1.GetMean()
-					nNegEvents+=h2.GetMean()
-					h1.Delete()
-					h2.Delete()
+					if ifhaddOnly != 1:
+						h1 = ROOT.TH1F("h1","", 999999999, 0 , 999999999)
+						h2 = ROOT.TH1F("h2","", 999999999, 0 , 999999999)
+						tree.Draw("nEvents>>h1","","",10)
+						tree.Draw("nNegEvents>>h2","","",10)
+						nEvents+=h1.GetMean()
+						nNegEvents+=h2.GetMean()
+						h1.Delete()
+						h2.Delete()
+					else:
+						print "skip..."
 				print files,nEvents,nNegEvents
 			file.Delete()
 
@@ -97,16 +101,18 @@ for samples in List:
 	sampleInfo.append(samples[0])
 	print ""
 
-print "=============	MAKE SUMMARY	================"	
-#sampleInfo.sort()
-pprint(sampleInfo)
-
-outScript = open("DibosonBoostedElMuSamples13TeV.txt","w");
-for i,files in enumerate(sampleInfo):
-	for sample in crossSections.keys():
-		#print i,files
-		#print files,sample
-		if files.find(sample) != -1:
-			#print "===> ",files,sample
-			print Name[sample],"\t",files,"\t",crossSections[sample],"\t1\t",int(ListnEvents[i]),"\t",int(ListnNegEvents[i]),"\t",colorCode[sample],"\t",Stack[sample]
-			outScript.write(Name[sample]+"\t"+files+"\t"+str(crossSections[sample])+"\t1\t"+str(ListnEvents[i])+"\t"+str(ListnNegEvents[i])+"\t"+str(colorCode[sample])+"\t"+str(Stack[sample])+"\n")
+if ifhaddOnly != 1:
+	print "=============	MAKE SUMMARY	================"	
+	#sampleInfo.sort()
+	pprint(sampleInfo)
+	
+	outScript = open("DibosonBoostedElMuSamples13TeV.txt","w");
+	outScript.write("# name           file_location  xspb/lumipb  otherscale nMCevents       nMCNegEvents    colorcode       stackit\n")
+	for i,files in enumerate(sampleInfo):
+		for sample in crossSections.keys():
+			#print i,files
+			#print files,sample
+			if files.find(sample) != -1:
+				#print "===> ",files,sample
+				print Name[sample],"\t",files,"\t",crossSections[sample],"\t1\t",int(ListnEvents[i]),"\t",int(ListnNegEvents[i]),"\t",colorCode[sample],"\t",Stack[sample]
+				outScript.write(Name[sample]+"\t"+files+"\t"+str(crossSections[sample])+"\t1\t"+str(ListnEvents[i])+"\t"+str(ListnNegEvents[i])+"\t"+str(colorCode[sample])+"\t"+str(Stack[sample])+"\n")
