@@ -6,25 +6,56 @@ from array import array
 import sys
 import time
 import subprocess
+import tarfile
+import datetime
+import commands
 
 currentDir = os.getcwd();
 CMSSWDir =  currentDir+"/../";
 
-#inputFolder = "/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/Feb142016";
 inputFolder = "/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/";
-outputFolder = currentDir+"/output/";
-exePathName = currentDir+"/WWAnalysisRun2/produceWWNtuples"
-LogOutputPath = "OutPut_3Oct/Logs/";
+TestRun = 0
+
+doMC = True;
+doData = True;
+category = ["el","mu"];
 
 lumi = 35900.0
 
-dryRun = False;
-doMC = True;
-doData = False;
+# Get date and time for output directory
+## ADD "test" IN OUTPUT FOLDER IF YOU ARE TESTING SO THAT LATER YOU REMEMBER TO WHICH DIRECTORY YOU HAVE TO REMOVE FROM EOS
+if TestRun:
+	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M')+"_TEST/";
+	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M') + "_TEST";
+else:
+	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M');
+	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M');
 
-#category = ["el"];
-#category = ["el","mu"];
-category = ["EleMu"];
+
+print "Name of output dir: ",outputFolder
+# create a directory on eos
+os.system('xrdfs root://cmseos.fnal.gov/ mkdir ' + outputFolder)
+# create directory in pwd for log files
+os.system('mkdir -p ' + OutputLogPath)
+
+# Function to create a tar file
+def make_tarfile(output_filename, source_dir):
+    with tarfile.open(output_filename, "w:gz") as tar:
+            tar.add(source_dir, arcname=os.path.basename(source_dir))
+
+# Get CMSSW directory path and name
+cmsswDirPath = commands.getstatusoutput('echo ${CMSSW_BASE}')
+CMSSWRel = os.path.basename(cmsswDirPath[1])
+
+print "CMSSW release used : ",CMSSWRel
+
+# create tarball of present working CMSSW base directory
+make_tarfile(CMSSWRel+".tgz", cmsswDirPath[1])
+
+# send the created tarball to eos
+os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov//store/user/rasharma/' + CMSSWRel+".tgz")
+os.system('xrdcp -f ThingsUpdated.txt root://cmseos.fnal.gov/' + outputFolder)
+os.system('cp ThingsUpdated.txt ' + OutputLogPath)
 
 samples = [
     ( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
@@ -190,19 +221,32 @@ nameDataEl = [
 ];
 
 
-inputlist="python/produceWWNtuples.py, ElectronTrigger_SF.root,  MuonTrigger_RunGH_23SepReReco_16p146fb.root, MuonID_RunBCDEF_23SepReReco_19p72fb.root, PileUpData2016_23Sep2016ReReco_69200ub.root, MuonID_RunGH_23SepReReco_16p146fb.root, egammaEffi_EGM2D_TightCutBasedIDSF.root, MuonIso_RunBCDEF_23SepReReco_19p72fb.root, egammaEffi_SF2D_GSF_tracking.root, MuonIso_RunGH_23SepReReco_16p146fb.root, puWeights_80x_37ifb.root, MuonTrigger_RunBCDEF_23SepReReco_19p72fb.root"
+inputlist = "runstep2condor.sh, python/produceWWNtuples.py"
 
 nameData = {"el": nameDataEl, "mu":nameDataMu};
 
-#command = "python "+currentDir+"/WWAnalysisRun2/python/produceWWNtuples.py -i "+inputFolder+" $*";
-command = "python produceWWNtuples.py -i "+inputFolder+" $*";
+command = "python python/produceWWNtuples.py -i "+inputFolder+" $*";
 
 outScript = open("runstep2condor.sh","w");
 outScript.write('#!/bin/bash');
-outScript.write("\n"+'cd '+CMSSWDir);
+outScript.write("\n"+'echo "Starting job on " `date`');
+outScript.write("\n"+'echo "Running on: `uname -a`"');
+outScript.write("\n"+'echo "System software: `cat /etc/redhat-release`"');
+outScript.write("\n"+'source /cvmfs/cms.cern.ch/cmsset_default.sh');
+outScript.write("\n"+'### copy the input root files if they are needed only if you require local reading');
+outScript.write("\n"+'xrdcp -s root://cmseos.fnal.gov//store/user/rasharma/' + CMSSWRel +'.tgz  .');
+outScript.write("\n"+'tar -xf '+ CMSSWRel +'.tgz' );
+outScript.write("\n"+'rm '+ CMSSWRel +'.tgz' );
+outScript.write("\n"+'cd ' + CMSSWRel + '/src/WWAnalysis/WWAnalysisRun2' );
+outScript.write("\n"+'scramv1 b ProjectRename');
 outScript.write("\n"+'eval `scram runtime -sh`');
-outScript.write("\n"+"cd -");
 outScript.write("\n"+command);
+outScript.write("\n"+'echo "====> List output files : " ');
+outScript.write("\n"+'ls WWTree*.root');
+outScript.write("\n"+'xrdcp WWTree*.root root://cmseos.fnal.gov/' + outputFolder);
+outScript.write("\n"+'rm WWTree*.root');
+outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
+outScript.write("\n"+'rm -rf ' + CMSSWRel);
 outScript.write("\n");
 outScript.close();
 os.system("chmod 777 runstep2condor.sh");
@@ -210,30 +254,28 @@ os.system("chmod 777 runstep2condor.sh");
 outJDL = open("runstep2condor.jdl","w");
 outJDL.write("Executable = runstep2condor.sh\n");
 outJDL.write("Universe = vanilla\n");
-outJDL.write("Requirements =FileSystemDomain==\"fnal.gov\" && Arch==\"X86_64\"");
-outJDL.write("\n");
+#outJDL.write("Requirements =FileSystemDomain==\"fnal.gov\" && Arch==\"X86_64\"");
 outJDL.write("Notification = ERROR\n");
 outJDL.write("Should_Transfer_Files = YES\n");
 outJDL.write("WhenToTransferOutput = ON_EXIT\n");
 #outJDL.write("include : list-infiles.sh |\n");
-outJDL.write("transfer_input_files = "+inputlist+"\n");
+outJDL.write("Transfer_Input_Files = "+inputlist+"\n");
 outJDL.write("x509userproxy = $ENV(X509_USER_PROXY)\n");
 
-for a in range(len(category)):
-
     #MC
-    if( doMC ):
-        for i in range(len(samples)):
-            outJDL.write("Output = "+LogOutputPath+"/"+str(samples[i][1])+"_"+category[a]+".stdout\n");
-            outJDL.write("Error  = "+LogOutputPath+"/"+str(samples[i][1])+"_"+category[a]+".stdout\n");
-            outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+category[a]+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc\n");
-            outJDL.write("Queue\n");
+if( doMC ):
+    for i in range(len(samples)):
+        outJDL.write("Output = "+OutputLogPath+"/"+str(samples[i][1])+".stdout\n");
+        outJDL.write("Error  = "+OutputLogPath+"/"+str(samples[i][1])+".stdout\n");
+        outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc\n");
+        outJDL.write("Queue\n");
     
-    #data
-    if( doData ):
+#data
+if( doData ):
+    for a in range(len(category)):
         for i in range(len(nameData[category[a]])):
-            outJDL.write("Output = "+LogOutputPath+"/"+(nameData[category[a]])[i]+".stdout\n");
-            outJDL.write("Error = "+LogOutputPath+"/"+(nameData[category[a]])[i]+".stdout\n");
+            outJDL.write("Output = "+OutputLogPath+"/"+(nameData[category[a]])[i]+".stdout\n");
+            outJDL.write("Error = "+OutputLogPath+"/"+(nameData[category[a]])[i]+".stdout\n");
             outJDL.write("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc\n");
             outJDL.write("Queue\n");
 
