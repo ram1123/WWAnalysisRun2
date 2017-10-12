@@ -19,9 +19,11 @@ from pprint import pprint
 #print "name of samples:"
 #pprint(Name)
 
-source = "../OutPut_2Oct_New"
+source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_2017-10-11_12h48/"
 
-ifhaddOnly = 1
+os.system('xrdfs root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
+
+ifhaddOnly = 0
 
 Arrayfilepath = []
 for root, dirs, filenames in os.walk(source):
@@ -95,9 +97,14 @@ for samples in List:
 	temp=""
 	temp="hadd -f "
 	for i in range(0,len(samples)):
-		temp+=source+"/"+samples[i]+" "
+		if i == 0:
+			temp+=source+'HaddedFiles/'+samples[i]+' '
+		else:
+			temp+=source+"/"+samples[i]+" "
 	print temp
 	os.system(temp)
+	#for i in range(1,len(samples)):
+	#	os.system('mv '+samples[i]+' '+source)
 	sampleInfo.append(samples[0])
 	print ""
 

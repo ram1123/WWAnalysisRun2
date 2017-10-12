@@ -50,6 +50,7 @@ CMSSWRel = os.path.basename(cmsswDirPath[1])
 print "CMSSW release used : ",CMSSWRel
 
 # create tarball of present working CMSSW base directory
+os.system('rm CMSSW*.tgz')
 make_tarfile(CMSSWRel+".tgz", cmsswDirPath[1])
 
 # send the created tarball to eos
@@ -129,7 +130,7 @@ samples = [
     ( 5765.40,	"DYJetsToLL_M-50_amcatnlo_5",	0),
     ( 5765.40,	"DYJetsToLL_M-50_amcatnlo_6",	0),
     ( 5765.40,	"DYJetsToLL_M-50_amcatnlo_7",	0),
-    ( 1.68,	"DYJetsToLL_M-50_HT-600to800",	0),
+    #( 1.68,	"DYJetsToLL_M-50_HT-600to800",	0),
     #( 			"WJetsToLNu_HT_70To100_13TeV"
     ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV", 		0),
     ( 1506.4,		"WJetsToLNu_HT_100To200_13TeV_ext1_1",		0),
