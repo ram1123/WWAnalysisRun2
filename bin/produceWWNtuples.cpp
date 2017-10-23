@@ -39,6 +39,11 @@
 #include "BaconAna/Utils/interface/TTrigger.hh"
 #include "BaconAna/DataFormats/interface/TLHEWeight.hh"
 
+// HEADER FILE FOR JES 
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+
 #include "../interface/setOutputTree.h"
 #include "../interface/METzCalculator.h"
 #include "../interface/METzCalculator_Run2.h"
@@ -110,6 +115,7 @@ int main (int argc, char** argv)
   TLorentzVector PuppiAK4_JET1_jes_up, PuppiAK4_JET1_jes_dn;
   TLorentzVector PuppiAK4_JET2_jes_up, PuppiAK4_JET2_jes_dn;
   TLorentzVector VBF1,VBF2,TOT;
+  TLorentzVector VBF1_jes_up, VBF1_jes_dn, VBF2_jes_up, VBF2_jes_dn;
   TLorentzVector ELE,MU;
 
   
@@ -301,6 +307,8 @@ int main (int argc, char** argv)
        eventTree->SetBranchAddress("LHEWeight",&lheWgtArr); lhePartBr = eventTree->GetBranch("LHEWeight");	       }
      }
 
+  JetCorrectorParameters param("Summer16_23Sep2016V4_MC_Uncertainty_AK4PFchs.txt");
+  JetCorrectionUncertainty *fJetUnc = new JetCorrectionUncertainty(param);
   for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
   {
     infoBr->GetEntry(jentry);	    
@@ -990,15 +998,13 @@ int main (int argc, char** argv)
 	JET.SetPtEtaPhiE(WWTree->ungroomed_AK8jet_pt,WWTree->ungroomed_AK8jet_eta,WWTree->ungroomed_AK8jet_phi,WWTree->ungroomed_AK8jet_e);
 	SJ1.SetPtEtaPhiM(WWTree->AK8jet_sj1_pt, WWTree->AK8jet_sj1_eta, WWTree->AK8jet_sj1_phi, WWTree->AK8jet_sj1_m);
 	SJ2.SetPtEtaPhiM(WWTree->AK8jet_sj2_pt, WWTree->AK8jet_sj2_eta, WWTree->AK8jet_sj2_phi, WWTree->AK8jet_sj2_m);
-	/* JET_jes_up.SetPtEtaPhiE(WWTree->ungroomed_jet_pt*(ReducedTree->AK8Jets_AK8correctionUp[hadWpos]/ReducedTree->AK8Jets_AK8correction[hadWpos]),
-	   WWTree->ungroomed_jet_eta,
-	   WWTree->ungroomed_jet_phi,
-	   WWTree->ungroomed_jet_e*(ReducedTree->AK8Jets_AK8correctionUp[hadWpos]/ReducedTree->AK8Jets_AK8correction[hadWpos]));
-	   JET_jes_dn.SetPtEtaPhiE(WWTree->ungroomed_jet_pt*(ReducedTree->AK8Jets_AK8correctionDown[hadWpos]/ReducedTree->AK8Jets_AK8correction[hadWpos]),
-	   WWTree->ungroomed_jet_eta,
-	   WWTree->ungroomed_jet_phi,
-	   WWTree->ungroomed_jet_e*(ReducedTree->AK8Jets_AK8correctionDown[hadWpos]/ReducedTree->AK8Jets_AK8correction[hadWpos]));
-	*/
+	// calculate Up variation
+	fJetUnc->setJetPt(JET.Pt());
+	fJetUnc->setJetEta(JET.Eta());
+	double unc = fJetUnc->getUncertainty(true);
+	JET_jes_up.SetPtEtaPhiM((1.+unc)*JET.Pt(), JET.Eta(), JET.Phi(), JET.M());	
+	// calculate Down variation
+	JET_jes_dn.SetPtEtaPhiM((1.-unc)*JET.Pt(), JET.Eta(), JET.Phi(), JET.M());	
       }
     
     
@@ -1084,16 +1090,13 @@ int main (int argc, char** argv)
 	JET_PuppiAK8.SetPtEtaPhiE(WWTree->ungroomed_PuppiAK8_jet_pt,WWTree->ungroomed_PuppiAK8_jet_eta,WWTree->ungroomed_PuppiAK8_jet_phi,WWTree->ungroomed_PuppiAK8_jet_e);
 	SJ1_PuppiAK8.SetPtEtaPhiM(WWTree->PuppiAK8_jet_sj1_pt, WWTree->PuppiAK8_jet_sj1_eta, WWTree->PuppiAK8_jet_sj1_phi, WWTree->PuppiAK8_jet_sj1_m);
 	SJ2_PuppiAK8.SetPtEtaPhiM(WWTree->PuppiAK8_jet_sj2_pt, WWTree->PuppiAK8_jet_sj2_eta, WWTree->PuppiAK8_jet_sj2_phi, WWTree->PuppiAK8_jet_sj2_m);
-	/* 
-	   JET_PuppiAK8_jes_up.SetPtEtaPhiE(WWTree->ungroomed_PuppiAK8_jet_pt*(ReducedTree->PuppiAK8Jets_PuppiAK8correctionUp[hadWPuppiAK8pos]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[hadWPuppiAK8pos]),
-	   WWTree->ungroomed_PuppiAK8_jet_eta,
-	   WWTree->ungroomed_PuppiAK8_jet_phi,
-	   WWTree->ungroomed_PuppiAK8_jet_e*(ReducedTree->PuppiAK8Jets_PuppiAK8correctionUp[hadWPuppiAK8pos]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[hadWPuppiAK8pos]));
-	   JET_PuppiAK8_jes_dn.SetPtEtaPhiE(WWTree->ungroomed_PuppiAK8_jet_pt*(ReducedTree->PuppiAK8Jets_PuppiAK8correctionDown[hadWPuppiAK8pos]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[hadWPuppiAK8pos]),
-	   WWTree->ungroomed_PuppiAK8_jet_eta,
-	   WWTree->ungroomed_PuppiAK8_jet_phi,
-	   WWTree->ungroomed_PuppiAK8_jet_e*(ReducedTree->PuppiAK8Jets_PuppiAK8correctionDown[hadWPuppiAK8pos]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[hadWPuppiAK8pos]));
-	*/
+	// calculate Up variation
+	fJetUnc->setJetPt(JET_PuppiAK8.Pt());
+	fJetUnc->setJetEta(JET_PuppiAK8.Eta());
+	double unc = fJetUnc->getUncertainty(true);
+	JET_PuppiAK8_jes_up.SetPtEtaPhiM((1.+unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), JET_PuppiAK8.M());	
+	// calculate Down variation
+	JET_PuppiAK8_jes_dn.SetPtEtaPhiM((1.-unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), JET_PuppiAK8.M());	
       }
     
     
@@ -1105,6 +1108,22 @@ int main (int argc, char** argv)
     cutEff[5]++;
     
     
+    WWTree->ungroomed_AK8jet_pt_jes_up = JET_jes_up.Pt();
+    WWTree->ungroomed_AK8jet_eta_jes_up = JET_jes_up.Eta();
+    WWTree->ungroomed_AK8jet_phi_jes_up = JET_jes_up.Phi();
+    WWTree->ungroomed_AK8jet_mass_jes_up = JET_jes_up.M();
+    WWTree->ungroomed_AK8jet_pt_jes_dn = JET_jes_dn.Pt();
+    WWTree->ungroomed_AK8jet_eta_jes_dn = JET_jes_dn.Eta();
+    WWTree->ungroomed_AK8jet_phi_jes_dn = JET_jes_dn.Phi();
+    WWTree->ungroomed_AK8jet_mass_jes_dn = JET_jes_dn.M();
+    WWTree->ungroomed_PuppiAK8_jet_pt_jes_up = JET_PuppiAK8_jes_up.Pt();
+    WWTree->ungroomed_PuppiAK8_jet_eta_jes_up = JET_PuppiAK8_jes_up.Eta();
+    WWTree->ungroomed_PuppiAK8_jet_phi_jes_up = JET_PuppiAK8_jes_up.Phi();
+    WWTree->ungroomed_PuppiAK8_jet_mass_jes_up = JET_PuppiAK8_jes_up.M();
+    WWTree->ungroomed_PuppiAK8_jet_pt_jes_dn = JET_PuppiAK8_jes_dn.Pt();
+    WWTree->ungroomed_PuppiAK8_jet_eta_jes_dn = JET_PuppiAK8_jes_dn.Eta();
+    WWTree->ungroomed_PuppiAK8_jet_phi_jes_dn = JET_PuppiAK8_jes_dn.Phi();
+    WWTree->ungroomed_PuppiAK8_jet_mass_jes_dn = JET_PuppiAK8_jes_dn.M();
     //////////////////ANGULAR VARIABLES
     WWTree->deltaR_Wjet_GenReco = deltaR(WWTree->hadW_eta_gen,WWTree->hadW_phi_gen,JET.Eta(),JET.Phi());
     WWTree->deltaR_lak8jet = deltaR(JET.Eta(),JET.Phi(),LEP.Eta(),LEP.Phi());
@@ -1159,17 +1178,6 @@ int main (int argc, char** argv)
     WWTree->mass_lvj_type0_met_PuppiAK8_jes_up = (LEP + NU0_jes_up + JET_PuppiAK8_jes_up).M();
     WWTree->mass_lvj_type0_met_PuppiAK8_jes_dn = (LEP + NU0_jes_dn + JET_PuppiAK8_jes_dn).M();
     
-    WWTree->mass_lvjj_type0_AK4 = (LEP + NU0 + AK4_JET1 + AK4_JET2).M();
-    WWTree->mass_lvjj_type2_AK4 = (LEP + NU2 + AK4_JET1 + AK4_JET2).M();
-    WWTree->mass_lvjj_run2_AK4  = (LEP + NU1 + AK4_JET1 + AK4_JET2).M();
-    WWTree->mass_lvjj_type0_met_jes_up_AK4 = (LEP + NU0_jes_up + AK4_JET1_jes_up + AK4_JET2_jes_up).M();
-    WWTree->mass_lvjj_type0_met_jes_dn_AK4 = (LEP + NU0_jes_dn + AK4_JET1_jes_dn + AK4_JET2_jes_dn).M();
-    
-    WWTree->mass_lvjj_type0_PuppiAK4 = (LEP + NU0 + PuppiAK4_JET1 + PuppiAK4_JET2).M();
-    WWTree->mass_lvjj_type2_PuppiAK4 = (LEP + NU2 + PuppiAK4_JET1 + PuppiAK4_JET2).M();
-    WWTree->mass_lvjj_run2_PuppiAK4  = (LEP + NU1 + PuppiAK4_JET1 + PuppiAK4_JET2).M();
-    WWTree->mass_lvjj_type0_met_jes_up_PuppiAK4 = (LEP + NU0_jes_up + PuppiAK4_JET1_jes_up + PuppiAK4_JET2_jes_up).M();
-    WWTree->mass_lvjj_type0_met_jes_dn_PuppiAK4 = (LEP + NU0_jes_dn + PuppiAK4_JET1_jes_dn + PuppiAK4_JET2_jes_dn).M();
     WWTree->mass_llj_PuppiAK8 = (LEP + LEP2 + JET_PuppiAK8).M();
 
    // if (WWTree->mass_lvj_type0_PuppiAK8 < 500 || WWTree->mass_lvj_type2_PuppiAK8 < 500 || WWTree->mass_lvj_run2_PuppiAK8 < 500) continue;    // cut on WW invariant mass 
@@ -1258,9 +1266,9 @@ int main (int argc, char** argv)
       
       
       //fill B-Tag info
-      if (jet->csv>0.460)  WWTree->nBTagJet_loose++;
-      if (jet->csv>0.800)  WWTree->nBTagJet_medium++;
-      if (jet->csv>0.935)  WWTree->nBTagJet_tight++;
+      if (jet->csv>0.5426)  WWTree->nBTagJet_loose++;
+      if (jet->csv>0.8484)  WWTree->nBTagJet_medium++;
+      if (jet->csv>0.9535)  WWTree->nBTagJet_tight++;
       
       //------------------------------
       // !!! VBF non-Puppi missing !!!
@@ -1325,12 +1333,46 @@ int main (int argc, char** argv)
         	WWTree->vbf_maxpt_j1_eta = jet1->eta;
         	WWTree->vbf_maxpt_j1_phi = jet1->phi;
         	WWTree->vbf_maxpt_j1_e = VBF1.E();
+        	WWTree->vbf_maxpt_j1_mass = VBF1.M();
         	WWTree->vbf_maxpt_j1_bDiscriminatorCSV = jet1->csv;
         	WWTree->vbf_maxpt_j2_pt = jet2->pt;
         	WWTree->vbf_maxpt_j2_eta = jet2->eta;
         	WWTree->vbf_maxpt_j2_phi = jet2->phi;
         	WWTree->vbf_maxpt_j2_e = VBF2.E();
+        	WWTree->vbf_maxpt_j2_mass = VBF2.M();
         	WWTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
+
+	// calculate Up variation
+	fJetUnc->setJetPt(jet1->pt);
+	fJetUnc->setJetEta(jet1->eta);
+	double unc = fJetUnc->getUncertainty(true);
+	VBF1_jes_up.SetPtEtaPhiM((1.+unc)*jet1->pt, jet1->eta, jet1->phi, jet1->mass);	
+	// calculate Down variation
+	VBF1_jes_dn.SetPtEtaPhiM((1.-unc)*jet1->pt, jet1->eta, jet1->phi, jet1->mass);	
+	// calculate Up variation
+	fJetUnc->setJetPt(jet2->pt);
+	fJetUnc->setJetEta(jet2->eta);
+	unc = fJetUnc->getUncertainty(true);
+	VBF2_jes_up.SetPtEtaPhiM((1.+unc)*jet2->pt, jet2->eta, jet2->phi, jet2->mass);
+	// calculate Down variation
+	VBF2_jes_dn.SetPtEtaPhiM((1.-unc)*jet2->pt, jet2->eta, jet2->phi, jet2->mass);	
+
+	WWTree->vbf_maxpt_j1_pt_jes_up 	= VBF1_jes_up.Pt();
+	WWTree->vbf_maxpt_j1_eta_jes_up = VBF1_jes_up.Eta();
+	WWTree->vbf_maxpt_j1_phi_jes_up = VBF1_jes_up.Phi();
+	WWTree->vbf_maxpt_j1_mass_jes_up= VBF1_jes_up.M();
+	WWTree->vbf_maxpt_j1_pt_jes_dn 	= VBF1_jes_dn.Pt();
+	WWTree->vbf_maxpt_j1_eta_jes_dn = VBF1_jes_dn.Eta();
+	WWTree->vbf_maxpt_j1_phi_jes_dn = VBF1_jes_dn.Phi();
+	WWTree->vbf_maxpt_j1_mass_jes_dn= VBF1_jes_dn.M();
+	WWTree->vbf_maxpt_j2_pt_jes_up 	= VBF2_jes_up.Pt();
+	WWTree->vbf_maxpt_j2_eta_jes_up = VBF2_jes_up.Eta();
+	WWTree->vbf_maxpt_j2_phi_jes_up = VBF2_jes_up.Phi();
+	WWTree->vbf_maxpt_j2_mass_jes_up= VBF2_jes_up.M();
+	WWTree->vbf_maxpt_j2_pt_jes_dn 	= VBF2_jes_dn.Pt();
+	WWTree->vbf_maxpt_j2_eta_jes_dn = VBF2_jes_dn.Eta();
+	WWTree->vbf_maxpt_j2_phi_jes_dn = VBF2_jes_dn.Phi();
+	WWTree->vbf_maxpt_j2_mass_jes_dn= VBF2_jes_dn.M();
 
         WWTree->vbf_maxpt_jj_pt = TOT.Pt();
         WWTree->vbf_maxpt_jj_eta = TOT.Eta();
@@ -1416,7 +1458,7 @@ int main (int argc, char** argv)
       
       
       //fill B-Tag info
-      if (jet->csv>0.460) { 
+      if (jet->csv>0.5426) { 
         WWTree->nBTagJetPuppi_loose++;
         float deltaRbtag = JET_PuppiAK8.DeltaR(AK4);
         if (deltaRbtag>0.8 && deltaRbtag<deltaRbtag_prev_loose) {
@@ -1425,7 +1467,7 @@ int main (int argc, char** argv)
         }	  
       }
       
-      if (jet->csv>0.800) {  
+      if (jet->csv>0.8484) {  
         WWTree->nBTagJetPuppi_medium++;
         float deltaRbtag = JET_PuppiAK8.DeltaR(AK4);
         if (deltaRbtag>0.8 && deltaRbtag<deltaRbtag_prev) {
@@ -1434,7 +1476,7 @@ int main (int argc, char** argv)
         }	  
       }
       
-      if (jet->csv>0.935) {
+      if (jet->csv>0.9535) {
         WWTree->nBTagJetPuppi_tight++;
       }
       
