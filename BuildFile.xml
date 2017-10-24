@@ -3,6 +3,8 @@
 <use name="root"/>
 <use name="roottmva"/>
 <use name="CondFormats/JetMETObjects"/>
+<use name="CondFormats/BTauObjects"/>
+<use name="CondTools/BTau"/>
 <flags CXXFLAGS="-g -Wall"/>
 <export>
   <lib   name="1"/>

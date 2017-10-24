@@ -44,6 +44,11 @@
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
+// HEADER FOR B-TAG
+#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+#include "CondTools/BTau/interface/BTagCalibrationReader.h"
+#include "../BtagUnc.hh"
+
 #include "../interface/setOutputTree.h"
 #include "../interface/METzCalculator.h"
 #include "../interface/METzCalculator_Run2.h"
@@ -235,6 +240,19 @@ int main (int argc, char** argv)
   
   Long64_t TotalNumberOfEvents = 0, nNegEvents = 0; 
 
+
+  // Set up b-tag scale factor readers
+  BTagCalibration calib("csvv2", "CSVv2_Moriond17_B_H.csv");
+  BTagCalibrationReader bTagReader(BTagEntry::OP_MEDIUM,  // working point: can be OP_LOOSE, OP_MEDIUM, OP_TIGHT 
+                                   "central",             // label for the central value (see the scale factor file)
+                                   {"up","down"});        // vector of labels for systematics
+  bTagReader.load(calib, BTagEntry::FLAV_B, "comb");      // use the "comb" measurements for b-jets
+  bTagReader.load(calib, BTagEntry::FLAV_C, "comb");      // use the "comb" measurements for c-jets
+  bTagReader.load(calib, BTagEntry::FLAV_UDSG, "incl");   // use the "incl" measurements for light jets
+      vector<int> posVec;
+      vector<const baconhep::TJet*> goodJetsv;
+  
+  // Loop on input files
   for(int i=0;i<nInputFiles;i++)
   {
      infile = TFile::Open(sampleName[i]);
@@ -1232,6 +1250,17 @@ int main (int argc, char** argv)
       
       if (jet->pt<=30 ) continue;
       if (!passJetLooseSel(jet)) continue;
+
+      //fill B-Tag info
+      
+      if (fabs(jet->eta) < 2.4){
+      		if (jet->csv>0.5426)  WWTree->nBTagJet_loose++;
+      		if (jet->csv>0.8484)  WWTree->nBTagJet_medium++;
+      		if (jet->csv>0.9535)  WWTree->nBTagJet_tight++;
+
+		posVec.push_back(i);
+		goodJetsv.push_back(jet);
+      }
       
       //CLEANING FROM FAT JET
       if (WWTree->nGoodAK8jets > 0) {
@@ -1265,15 +1294,24 @@ int main (int argc, char** argv)
       AK4.SetPtEtaPhiM(jet->pt,jet->eta,jet->phi,jet->mass);
       
       
-      //fill B-Tag info
-      if (jet->csv>0.5426)  WWTree->nBTagJet_loose++;
-      if (jet->csv>0.8484)  WWTree->nBTagJet_medium++;
-      if (jet->csv>0.9535)  WWTree->nBTagJet_tight++;
       
       //------------------------------
       // !!! VBF non-Puppi missing !!!
       //------------------------------
     }
+    vector<float> btagSFv       = getJetSFs(goodJetsv, bTagReader, "central", "central");
+    vector<float> btagSFUpHFv   = getJetSFs(goodJetsv, bTagReader, "up",      "central");
+    vector<float> btagSFDownHFv = getJetSFs(goodJetsv, bTagReader, "down",    "central");
+    vector<float> btagSFUpLFv   = getJetSFs(goodJetsv, bTagReader, "central", "up");
+    vector<float> btagSFDownLFv = getJetSFs(goodJetsv, bTagReader, "central", "down"); 
+
+    WWTree->btag1Wgt       = getBtagEventReweightEtaBin(1, goodJetsv, btagSFv);
+    WWTree->btag2Wgt       = getBtagEventReweightEtaBin(2, goodJetsv, btagSFv);
+
+    WWTree->btag1WgtUpHF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpHFv);
+    WWTree->btag1WgtDownHF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownHFv);
+    WWTree->btag1WgtUpLF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpLFv);
+    WWTree->btag1WgtDownLF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownLFv);
 
     if (indexGoodVBFJets.size()>=2) 
     {

@@ -392,6 +392,12 @@ class setOutputTree {
   int nBTagJetPuppi_loose_unmerged;
   int nBTagJetPuppi_medium_unmerged;
   int nBTagJetPuppi_tight_unmerged;
+  float btag1Wgt;
+  float btag2Wgt;
+  float btag1WgtUpHF;
+  float btag1WgtDownHF;
+  float btag1WgtUpLF;
+  float btag1WgtDownLF;
   float vbf_maxpt_j1_pt;
   float vbf_maxpt_j1_pt_jes_up;
   float vbf_maxpt_j1_pt_jes_dn;

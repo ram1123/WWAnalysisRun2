@@ -233,6 +233,12 @@ void setOutputTree::initializeVariables()
   nBTagJetPuppi_loose_unmerged	=0;
   nBTagJetPuppi_medium_unmerged	=0;
   nBTagJetPuppi_tight_unmerged	=0;
+  btag1Wgt			=-999.;
+  btag2Wgt			=-999.;
+  btag1WgtUpHF			=-999.;
+  btag1WgtDownHF		=-999.;
+  btag1WgtUpLF			=-999.;
+  btag1WgtDownLF		=-999.;
   ungroomed_AK8jet_pt		=-999;
   ungroomed_AK8jet_pt_jes_up	=-999;
   ungroomed_AK8jet_pt_jes_dn	=-999;
@@ -947,6 +953,12 @@ void setOutputTree::setBranches()
   fTree->Branch("nBTagJetPuppi_loose_unmerged",&nBTagJetPuppi_loose_unmerged,"nBTagJetPuppi_loose_unmerged/I");
   fTree->Branch("nBTagJetPuppi_medium_unmerged",&nBTagJetPuppi_medium_unmerged,"nBTagJetPuppi_medium_unmerged/I");
   fTree->Branch("nBTagJetPuppi_tight_unmerged",&nBTagJetPuppi_tight_unmerged,"nBTagJetPuppi_tight_unmerged/I");
+  fTree->Branch("btag1Wgt",&btag1Wgt,"btag1Wgt/F");
+  fTree->Branch("btag2Wgt",&btag2Wgt,"btag2Wgt/F");
+  fTree->Branch("btag1WgtUpHF",&btag1WgtUpHF,"btag1WgtUpHF/F");
+  fTree->Branch("btag1WgtDownHF",&btag1WgtDownHF,"btag1WgtDownHF/F");
+  fTree->Branch("btag1WgtUpLF",&btag1WgtUpLF,"btag1WgtUpLF/F");
+  fTree->Branch("btag1WgtDownLF",&btag1WgtDownLF,"btag1WgtDownLF/F");
   fTree->Branch("mass_leptonic_closerjet",&mass_leptonic_closerjet,"mass_leptonic_closerjet/F");
   fTree->Branch("mass_ungroomedjet_closerjet",&mass_ungroomedjet_closerjet,"mass_ungroomedjet_closerjet/F");
   fTree->Branch("AK8_closerjet_pt",&AK8_closerjet_pt,"AK8_closerjet_pt/F");
