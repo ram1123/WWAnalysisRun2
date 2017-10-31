@@ -65,6 +65,7 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
 double GetSFs_Lepton(double pt, double eta, TH1F* h1);
 double GetMin(double x, double y);
 double GetMax(double x, double y);
+float getPUPPIweight(float puppipt, float puppieta );
 
 //*******MAIN*******************************************************************
 
@@ -287,6 +288,13 @@ int main (int argc, char** argv)
   float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
   int totalEntries=0;
 
+  JetCorrectorParameters paramAK4chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK4PFchs.txt");
+  JetCorrectorParameters paramAK8chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFchs.txt");
+  JetCorrectorParameters paramAK8puppi("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFPuppi.txt");
+  JetCorrectionUncertainty *fJetUnc_AK4chs = new JetCorrectionUncertainty(paramAK4chs);
+  JetCorrectionUncertainty *fJetUnc_AK8chs = new JetCorrectionUncertainty(paramAK8chs);
+  JetCorrectionUncertainty *fJetUnc_AK8puppi = new JetCorrectionUncertainty(paramAK8puppi);
+
   //---------start loop on events------------
   std::cout << "---------start loop on events------------" << std::endl;
   jentry2=0;
@@ -325,8 +333,6 @@ int main (int argc, char** argv)
        eventTree->SetBranchAddress("LHEWeight",&lheWgtArr); lhePartBr = eventTree->GetBranch("LHEWeight");	       }
      }
 
-  JetCorrectorParameters param("Summer16_23Sep2016V4_MC_Uncertainty_AK4PFchs.txt");
-  JetCorrectionUncertainty *fJetUnc = new JetCorrectionUncertainty(param);
   for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
   {
     infoBr->GetEntry(jentry);	    
@@ -1017,9 +1023,9 @@ int main (int argc, char** argv)
 	SJ1.SetPtEtaPhiM(WWTree->AK8jet_sj1_pt, WWTree->AK8jet_sj1_eta, WWTree->AK8jet_sj1_phi, WWTree->AK8jet_sj1_m);
 	SJ2.SetPtEtaPhiM(WWTree->AK8jet_sj2_pt, WWTree->AK8jet_sj2_eta, WWTree->AK8jet_sj2_phi, WWTree->AK8jet_sj2_m);
 	// calculate Up variation
-	fJetUnc->setJetPt(JET.Pt());
-	fJetUnc->setJetEta(JET.Eta());
-	double unc = fJetUnc->getUncertainty(true);
+	fJetUnc_AK8chs->setJetPt(JET.Pt());
+	fJetUnc_AK8chs->setJetEta(JET.Eta());
+	double unc = fJetUnc_AK8chs->getUncertainty(true);
 	JET_jes_up.SetPtEtaPhiM((1.+unc)*JET.Pt(), JET.Eta(), JET.Phi(), JET.M());	
 	// calculate Down variation
 	JET_jes_dn.SetPtEtaPhiM((1.-unc)*JET.Pt(), JET.Eta(), JET.Phi(), JET.M());	
@@ -1079,7 +1085,7 @@ int main (int argc, char** argv)
       
 	WWTree->PuppiAK8_jet_mass  = jet->mass;
 	WWTree->PuppiAK8_jet_mass_pr  = addjet->mass_prun;
-	WWTree->PuppiAK8_jet_mass_so  = addjet->mass_sd0;
+	WWTree->PuppiAK8_jet_mass_so  = addjet->mass_sd0*getPUPPIweight(jet->pt, jet->eta);
 	WWTree->PuppiAK8_jet_mass_tr  = addjet->mass_trim;
 	WWTree->PuppiAK8_jet_tau2tau1 = addjet->tau2/addjet->tau1;
 	WWTree->ungroomed_PuppiAK8_jet_charge = jet->q;
@@ -1099,7 +1105,7 @@ int main (int argc, char** argv)
 	
 	//tempPt = WWTree->ungroomed_PuppiAK8_jet_pt;
 	//tempMassW = abs(jet->mass - 80.385);
-	tempMassW = abs(addjet->mass_sd0 - 80.385);
+	tempMassW = abs(WWTree->PuppiAK8_jet_mass_so - 80.385);
 	nGoodPuppiAK8jets++;
 	//hadWPuppiAK8pos = i;
       }
@@ -1109,9 +1115,9 @@ int main (int argc, char** argv)
 	SJ1_PuppiAK8.SetPtEtaPhiM(WWTree->PuppiAK8_jet_sj1_pt, WWTree->PuppiAK8_jet_sj1_eta, WWTree->PuppiAK8_jet_sj1_phi, WWTree->PuppiAK8_jet_sj1_m);
 	SJ2_PuppiAK8.SetPtEtaPhiM(WWTree->PuppiAK8_jet_sj2_pt, WWTree->PuppiAK8_jet_sj2_eta, WWTree->PuppiAK8_jet_sj2_phi, WWTree->PuppiAK8_jet_sj2_m);
 	// calculate Up variation
-	fJetUnc->setJetPt(JET_PuppiAK8.Pt());
-	fJetUnc->setJetEta(JET_PuppiAK8.Eta());
-	double unc = fJetUnc->getUncertainty(true);
+	fJetUnc_AK8puppi->setJetPt(JET_PuppiAK8.Pt());
+	fJetUnc_AK8puppi->setJetEta(JET_PuppiAK8.Eta());
+	double unc = fJetUnc_AK8puppi->getUncertainty(true);
 	JET_PuppiAK8_jes_up.SetPtEtaPhiM((1.+unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), JET_PuppiAK8.M());	
 	// calculate Down variation
 	JET_PuppiAK8_jes_dn.SetPtEtaPhiM((1.-unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), JET_PuppiAK8.M());	
@@ -1381,16 +1387,16 @@ int main (int argc, char** argv)
         	WWTree->vbf_maxpt_j2_bDiscriminatorCSV = jet2->csv;
 
 	// calculate Up variation
-	fJetUnc->setJetPt(jet1->pt);
-	fJetUnc->setJetEta(jet1->eta);
-	double unc = fJetUnc->getUncertainty(true);
+	fJetUnc_AK4chs->setJetPt(jet1->pt);
+	fJetUnc_AK4chs->setJetEta(jet1->eta);
+	double unc = fJetUnc_AK4chs->getUncertainty(true);
 	VBF1_jes_up.SetPtEtaPhiM((1.+unc)*jet1->pt, jet1->eta, jet1->phi, jet1->mass);	
 	// calculate Down variation
 	VBF1_jes_dn.SetPtEtaPhiM((1.-unc)*jet1->pt, jet1->eta, jet1->phi, jet1->mass);	
 	// calculate Up variation
-	fJetUnc->setJetPt(jet2->pt);
-	fJetUnc->setJetEta(jet2->eta);
-	unc = fJetUnc->getUncertainty(true);
+	fJetUnc_AK4chs->setJetPt(jet2->pt);
+	fJetUnc_AK4chs->setJetEta(jet2->eta);
+	unc = fJetUnc_AK4chs->getUncertainty(true);
 	VBF2_jes_up.SetPtEtaPhiM((1.+unc)*jet2->pt, jet2->eta, jet2->phi, jet2->mass);
 	// calculate Down variation
 	VBF2_jes_dn.SetPtEtaPhiM((1.-unc)*jet2->pt, jet2->eta, jet2->phi, jet2->mass);	
@@ -1778,6 +1784,8 @@ int main (int argc, char** argv)
 
 
     outTree->Fill();
+    goodJetsv.clear();
+    posVec.clear();
     }
     delete infile;
     infile=0, eventTree=0;
@@ -1945,3 +1953,30 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
   	if (x>y) return x;
 	else	 return y;
   }
+
+float getPUPPIweight(float puppipt, float puppieta ){
+
+ TFile* file = TFile::Open( "puppiCorr.root","READ");
+  TF1* puppisd_corrGEN      = (TF1*)file->Get("puppiJECcorr_gen");
+  TF1* puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
+  TF1* puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
+
+
+  float genCorr  = 1.;
+  float recoCorr = 1.;
+  float totalWeight = 1.;
+        
+  genCorr =  puppisd_corrGEN->Eval( puppipt );
+  if( fabs(puppieta)  <= 1.3 ){
+    recoCorr = puppisd_corrRECO_cen->Eval( puppipt );
+  }
+  else{
+    recoCorr = puppisd_corrRECO_for->Eval( puppipt );
+  }
+  
+  totalWeight = genCorr * recoCorr;
+
+  file->Close();
+
+  return totalWeight;
+}
