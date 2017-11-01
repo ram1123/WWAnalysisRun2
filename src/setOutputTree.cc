@@ -12,8 +12,7 @@ setOutputTree::~setOutputTree(){
 
 void setOutputTree::initializeVariables()
 {
-  LHEid.clear();
-  LHEWeight.clear();
+  LHEWeight[1163] = { };
   run		=-999;
   event		=-999;
   nEvents	=0;
@@ -576,8 +575,7 @@ void setOutputTree::initializeVariables()
 
 void setOutputTree::setBranches()
 {
-  fTree->Branch("LHEid",&LHEid);
-  fTree->Branch("LHEWeight",&LHEWeight);
+  fTree->Branch("LHEWeight",&LHEWeight[0],"LHEWeight[1164]/F");
   fTree->Branch("run",&run,"run/I");
   fTree->Branch("event",&event,"event/I");
   fTree->Branch("nEvents",&nEvents,"nEvents/I");

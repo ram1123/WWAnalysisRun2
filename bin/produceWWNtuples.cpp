@@ -65,7 +65,8 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
 double GetSFs_Lepton(double pt, double eta, TH1F* h1);
 double GetMin(double x, double y);
 double GetMax(double x, double y);
-float getPUPPIweight(float puppipt, float puppieta );
+//float getPUPPIweight(float puppipt, float puppieta );
+float getPUPPIweight(TF1* puppisd_corrGEN, TF1* puppisd_corrRECO_cen, TF1* puppisd_corrRECO_for, float puppipt, float puppieta );
 
 //*******MAIN*******************************************************************
 
@@ -218,6 +219,11 @@ int main (int argc, char** argv)
   TH1F* hTriggerMuB = (TH1F*)TriggerMuB->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio");
 
   //---------------- Root Files for ID, ISO, Trigger, GSF correctiosn for ELE and MU both: ENDS -------------
+  
+  TFile* file = TFile::Open( "puppiCorr.root","READ");
+  TF1* puppisd_corrGEN      = (TF1*)file->Get("puppiJECcorr_gen");
+  TF1* puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
+  TF1* puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
 
 
   //---------output tree----------------
@@ -232,7 +238,7 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles = 5;
+  if (isLocal==1) nInputFiles = 1;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -250,8 +256,9 @@ int main (int argc, char** argv)
   bTagReader.load(calib, BTagEntry::FLAV_B, "comb");      // use the "comb" measurements for b-jets
   bTagReader.load(calib, BTagEntry::FLAV_C, "comb");      // use the "comb" measurements for c-jets
   bTagReader.load(calib, BTagEntry::FLAV_UDSG, "incl");   // use the "incl" measurements for light jets
-      vector<int> posVec;
-      vector<const baconhep::TJet*> goodJetsv;
+  
+
+  vector<const baconhep::TJet*> goodJetsv;
   
   // Loop on input files
   for(int i=0;i<nInputFiles;i++)
@@ -287,6 +294,7 @@ int main (int argc, char** argv)
 
   float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
   int totalEntries=0;
+
 
   JetCorrectorParameters paramAK4chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK4PFchs.txt");
   JetCorrectorParameters paramAK8chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFchs.txt");
@@ -370,6 +378,10 @@ int main (int argc, char** argv)
       TLorentzVector genLep, genNeutrino, genWquarks, genVBFquarks;
       std::vector<TLorentzVector> v_GEN_hadW, v_GEN_lepW, v_GEN_VBFJ1, v_GEN_VBFJ2, v_GEN_VBFJ, v_GEN_temp;
       std::vector<TLorentzVector> v_genLep, v_genNeutrino, v_genWquarks, v_genVBFquarks;
+
+      v_GEN_hadW.clear();	v_GEN_lepW.clear();	v_GEN_VBFJ1.clear();	v_GEN_VBFJ2.clear();
+      v_GEN_VBFJ.clear();	v_GEN_temp.clear();	v_genLep.clear();	v_genNeutrino.clear();
+      v_genWquarks.clear();	v_genVBFquarks.clear();
       
       for (int i = 0; i<genPartArr->GetEntries();i++)
 	{
@@ -444,8 +456,8 @@ int main (int argc, char** argv)
     	for (int i = 0; i<lheWgtArr->GetEntries();i++)     // Note that i is starting from 446.
 	{
 		const baconhep::TLHEWeight *lhe = (baconhep::TLHEWeight*)((*lheWgtArr)[i]);
-		WWTree->LHEid.push_back(lhe->id);
-		WWTree->LHEWeight.push_back(lhe->weight);
+		//WWTree->LHEid[i] = lhe->id;
+		WWTree->LHEWeight[i] = lhe->weight;
 	}
     }
 
@@ -1085,7 +1097,7 @@ int main (int argc, char** argv)
       
 	WWTree->PuppiAK8_jet_mass  = jet->mass;
 	WWTree->PuppiAK8_jet_mass_pr  = addjet->mass_prun;
-	WWTree->PuppiAK8_jet_mass_so  = addjet->mass_sd0*getPUPPIweight(jet->pt, jet->eta);
+	WWTree->PuppiAK8_jet_mass_so  = addjet->mass_sd0*getPUPPIweight(puppisd_corrGEN, puppisd_corrRECO_cen, puppisd_corrRECO_for, jet->pt, jet->eta);
 	WWTree->PuppiAK8_jet_mass_tr  = addjet->mass_trim;
 	WWTree->PuppiAK8_jet_tau2tau1 = addjet->tau2/addjet->tau1;
 	WWTree->ungroomed_PuppiAK8_jet_charge = jet->q;
@@ -1264,7 +1276,6 @@ int main (int argc, char** argv)
       		if (jet->csv>0.8484)  WWTree->nBTagJet_medium++;
       		if (jet->csv>0.9535)  WWTree->nBTagJet_tight++;
 
-		posVec.push_back(i);
 		goodJetsv.push_back(jet);
       }
       
@@ -1305,19 +1316,22 @@ int main (int argc, char** argv)
       // !!! VBF non-Puppi missing !!!
       //------------------------------
     }
-    vector<float> btagSFv       = getJetSFs(goodJetsv, bTagReader, "central", "central");
-    vector<float> btagSFUpHFv   = getJetSFs(goodJetsv, bTagReader, "up",      "central");
-    vector<float> btagSFDownHFv = getJetSFs(goodJetsv, bTagReader, "down",    "central");
-    vector<float> btagSFUpLFv   = getJetSFs(goodJetsv, bTagReader, "central", "up");
-    vector<float> btagSFDownLFv = getJetSFs(goodJetsv, bTagReader, "central", "down"); 
+    	vector<float> btagSFv       = getJetSFs(goodJetsv, bTagReader, "central", "central");
+    	vector<float> btagSFUpHFv   = getJetSFs(goodJetsv, bTagReader, "up",      "central");
+    	vector<float> btagSFDownHFv = getJetSFs(goodJetsv, bTagReader, "down",    "central");
+    	vector<float> btagSFUpLFv   = getJetSFs(goodJetsv, bTagReader, "central", "up");
+    	vector<float> btagSFDownLFv = getJetSFs(goodJetsv, bTagReader, "central", "down"); 
 
-    WWTree->btag1Wgt       = getBtagEventReweightEtaBin(1, goodJetsv, btagSFv);
-    WWTree->btag2Wgt       = getBtagEventReweightEtaBin(2, goodJetsv, btagSFv);
+    	WWTree->btag1Wgt       = getBtagEventReweightEtaBin(1, goodJetsv, btagSFv);
+    	WWTree->btag2Wgt       = getBtagEventReweightEtaBin(2, goodJetsv, btagSFv);
 
-    WWTree->btag1WgtUpHF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpHFv);
-    WWTree->btag1WgtDownHF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownHFv);
-    WWTree->btag1WgtUpLF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpLFv);
-    WWTree->btag1WgtDownLF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownLFv);
+    	WWTree->btag1WgtUpHF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpHFv);
+    	WWTree->btag1WgtDownHF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownHFv);
+    	WWTree->btag1WgtUpLF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpLFv);
+    	WWTree->btag1WgtDownLF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownLFv);
+    	
+    	btagSFv.clear();	btagSFUpHFv.clear();	btagSFDownHFv.clear();
+    	btagSFUpLFv.clear();	btagSFDownLFv.clear();
 
     if (indexGoodVBFJets.size()>=2) 
     {
@@ -1429,6 +1443,7 @@ int main (int argc, char** argv)
 	WWTree->AK4_DR_GENRECO_22 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
       }
     }
+    indexGoodVBFJets.clear();
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1784,8 +1799,8 @@ int main (int argc, char** argv)
 
 
     outTree->Fill();
+
     goodJetsv.clear();
-    posVec.clear();
     }
     delete infile;
     infile=0, eventTree=0;
@@ -1797,6 +1812,7 @@ int main (int argc, char** argv)
   //delete pileupHisto;
   //pileupFile->Close();
   pileupFileMC->Close();
+  file->Close();
   std::cout << "---------end loop on events------------" << std::endl;
   std::cout << std::endl;
   std::cout << "GEN events = " << count_genEvents << std::endl;
@@ -1954,12 +1970,8 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
 	else	 return y;
   }
 
-float getPUPPIweight(float puppipt, float puppieta ){
+float getPUPPIweight(TF1* puppisd_corrGEN, TF1* puppisd_corrRECO_cen, TF1* puppisd_corrRECO_for, float puppipt, float puppieta ){
 
- TFile* file = TFile::Open( "puppiCorr.root","READ");
-  TF1* puppisd_corrGEN      = (TF1*)file->Get("puppiJECcorr_gen");
-  TF1* puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
-  TF1* puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
 
 
   float genCorr  = 1.;
@@ -1976,7 +1988,6 @@ float getPUPPIweight(float puppipt, float puppieta ){
   
   totalWeight = genCorr * recoCorr;
 
-  file->Close();
 
   return totalWeight;
 }

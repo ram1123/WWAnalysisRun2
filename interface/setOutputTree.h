@@ -10,8 +10,7 @@ class setOutputTree {
  public:
 
   TTree* fTree;
-  std::vector<int>      LHEid;
-  std::vector<float> LHEWeight;
+  float LHEWeight[1164] = {};
   int run;
   int event;
   int nEvents;
