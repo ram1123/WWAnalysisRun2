@@ -676,12 +676,41 @@ int main (int argc, char** argv)
     
     float Wmass = 80.385;
   
-    TLorentzVector W_Met, W_Met_jes_up, W_Met_jes_dn;
+    TLorentzVector W_Met, W_Met_jes_up, W_Met_jes_dn, AK4Up, AK4Down;
   
     W_Met.SetPxPyPzE(info->pfMET * TMath::Cos(info->pfMETphi), info->pfMET * TMath::Sin(info->pfMETphi), 0., sqrt(info->pfMET*info->pfMET));
-    //W_Met_jes_up.SetPxPyPzE(ReducedTree->METPtUp * TMath::Cos(ReducedTree->METPhiUp), ReducedTree->METPtUp * TMath::Sin(ReducedTree->METPhiUp), 0., sqrt(ReducedTree->METPtUp*ReducedTree->METPtUp));
-    //W_Met_jes_dn.SetPxPyPzE(ReducedTree->METPtDown * TMath::Cos(ReducedTree->METPhiDown), ReducedTree->METPtDown * TMath::Sin(ReducedTree->METPhiDown), 0., sqrt(ReducedTree->METPtDown*ReducedTree->METPtDown));
-  
+
+    ////////////////////////////////////////////////////////////////
+    //		
+    //		MET JES Calculate
+    //
+    ////////////////////////////////////////////////////////////////
+    jetArr->Clear();
+    jetBr->GetEntry(jentry);
+    for ( int i=0; i<jetArr->GetEntries(); i++) //loop on AK4 jet
+    {
+      const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
+      TLorentzVector AK4_LV_temp, AK4_LV_temp2;
+      fJetUnc_AK4chs->setJetPt(jet->pt);
+      fJetUnc_AK4chs->setJetEta(jet->eta);
+      double unc = fJetUnc_AK4chs->getUncertainty(true);
+
+      // Get AK4 LorentzVector 
+      AK4_LV_temp.SetPtEtaPhiM(jet->pt, jet->eta, jet->phi, jet->mass);
+
+      // calculate Up variation
+      AK4_LV_temp2.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, jet->mass);
+      AK4Up += AK4_LV_temp2 - AK4_LV_temp;
+
+      // calculate Down variation
+      AK4_LV_temp2.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, jet->mass);
+      AK4Down += AK4_LV_temp2 - AK4_LV_temp;
+    }
+    W_Met_jes_up = W_Met + AK4Up;
+    W_Met_jes_dn = W_Met + AK4Down;
+    //////////////////////////////////////// END: MET JES Calculate
+
+
     // type0 calculation of neutrino pZ
     METzCalculator NeutrinoPz_type0;
     METzCalculator NeutrinoPz_type0_jes_up;
@@ -708,8 +737,8 @@ int main (int argc, char** argv)
     
     double pz1_run2 = NeutrinoPz_run2.Calculate();
   
-    //double pz1_type0_jes_up = NeutrinoPz_type0_jes_up.Calculate(); // Default one -> according to type0
-    //double pz1_type0_jes_dn = NeutrinoPz_type0_jes_dn.Calculate(); // Default one -> according to type0
+    double pz1_type0_jes_up = NeutrinoPz_type0_jes_up.Calculate(); // Default one -> according to type0
+    double pz1_type0_jes_dn = NeutrinoPz_type0_jes_dn.Calculate(); // Default one -> according to type0
   
     // don't touch the neutrino pT
     TLorentzVector W_neutrino_type0_met; 
@@ -761,8 +790,8 @@ int main (int argc, char** argv)
     }
     
     WWTree->pfMET = sqrt(info->pfMET*info->pfMET);
-    //WWTree->pfMET_jes_up = sqrt(ReducedTree->METPtUp*ReducedTree->METPtUp);
-    //WWTree->pfMET_jes_dn = sqrt(ReducedTree->METPtDown*ReducedTree->METPtDown);
+    WWTree->pfMET_jes_up = W_Met_jes_up.Pt();
+    WWTree->pfMET_jes_dn = W_Met_jes_dn.Pt();
     WWTree->pfMET_Phi = info->pfMETphi;
     WWTree->pfMET_Corr = info->pfMETC;
     WWTree->pfMET_Corr_phi = info->pfMETCphi;
@@ -797,8 +826,8 @@ int main (int argc, char** argv)
     /////////////////THE LEPTONIC W
   
     NU0.SetPxPyPzE(info->pfMET*TMath::Cos(info->pfMETphi),info->pfMET*TMath::Sin(info->pfMETphi),WWTree->nu_pz_type0,TMath::Sqrt(WWTree->pfMET*WWTree->pfMET+WWTree->nu_pz_type0*WWTree->nu_pz_type0));
-    //NU0_jes_up.SetPxPyPzE(ReducedTree->METPtUp*TMath::Cos(ReducedTree->METPhiUp),ReducedTree->METPtUp*TMath::Sin(ReducedTree->METPhiUp),pz1_type0_jes_up,TMath::Sqrt(WWTree->pfMET_jes_up*WWTree->pfMET_jes_up+pz1_type0_jes_up*pz1_type0_jes_up));
-    //NU0_jes_dn.SetPxPyPzE(ReducedTree->METPtDown*TMath::Cos(ReducedTree->METPhiDown),ReducedTree->METPtDown*TMath::Sin(ReducedTree->METPhiDown),pz1_type0_jes_dn,TMath::Sqrt(WWTree->pfMET_jes_dn*WWTree->pfMET_jes_dn+pz1_type0_jes_dn*pz1_type0_jes_dn));
+    NU0_jes_up.SetPxPyPzE(W_Met_jes_up.Pt()*TMath::Cos(W_Met_jes_up.Phi()), W_Met_jes_up.Pt()*TMath::Sin(W_Met_jes_up.Phi()),pz1_type0_jes_up,TMath::Sqrt(WWTree->pfMET_jes_up*WWTree->pfMET_jes_up+pz1_type0_jes_up*pz1_type0_jes_up));
+    NU0_jes_dn.SetPxPyPzE(W_Met_jes_dn.Pt()*TMath::Cos(W_Met_jes_dn.Phi()), W_Met_jes_dn.Pt()*TMath::Sin(W_Met_jes_dn.Phi()),pz1_type0_jes_dn,TMath::Sqrt(WWTree->pfMET_jes_dn*WWTree->pfMET_jes_dn+pz1_type0_jes_dn*pz1_type0_jes_dn));
     
     NU2.SetPxPyPzE(info->pfMET*TMath::Cos(info->pfMETphi),info->pfMET*TMath::Sin(info->pfMETphi),WWTree->nu_pz_type2,TMath::Sqrt(WWTree->pfMET*WWTree->pfMET+WWTree->nu_pz_type2*WWTree->nu_pz_type2));
     NU1.SetPxPyPzE(info->pfMET*TMath::Cos(info->pfMETphi),info->pfMET*TMath::Sin(info->pfMETphi),WWTree->nu_pz_run2,TMath::Sqrt(WWTree->pfMET*WWTree->pfMET+WWTree->nu_pz_run2*WWTree->nu_pz_run2));
