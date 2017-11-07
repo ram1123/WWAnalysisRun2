@@ -440,10 +440,16 @@ class setOutputTree {
   int   vbfPuppi_maxpt_j1_ID;
   int   vbfPuppi_maxpt_j2_ID;
   float vbf_maxpt_jj_pt;
+  float vbf_maxpt_jj_pt_jes_up;
+  float vbf_maxpt_jj_pt_jes_dn;
   float vbf_maxpt_jj_eta;
   float vbf_maxpt_jj_phi;
   float vbf_maxpt_jj_m;
+  float vbf_maxpt_jj_m_jes_up;
+  float vbf_maxpt_jj_m_jes_dn;
   float vbf_maxpt_jj_Deta;
+  float vbf_maxpt_jj_Deta_jes_up;
+  float vbf_maxpt_jj_Deta_jes_dn;
   float vbf_maxpt_deltaR;
   float vbfPuppi_maxpt_j1_pt;
   float vbfPuppi_maxpt_j1_pt_jes_up;

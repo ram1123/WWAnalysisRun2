@@ -153,7 +153,8 @@ int main (int argc, char** argv)
   if ( cluster == "lxplus")
   	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   else 
-  	sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
+	sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
+	//sprintf(command1,"eos root://cmseos.fnal.gov find -f %s | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());	// WORKS ONLY WITH INTERACTIVE NODE
 
   std::cout<<command1<<std::endl;
   system(command1);
@@ -310,7 +311,7 @@ int main (int argc, char** argv)
   jentry2=0;
   for(int i=0;i<nInputFiles;i++)
   {
-  cout<<"\n\n=====	Processing File Number : "<<i<<"\n\t"<<sampleName[i]<<"\n-------"<<endl;
+  cout<<"\n\n=====	Processing File Number : "<<i<<"/"<<nInputFiles<<"\n\t"<<sampleName[i]<<"\n-------"<<endl;
 
   infile = TFile::Open(sampleName[i]);
   eventTree = (TTree*)infile->Get("Events");
@@ -701,11 +702,11 @@ int main (int argc, char** argv)
       AK4_LV_temp.SetPtEtaPhiM(jet->pt, jet->eta, jet->phi, jet->mass);
 
       // calculate Up variation
-      AK4_LV_temp2.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, jet->mass);
+      AK4_LV_temp2.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, (1.+unc)*jet->mass);
       AK4Up += AK4_LV_temp2 - AK4_LV_temp;
 
       // calculate Down variation
-      AK4_LV_temp2.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, jet->mass);
+      AK4_LV_temp2.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, (1.-unc)*jet->mass);
       AK4Down += AK4_LV_temp2 - AK4_LV_temp;
     }
     W_Met_jes_up = W_Met + AK4Up;
@@ -886,11 +887,11 @@ int main (int argc, char** argv)
       AK4_LV_temp.SetPtEtaPhiM(jet->pt, jet->eta, jet->phi, jet->mass);
 
       // calculate Up variation
-      AK4_LV_temp2.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, jet->mass);
+      AK4_LV_temp2.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, (1.+unc)*jet->mass);
       AK4Up_Puppi += AK4_LV_temp2 - AK4_LV_temp;
 
       // calculate Down variation
-      AK4_LV_temp2.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, jet->mass);
+      AK4_LV_temp2.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, (1.-unc)*jet->mass);
       AK4Down_Puppi += AK4_LV_temp2 - AK4_LV_temp;
     }
     W_Met_jes_up = W_Met + AK4Up;
@@ -1096,9 +1097,9 @@ int main (int argc, char** argv)
 	fJetUnc_AK8chs->setJetPt(JET.Pt());
 	fJetUnc_AK8chs->setJetEta(JET.Eta());
 	double unc = fJetUnc_AK8chs->getUncertainty(true);
-	JET_jes_up.SetPtEtaPhiM((1.+unc)*JET.Pt(), JET.Eta(), JET.Phi(), JET.M());	
+	JET_jes_up.SetPtEtaPhiM((1.+unc)*JET.Pt(), JET.Eta(), JET.Phi(), (1.+unc)*JET.M());	
 	// calculate Down variation
-	JET_jes_dn.SetPtEtaPhiM((1.-unc)*JET.Pt(), JET.Eta(), JET.Phi(), JET.M());	
+	JET_jes_dn.SetPtEtaPhiM((1.-unc)*JET.Pt(), JET.Eta(), JET.Phi(), (1.-unc)*JET.M());	
       }
     
     
@@ -1188,9 +1189,9 @@ int main (int argc, char** argv)
 	fJetUnc_AK8puppi->setJetPt(JET_PuppiAK8.Pt());
 	fJetUnc_AK8puppi->setJetEta(JET_PuppiAK8.Eta());
 	double unc = fJetUnc_AK8puppi->getUncertainty(true);
-	JET_PuppiAK8_jes_up.SetPtEtaPhiM((1.+unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), JET_PuppiAK8.M());	
+	JET_PuppiAK8_jes_up.SetPtEtaPhiM((1.+unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.+unc)*JET_PuppiAK8.M());	
 	// calculate Down variation
-	JET_PuppiAK8_jes_dn.SetPtEtaPhiM((1.-unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), JET_PuppiAK8.M());	
+	JET_PuppiAK8_jes_dn.SetPtEtaPhiM((1.-unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.-unc)*JET_PuppiAK8.M());	
       }
     
     
@@ -1324,7 +1325,7 @@ int main (int argc, char** argv)
       bool isCleaned = true;
       bool isCleanedFromFatJet = true;
       
-      if (jet->pt<=30 ) continue;
+      if (jet->pt<=20 ) continue;
       if (!passJetLooseSel(jet)) continue;
 
       //fill B-Tag info
@@ -1462,16 +1463,16 @@ int main (int argc, char** argv)
 	fJetUnc_AK4chs->setJetPt(jet1->pt);
 	fJetUnc_AK4chs->setJetEta(jet1->eta);
 	double unc = fJetUnc_AK4chs->getUncertainty(true);
-	VBF1_jes_up.SetPtEtaPhiM((1.+unc)*jet1->pt, jet1->eta, jet1->phi, jet1->mass);	
+	VBF1_jes_up.SetPtEtaPhiM((1.+unc)*jet1->pt, jet1->eta, jet1->phi, (1.+unc)*jet1->mass);	
 	// calculate Down variation
-	VBF1_jes_dn.SetPtEtaPhiM((1.-unc)*jet1->pt, jet1->eta, jet1->phi, jet1->mass);	
+	VBF1_jes_dn.SetPtEtaPhiM((1.-unc)*jet1->pt, jet1->eta, jet1->phi, (1.-unc)*jet1->mass);	
 	// calculate Up variation
 	fJetUnc_AK4chs->setJetPt(jet2->pt);
 	fJetUnc_AK4chs->setJetEta(jet2->eta);
 	unc = fJetUnc_AK4chs->getUncertainty(true);
-	VBF2_jes_up.SetPtEtaPhiM((1.+unc)*jet2->pt, jet2->eta, jet2->phi, jet2->mass);
+	VBF2_jes_up.SetPtEtaPhiM((1.+unc)*jet2->pt, jet2->eta, jet2->phi, (1.+unc)*jet2->mass);
 	// calculate Down variation
-	VBF2_jes_dn.SetPtEtaPhiM((1.-unc)*jet2->pt, jet2->eta, jet2->phi, jet2->mass);	
+	VBF2_jes_dn.SetPtEtaPhiM((1.-unc)*jet2->pt, jet2->eta, jet2->phi, (1.-unc)*jet2->mass);	
 
 	WWTree->vbf_maxpt_j1_pt_jes_up 	= VBF1_jes_up.Pt();
 	WWTree->vbf_maxpt_j1_eta_jes_up = VBF1_jes_up.Eta();
@@ -1491,10 +1492,16 @@ int main (int argc, char** argv)
 	WWTree->vbf_maxpt_j2_mass_jes_dn= VBF2_jes_dn.M();
 
         WWTree->vbf_maxpt_jj_pt = TOT.Pt();
+        WWTree->vbf_maxpt_jj_pt_jes_up = (VBF1_jes_up + VBF2_jes_up).Pt();
+        WWTree->vbf_maxpt_jj_pt_jes_dn = (VBF1_jes_dn + VBF2_jes_dn).Pt();
         WWTree->vbf_maxpt_jj_eta = TOT.Eta();
         WWTree->vbf_maxpt_jj_phi = TOT.Phi();
         WWTree->vbf_maxpt_jj_m = TOT.M();	
+        WWTree->vbf_maxpt_jj_m_jes_up = (VBF1_jes_up + VBF2_jes_up).M();
+        WWTree->vbf_maxpt_jj_m_jes_dn = (VBF1_jes_dn + VBF2_jes_dn).M();
 	WWTree->vbf_maxpt_jj_Deta = abs(VBF1.Eta() - VBF2.Eta());
+	WWTree->vbf_maxpt_jj_Deta_jes_up = abs(VBF1_jes_up.Eta() - VBF2_jes_up.Eta());
+	WWTree->vbf_maxpt_jj_Deta_jes_dn = abs(VBF1_jes_dn.Eta() - VBF2_jes_dn.Eta());
 	WWTree->AK4_DR_GENRECO_11 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
 	WWTree->AK4_DR_GENRECO_12 = abs(deltaR(WWTree->AK4_1_eta_gen, WWTree->AK4_1_phi_gen, WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_phi));
 	WWTree->AK4_DR_GENRECO_21 = abs(deltaR(WWTree->AK4_2_eta_gen, WWTree->AK4_2_phi_gen, WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j1_phi));
