@@ -1324,8 +1324,16 @@ int main (int argc, char** argv)
       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
       bool isCleaned = true;
       bool isCleanedFromFatJet = true;
+
+	// calculate Up variation
+	fJetUnc_AK4chs->setJetPt(jet->pt);
+	fJetUnc_AK4chs->setJetEta(jet->eta);
+	double unc = fJetUnc_AK4chs->getUncertainty(true);
+	VBF1_jes_up.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, (1.+unc)*jet->mass);	
+	// calculate Down variation
+	VBF1_jes_dn.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, (1.-unc)*jet->mass);	
       
-      if (jet->pt<=20 ) continue;
+      if (jet->pt<=20 && VBF1_jes_up.Pt()<=20 && VBF1_jes_dn.Pt()<=20 ) continue;
       if (!passJetLooseSel(jet)) continue;
 
       //fill B-Tag info
@@ -1406,7 +1414,22 @@ int main (int argc, char** argv)
           VBF1.SetPtEtaPhiM(jet1->pt,jet1->eta,jet1->phi,jet1->mass);
           VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
           TOT = VBF1 + VBF2;
-	  if (TOT.M()<500) continue;
+
+	// calculate Up variation
+	fJetUnc_AK4chs->setJetPt(jet1->pt);
+	fJetUnc_AK4chs->setJetEta(jet1->eta);
+	double unc = fJetUnc_AK4chs->getUncertainty(true);
+	VBF1_jes_up.SetPtEtaPhiM((1.+unc)*jet1->pt, jet1->eta, jet1->phi, (1.+unc)*jet1->mass);	
+	// calculate Down variation
+	VBF1_jes_dn.SetPtEtaPhiM((1.-unc)*jet1->pt, jet1->eta, jet1->phi, (1.-unc)*jet1->mass);	
+	// calculate Up variation
+	fJetUnc_AK4chs->setJetPt(jet2->pt);
+	fJetUnc_AK4chs->setJetEta(jet2->eta);
+	double unc = fJetUnc_AK4chs->getUncertainty(true);
+	VBF2_jes_up.SetPtEtaPhiM((1.+unc)*jet2->pt, jet2->eta, jet2->phi, (1.+unc)*jet2->mass);	
+	// calculate Down variation
+	VBF2_jes_dn.SetPtEtaPhiM((1.-unc)*jet2->pt, jet2->eta, jet2->phi, (1.-unc)*jet2->mass);	
+	  if (TOT.M()<500 && (VBF1_jes_up+VBF2_jes_up).M()<500 && (VBF1_jes_dn+VBF2_jes_dn).M()<500 ) continue;
 	  if ( VBFSel==1)
 	  {
 		if (TOT.Pt() < tempPtMax) continue;
