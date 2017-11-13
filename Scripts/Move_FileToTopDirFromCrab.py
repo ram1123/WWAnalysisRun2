@@ -12,14 +12,16 @@ if len(sys.argv) != 2:
         exit(0)
 
 
-source = sys.argv[1]
+#source = sys.argv[1]
 
-
+source = "/eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples_New/" + sys.argv[1]+"/"
+print "Path of input ROOT file : ",source
 #os.system("eos root://cmseos.fnal.gov ls "+sys.argv[1])
 
 search1='log'
 search2='failed'
 Arrayfilepath = []
+ArrayfileName = []
 for root, dirs, filenames in os.walk(source):   
         for f in filenames:
                 filepath = root + os.sep + f
@@ -27,10 +29,26 @@ for root, dirs, filenames in os.walk(source):
                         if filepath.find(search1) == -1:        # Don't select file if it contains wored log in path
                                 if filepath.endswith(".root"):  # select only root files
                                         Arrayfilepath.append(filepath)
+					ArrayfileName.append(f)
 #print len(Arrayfilepath)                                       
 #print Arrayfilepath[0]
 
+os.system("rm temp_script.sh")
+
+OutFileName = "temp_script.sh"
+
+OutFile = open(OutFileName,'w')
+
 for i in range(0,len(Arrayfilepath)):
-        print "====> Copying file:",i," => ",Arrayfilepath[i]
+        #print "====> Copying file:",i," => ",Arrayfilepath[i]
         #print("xrdcp -f "+ Arrayfilepath[i]+" "+ source)
-        os.system("xrdcp -f "+ Arrayfilepath[i]+" "+ source)
+	# eos root://cmseos.fnal.gov mv
+        #print("eos root://cmseos.fnal.gov mv "+ Arrayfilepath[i]+" "+ source+"/"+ArrayfileName[i])
+        OutFile.write("eos root://cmseos.fnal.gov mv "+ Arrayfilepath[i]+" "+ source+"/"+ArrayfileName[i]+'\n')
+        #os.system("eos root://cmseos.fnal.gov mv "+ Arrayfilepath[i]+" "+ source)
+	#print('')
+
+OutFile.close()
+print "Run command: source ",OutFileName
+#os.system('source '+str(OutFileName))
+#os.system('rm '+str(OutFile))
