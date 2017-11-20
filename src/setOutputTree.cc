@@ -30,7 +30,9 @@ void setOutputTree::initializeVariables()
   top1_NNLO_Weight	=1.;
   top2_NNLO_Weight	=1.;
   trig_eff_Weight	=1.;
+  trig_eff_Weight2	=1.;
   id_eff_Weight		=1.;
+  id_eff_Weight2	=1.;
   gen_top1_pt		=-999;
   gen_top2_pt		=-999;
   totalEventWeight	=-999;
@@ -147,6 +149,8 @@ void setOutputTree::initializeVariables()
   deltaR_lPuppiak4jetjet=-999;
   deltaphi_METPuppiak4jetjet	=-999;
   deltaphi_VPuppiak4jetjet	=-999;
+  deltaR_l2Puppiak8jet  = -999;
+  deltaR_VLepPuppiak8jet  = -999;
   v_pt_type2	=-999;
   v_pt_type0	=-999;
   v_pt_run2	=-999;
@@ -215,6 +219,9 @@ void setOutputTree::initializeVariables()
   mass_lvjj_type2_PuppiAK4	=-999;
   mass_lvjj_run2_PuppiAK4	=-999;
   mass_llj_PuppiAK8		=-999;
+  pt_llj_PuppiAK8 = -999;
+  eta_llj_PuppiAK8  = -999;
+  phi_llj_PuppiAK8  = -999;
   njets			=0;
   njetsPuppi		=0;
   nGoodAK8jets		=0;
@@ -649,6 +656,17 @@ PuppiAK8jet_qjet  = -999;
   BosonCentralityPuppi_type0	=-999.;
   BosonCentralityPuppi_type2	=-999.;
   BosonCentralityPuppi_run2	=-999.;
+  PtBalance_2Lep  = -999;
+BosonCentrality_2Lep  = -999;
+costheta1_2Lep  = -999;
+costheta2_2Lep  = -999;
+costhetastar_2Lep = -999;
+phi_2Lep  = -999;
+phi1_2Lep = -999;
+VBSCentrality_2Lep  = -999;
+RpT_2Lep  = -999;
+ZeppenfeldWL_2Lep = -999;
+LeptonProjection_2Lep = -999;
 
 }
 
@@ -674,7 +692,9 @@ void setOutputTree::setBranches()
   fTree->Branch("gen_top1_pt",&gen_top1_pt,"gen_top1_pt/F");
   fTree->Branch("gen_top2_pt",&gen_top2_pt,"gen_top2_pt/F");
   fTree->Branch("trig_eff_Weight",&trig_eff_Weight,"trig_eff_Weight/F");
+  fTree->Branch("trig_eff_Weight2",&trig_eff_Weight2,"trig_eff_Weight2/F");
   fTree->Branch("id_eff_Weight",&id_eff_Weight,"id_eff_Weight/F");
+  fTree->Branch("id_eff_Weight2",&id_eff_Weight2,"id_eff_Weight2/F");
   fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
   fTree->Branch("pu_Weight",&pu_Weight,"pu_Weight/F");
   fTree->Branch("totalEventWeight_2",&totalEventWeight_2,"totalEventWeight_2/F");
@@ -1016,6 +1036,8 @@ fTree->Branch("PuppiAK8jet_qjet",&PuppiAK8jet_qjet,"PuppiAK8jet_qjet");
   fTree->Branch("deltaR_lPuppiak4jetjet",&deltaR_lPuppiak4jetjet,"deltaR_lPuppiak4jetjet/F");
   fTree->Branch("deltaphi_METPuppiak4jetjet",&deltaphi_METPuppiak4jetjet,"deltaphi_METPuppiak4jetjet/F");
   fTree->Branch("deltaphi_VPuppiak4jetjet",&deltaphi_VPuppiak4jetjet,"deltaphi_VPuppiak4jetjet/F");
+  fTree->Branch("deltaR_l2Puppiak8jet",&deltaR_l2Puppiak8jet,"deltaR_l2Puppiak8jet/F");
+  fTree->Branch("deltaR_VLepPuppiak8jet",&deltaR_VLepPuppiak8jet,"deltaR_VLepPuppiak8jet/F");
   fTree->Branch("v_pt_type0",&v_pt_type0,"v_pt_type0/F");
   fTree->Branch("v_pt_type2",&v_pt_type2,"v_pt_type2/F");
   fTree->Branch("v_pt_run2",&v_pt_run2,"v_pt_run2/F");
@@ -1084,6 +1106,9 @@ fTree->Branch("PuppiAK8jet_qjet",&PuppiAK8jet_qjet,"PuppiAK8jet_qjet");
   fTree->Branch("mass_lvjj_type2_PuppiAK4",&mass_lvjj_type2_PuppiAK4,"mass_lvjj_type2_PuppiAK4/F");
   fTree->Branch("mass_lvjj_run2_PuppiAK4",&mass_lvjj_run2_PuppiAK4,"mass_lvjj_run2_PuppiAK4/F");
   fTree->Branch("mass_llj_PuppiAK8",&mass_llj_PuppiAK8,"mass_llj_PuppiAK8/F");
+  fTree->Branch("pt_llj_PuppiAK8",&pt_llj_PuppiAK8,"pt_llj_PuppiAK8/F");
+  fTree->Branch("eta_llj_PuppiAK8",&eta_llj_PuppiAK8,"eta_llj_PuppiAK8/F");
+  fTree->Branch("phi_llj_PuppiAK8",&phi_llj_PuppiAK8,"phi_llj_PuppiAK8/F");
   fTree->Branch("njets",&njets,"njets/I");
   fTree->Branch("njetsPuppi",&njetsPuppi,"njetsPuppi/I");
   fTree->Branch("nGoodAK8jets",&nGoodAK8jets,"nGoodAK8jets/I");
@@ -1294,6 +1319,18 @@ fTree->Branch("PuppiAK8jet_qjet",&PuppiAK8jet_qjet,"PuppiAK8jet_qjet");
   fTree->Branch("BosonCentralityPuppi_type0", &BosonCentralityPuppi_type0 , "BosonCentralityPuppi_type0/F");
   fTree->Branch("BosonCentralityPuppi_type2", &BosonCentralityPuppi_type2 , "BosonCentralityPuppi_type2/F");
   fTree->Branch("BosonCentralityPuppi_run2", &BosonCentralityPuppi_run2 , "BosonCentralityPuppi_run2/F");
+
+  fTree->Branch("PtBalance_2Lep",&PtBalance_2Lep,"PtBalance_2Lep/F");
+  fTree->Branch("BosonCentrality_2Lep",&BosonCentrality_2Lep,"BosonCentrality_2Lep/F");
+  fTree->Branch("costheta1_2Lep",&costheta1_2Lep,"costheta1_2Lep/F");
+  fTree->Branch("costheta2_2Lep",&costheta2_2Lep,"costheta2_2Lep/F");
+  fTree->Branch("costhetastar_2Lep",&costhetastar_2Lep,"costhetastar_2Lep/F");
+  fTree->Branch("phi_2Lep",&phi_2Lep,"phi_2Lep/F");
+  fTree->Branch("phi1_2Lep",&phi1_2Lep,"phi1_2Lep/F");
+  fTree->Branch("VBSCentrality_2Lep",&VBSCentrality_2Lep,"VBSCentrality_2Lep/F");
+  fTree->Branch("RpT_2Lep",&RpT_2Lep,"RpT_2Lep/F");
+  fTree->Branch("ZeppenfeldWL_2Lep",&ZeppenfeldWL_2Lep,"ZeppenfeldWL_2Lep/F");
+  fTree->Branch("LeptonProjection_2Lep",&LeptonProjection_2Lep,"LeptonProjection_2Lep/F");
   //fTree->Branch("", & , "/F");
 
 //  fTree->Branch("deltaR_AK4",&deltaR_AK4,"deltaR_AK4/F");
