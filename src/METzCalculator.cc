@@ -24,12 +24,17 @@ double METzCalculator::Calculate(int type) {
   double pzmu = lepton_.Pz();
   double pxnu = MET_.Px();
   double pynu = MET_.Py();
+  double ptnu = MET_.Pt();
   double pznu = 0.;
   otherSol_ = 0.;
-  double a = M_W*M_W - M_mu*M_mu + 2.0*pxmu*pxnu + 2.0*pymu*pynu;
-  double A = 4.0*(emu*emu - pzmu*pzmu);
-  double B = -4.0*a*pzmu;
-  double C = 4.0*emu*emu*(pxnu*pxnu + pynu*pynu) - a*a;
+  double a = M_W*M_W/2 + pxnu*pxmu + pynu*pymu;
+  double A = pzmu*pzmu - emu*emu ;
+  double B = 2*pzmu*a;
+  double C = a*a - emu*emu*ptnu*ptnu;
+  //double a = M_W*M_W - M_mu*M_mu + 2.0*pxmu*pxnu + 2.0*pymu*pynu;
+  //double A = 4.0*(emu*emu - pzmu*pzmu);
+  //double B = -4.0*a*pzmu;
+  //double C = 4.0*emu*emu*(pxnu*pxnu + pynu*pynu) - a*a;
   double tmproot = B*B - 4.0*A*C;
   if (tmproot<0) {
     isComplex_= true;

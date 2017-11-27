@@ -1,9 +1,12 @@
 #####Table Of Content
 
 * [Instructions](#instructions)
+* [To Do List](#to-do-list)
 * [POG Recipes for Moriond 2017](#pog-recipes-for-moriond-2017)
 * [How To Make PU Distribution for data](#how-to-make-pu-distribution-for-data)
-* [To Do List](#to-do-list)
+* [General command](#general-command)
+* [Command to generate aQGC parametres summary from reweight cards](#command-to-generate-aQGC-parametres-summary-from-reweight-cards)
+
 ---
 The package contains a code to produce ntuple for WW semileptonic final state.
 It takes in input ntuples produced from miniAOD with the Bacon (https://github.com/ksung25/BaconProd )
@@ -36,10 +39,10 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 		cd {...}/CMSSW_8_0_26_patch1/src/WWAnalysis/WWAnalysisRun2
 		python python/submit_on_lpcCondor_MINIAODv2.py
 
-This will give you two files named ==runstep2condor.jdl== and ==runstep2condor.sh==. To submit the condor job do 
+This will give you two files named `runstep2condor.jdl` and `runstep2condor.sh`. To submit the condor job do
 
-		voms-proxy-init --voms cms --valid 168:00  # if proxy was not set
-		condor_submit runstep2condor.jdl
+	voms-proxy-init --voms cms --valid 168:00  # if proxy was not set
+	condor_submit runstep2condor.jdl
 
 Monitor the status of jobs using:
 
@@ -50,9 +53,6 @@ Monitor the status of jobs using:
 		python python/produceWWNtuples.py --help
 
 ## To Do List
-- [ ] Apply latest ID, ISO, & Trigger Efficiency for electron and muons
-- [ ] Apply ID for jets
-- [ ] Apply PU
 - [ ] Clean the code
 
 ## POG Recipes for Moriond 2017
@@ -67,14 +67,14 @@ Ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/POGRecipesICHEP2016
 	pileupCalc.py -i Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt --inputLumiJSON pileup_latest.txt --calcMode true --minBiasXsec 69200 --maxPileupBin 70 --numPileupBins 70 MyDataPileupHistogram.root
 
 where,
-* MyAnalysisJSON.txt is the JSON file we are using.	
+* MyAnalysisJSON.txt is the JSON file we are using.
 * pileup_latest.txt : this is input json file. It can be found at link: /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/PileUp/pileup_latest.txt
 
 Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Pileup_JSON_Files_For_Run_II
 
 
 
-# General command
+## General command
 
 	grep "time to run this code =" *.stdout | awk '{print $10,$7/60}'
 
@@ -82,8 +82,8 @@ Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Pi
 
 	grep -r --exclude=\*.{root,o,exe,swp,bcup} genGravMass *
 
-# Command to generate aQGC parametres summary from reweight cards
-	
+## Command to generate aQGC parametres summary from reweight cards
+
 	grep launch aQGC_WMhadZlepJJ_EWK_LO_NPle1_mjj100pt10_reweight_card.dat | awk -F "=" '{print $2}' | awk -F "_" '{ gsub("p",".",$2); gsub("m","-",$2); print $1,$2}'
 
 	grep launch aQGC_WMhadZlepJJ_EWK_LO_NPle1_mjj100pt10_reweight_card.dat | awk -F "=" '{print $2}' | awk -F "_" '{ gsub("p",".",$2); gsub("m","-",$2); print $1}'

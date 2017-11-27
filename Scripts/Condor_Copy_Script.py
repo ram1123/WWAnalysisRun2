@@ -12,7 +12,8 @@ CMSSWDir =  currentDir+"/../";
 
 #inputFolder = "/store/cmst3/group/monojet/production/12";
 inputFolder = "/store/user/arapyan/Run2/";
-inputFolder = "/eos/cms/store/user/ksung/production/12/"
+#inputFolder = "/eos/cms/store/user/ksung/production/12/"
+inputFolder = "/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples_New";
 outputFolder = "/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples";
 
 dryRun = False;
@@ -20,9 +21,17 @@ doMC = False;
 doData = True;
 
 sampleName = [
-"Summer16_ST_s_channel_4f_leptonDecays",
-"Summer16_ST_t_channel_antitop_4f_inclusiveDecays_TuneCUETP8M2T4",
-"Summer16_ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4"
+"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+"DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+#"DYToLL_0J_13TeV-amcatnloFXFX-pythia8",
+#"DYToLL_1J_13TeV-amcatnloFXFX-pythia8",
+#"DYToLL_2J_13TeV-amcatnloFXFX-pythia8"
+#"Summer16_ST_s_channel_4f_leptonDecays",
+#"Summer16_ST_t_channel_antitop_4f_inclusiveDecays_TuneCUETP8M2T4",
+#"Summer16_ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4"
 #"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	
 #"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	
 #"WplusToLNuWplusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	
@@ -41,7 +50,7 @@ sampleName = [
 #"WplusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		
 #"WminusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		
 #"WminusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		
-#"ZTo2LZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		
+#"ZTo2LZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8"	
 #
 #"WplusToLNuWminusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	
 #"WplusTo2JWminusToLNuJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	
@@ -154,7 +163,7 @@ sampleName = [
 ]
 
 command1 = "xrdfs root://cmseos.fnal.gov/ mkdir "+outputFolder+"/$1/"
-command2 = "xrdcp -r root://eoscms.cern.ch/"+inputFolder+"/$1/  root://cmseos.fnal.gov/"+outputFolder+"/$1/"
+command2 = "xrdcp -r root://cmseos.fnal.gov/"+inputFolder+"/$1/  root://cmseos.fnal.gov/"+outputFolder+"/$1/"
 #command2 = "xrdcp -r -f -s root://eoscms.cern.ch/"+inputFolder+"/$1/  root://cmseos.fnal.gov/"+outputFolder+"/$1/"
 
 outScript = open("runCopycondor.sh","w");
