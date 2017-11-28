@@ -15,6 +15,8 @@ void setOutputTree::initializeVariables()
   LHEWeight[1163] = { };
   run		=-999;
   event		=-999;
+  nTotEvents	=0;
+  nTotNegEvents	=0;
   nEvents	=0;
   nNegEvents	=0;
   lumi		=-999;
@@ -675,6 +677,8 @@ void setOutputTree::setBranches()
   fTree->Branch("LHEWeight",&LHEWeight[0],"LHEWeight[1164]/F");
   fTree->Branch("run",&run,"run/I");
   fTree->Branch("event",&event,"event/I");
+  fTree->Branch("nTotEvents",&nTotEvents,"nTotEvents/I");
+  fTree->Branch("nTotNegEvents",&nTotNegEvents,"nTotNegEvents/I");
   fTree->Branch("nEvents",&nEvents,"nEvents/I");
   fTree->Branch("nNegEvents",&nNegEvents,"nNegEvents/I");
   fTree->Branch("lumi",&lumi,"lumi/I");

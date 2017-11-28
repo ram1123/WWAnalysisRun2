@@ -82,8 +82,8 @@ int main (int argc, char** argv)
   std::string inputTreeName = argv[5];
   std::string inputFile = argv[6];
   std::string xSecWeight = argv[7];
-  //std::string TotalNumberOfEntries = argv[8];
-  //float LUMI = atof(argv[9]);
+  std::string TotalNumberOfEntries = argv[8];
+  std::string TotalNumberOfNegativeEntries = argv[9];
   int applyTrigger = atoi(argv[10]);
   std::string jsonFileName = argv[11];
   int isLocal = atoi(argv[12]);
@@ -293,7 +293,9 @@ int main (int argc, char** argv)
   cout<<"==> Total number of events : "<<TotalNumberOfEvents<<endl;
   cout<<"==> Total number of negative events : "<<nNegEvents<<endl;
 
-  float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
+  //float weight = std::atof(xSecWeight.c_str())/TotalNumberOfEvents;
+  float weight = std::atof(xSecWeight.c_str())/(std::atof(TotalNumberOfEntries.c_str()) - 2*std::atof(TotalNumberOfNegativeEntries.c_str()));
+  cout<<"Weight of cross-sec/events = "<<weight<<endl;
   int totalEntries=0;
 
 
@@ -1660,6 +1662,8 @@ int main (int argc, char** argv)
     
     WWTree->nEvents = TotalNumberOfEvents;
     WWTree->nNegEvents = nNegEvents;
+    WWTree->nTotEvents = std::atof(TotalNumberOfEntries.c_str());
+    WWTree->nTotNegEvents = std::atof(TotalNumberOfNegativeEntries.c_str());
 
 
 ///////////////////////////////////////////////////

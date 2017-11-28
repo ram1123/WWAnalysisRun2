@@ -13,6 +13,8 @@ class setOutputTree {
   float LHEWeight[1164] = {};
   int run;
   int event;
+  int nTotEvents;
+  int nTotNegEvents;
   int nEvents;
   int nNegEvents;
   int lumi;

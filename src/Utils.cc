@@ -549,6 +549,13 @@ void setupNtupleVector(std::string iHeader,TTree *iTree,std::vector< std::vector
   }
 }
 //--------------------------------------------------------------------------------------------------
+double epsilon=.000001;
+int EqualTo(double a, double b)		{	return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);	}
+int GreaterThan(double a, double b)	{	return (a - b) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);		}
+int LessThan(double a, double b)	{	return (b - a) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);		}
+int GreaterThanEqual(double a, double b){	return GreaterThan(a,b) || EqualTo(a,b);	}
+int LessThanEqual(double a, double b)	{	return GreaterThan(a,b) || EqualTo(a,b);	}
+//--------------------------------------------------------------------------------------------------
 double getVal(TH1D*h,double val) {
   return h->GetBinContent(h->FindBin(val));
 }

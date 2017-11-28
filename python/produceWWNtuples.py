@@ -17,6 +17,7 @@ if __name__ == '__main__':
     parser.add_argument ('-n', '--name' , default = 'WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8' , help='input file')
     parser.add_argument ('-w', '--xsecWeight' , default = '0.0002739' , help='xsec (pb)')
     parser.add_argument ('-no', '--numberOfEntries' , default = '28687' , help='number of initial entries of the dataset')
+    parser.add_argument ('-noNeg', '--numberOfNegEntries' , default = '0' , help='number of initial entries of the negative events in dataset')
     parser.add_argument ('-lumi', '--lumi' , default = '35900' , help='Luminosity in pb-1')
     parser.add_argument ('-trig', '--applyTrigger' , default = '0' , help='apply trigger or not')
     parser.add_argument ('-json', '--json', default = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt', help="json file to apply")
@@ -34,9 +35,9 @@ if __name__ == '__main__':
     	amcatnlo = 0
 	print "==> Not a aMC@NLO sample"
     if len(args.name) != 2:
-    	command = args.exe+' '+args.inputFolder+'/'+args.name+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    	command = args.exe+' '+args.inputFolder+'/'+args.name+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.numberOfNegEntries+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
     else:
-    	command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.lumi+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    	command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.numberOfNegEntries+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
     print "==> Name = ",len(args.name)
     print "==> ",command
     os.system(command)

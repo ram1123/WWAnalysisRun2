@@ -49,6 +49,11 @@ void   setupNtuple            (std::string iHeader,TTree *iTree,int iN,std::vect
 void   setupNtupleVector      (std::string iHeader,TTree *iTree,std::vector<double> &pt, std::vector<double> &eta, std::vector<double> &phi);
 void   setupNtupleVector      (std::string iHeader,TTree *iTree,std::vector< std::vector<double> > &iValVectors,std::vector<std::string> &iLabels);
 void   setupNtupleVector      (std::string iHeader,TTree *iTree,std::vector< std::vector<float> > &iValVectors,std::vector<std::string> &iLabels);
+int    EqualTo		      (double a, double b);
+int    GreaterThan	      (double a, double b);
+int    LessThan		      (double a, double b);
+int    GreaterThanEqual	      (double a, double b);
+int    LessThanEqual	      (double a, double b);
 
 template<class T> void addObject(T *iObject,std::vector<T*> &iObjects) {
   bool lFill = false;
