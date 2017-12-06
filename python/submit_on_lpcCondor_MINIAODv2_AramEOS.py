@@ -31,8 +31,8 @@ else:
 	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M');
 	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M');
 
-outputFolder = "/store/user/rasharma/SecondStep/WWTree_2017-11-26_18h59/" 
-OutputLogPath = "OutPut_Logs/Logs_2017-11-26_18h59/"
+outputFolder = "/store/user/rasharma/SecondStep/WWTree_2017_12_06_11h55/" 
+OutputLogPath = "OutPut_Logs/Logs_2017_12_06_11h55/"
 
 print "Name of output dir: ",outputFolder
 # create a directory on eos
@@ -61,54 +61,54 @@ os.system('xrdcp -f ThingsUpdated.txt root://cmseos.fnal.gov/' + outputFolder)
 os.system('cp ThingsUpdated.txt ' + OutputLogPath)
 
 samples = [
-    ( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 0.0879,	"WplusToLNuWplusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 0.0326,	"WminusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 0.1825,	"WplusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 0.0540,	"WplusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 0.1000,	"WminusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 0.0298,	"WminusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 0.0159,	"ZTo2LZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 5.546,	"WplusTo2JWminusToLNuJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 5.558,	"WplusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 0.086,	"WplusToLNuWplusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 0.038,	"WminusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	0),
-    ( 2.159,	"WplusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 0.640,	"WplusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 1.302,	"WminusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 0.387,	"WminusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 0.376,	"ZTo2LZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		0),
-    ( 4274.1645,	"DYToLL_0J_13TeV-amcatnloFXFX-pythia8",		0),
-    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_1",		0),
-    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_2",		0),
-    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_3",		0),
-    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_4",		0),
-    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_5",		0),
-    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_6",		0),
-    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_7",		0),
-    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_1",		0),
-    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_2",		0),
-    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_3",		0),
-    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_4",		0),
-    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_5",		0),
-    ( 45.446723,	"DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",	0),
-    ( 97.554176,	"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_1",	0),
-    ( 97.554176,	"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_2",	0),
-    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_1",	0),
-    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_2",	0),
-    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_3",	0),
-    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_4",	0),
-    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_5",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_1",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_2",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_3",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_4",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_5",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_6",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_7",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_8",	0),
-    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_9",	0),
+    ( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1991227,   0),
+    ( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1983847,   0),
+    ( 0.0879,	"WplusToLNuWplusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	198848,   0),
+    ( 0.0326,	"WminusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	189560,   0),
+    ( 0.1825,	"WplusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		393171,   0),
+    ( 0.0540,	"WplusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		198922,   0),
+    ( 0.1000,	"WminusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		199542,   0),
+    ( 0.0298,	"WminusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		189086,   0),
+    ( 0.0159,	"ZTo2LZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		99997,   0),
+    ( 5.546,	"WplusTo2JWminusToLNuJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	3994663,   0),
+    ( 5.558,	"WplusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	3949170,   0),
+    ( 0.086,	"WplusToLNuWplusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99992,   0),
+    ( 0.038,	"WminusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99657,   0),
+    ( 2.159,	"WplusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		1991348,   0),
+    ( 0.640,	"WplusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		499432,   0),
+    ( 1.302,	"WminusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		981540,   0),
+    ( 0.387,	"WminusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		489280,   0),
+    ( 0.376,	"ZTo2LZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		49999,   0),
+    ( 4274.1645,	"DYToLL_0J_13TeV-amcatnloFXFX-pythia8",			1749590,	161090),
+    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_1",		35950579,	9808428),
+    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_2",		35950579,	9808428),
+    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_3",		35950579,	9808428),
+    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_4",		35950579,	9808428),
+    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_5",		35950579,	9808428),
+    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_6",		35950579,	9808428),
+    ( 1115.0463,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_7",		35950579,	9808428),
+    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_1",		21571879,	7649488),
+    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_2",		21571879,	7649488),
+    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_3",		21571879,	7649488),
+    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_4",		21571879,	7649488),
+    ( 222.57608,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_5",		21571879,	7649488),
+    ( 45.446723,	"DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",	2798791,	0),
+    ( 97.554176,	"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_1",	4866978,	0),
+    ( 97.554176,	"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_2",	4866978,	0),
+    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_1",	19296117,	0),
+    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_2",	19296117,	0),
+    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_3",	19296117,	0),
+    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_4",	19296117,	0),
+    ( 314.57229,	"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_5",	19296117,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_1",	52602172,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_2",	52602172,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_3",	52602172,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_4",	52602172,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_5",	52602172,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_6",	52602172,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_7",	52602172,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_8",	52602172,	0),
+    ( 1103.0878,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_9",	52602172,	0),
     #( 4435.5258,	"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",	0)
         ]
 
@@ -202,7 +202,7 @@ if( doMC ):
     for i in range(len(samples)):
         outJDL.write("Output = "+OutputLogPath+"/"+str(samples[i][1])+".stdout\n");
         outJDL.write("Error  = "+OutputLogPath+"/"+str(samples[i][1])+".stdout\n");
-        outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+" -w "+str(samples[i][0])+" -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc\n");
+        outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+" -w "+str(samples[i][0])+" -no "+ str(samples[i][2]) + " -noNeg " + str(samples[i][3]) + " -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc\n");
         outJDL.write("Queue\n");
     
 #data

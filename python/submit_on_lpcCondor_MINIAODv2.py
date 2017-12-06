@@ -25,11 +25,11 @@ lumi = 35900.0
 # Get date and time for output directory
 ## ADD "test" IN OUTPUT FOLDER IF YOU ARE TESTING SO THAT LATER YOU REMEMBER TO WHICH DIRECTORY YOU HAVE TO REMOVE FROM EOS
 if TestRun:
-	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M')+"_TEST/";
-	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M') + "_TEST";
+	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+"_TEST/";
+	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M') + "_TEST";
 else:
-	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M');
-	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M');
+	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
 
 
 print "Name of output dir: ",outputFolder
@@ -66,11 +66,11 @@ os.system('cp ThingsUpdated.txt ' + OutputLogPath)
 samples = [
 	( 6.655,	"WJetsToLNu_HT_800To1200_13TeV",	7688957,	0),
 	( 6.655,	"WJetsToLNu_HT_800To1200_13TeV_ext1",	7688957,	0),
-	( 1.589,	"ZTo2LZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99997,	0),
-	( 91.14,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1981107,	0),
-	( 5.633,	"WplusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	3948770,	0),
+	#( 1.589,	"ZTo2LZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99997,	0),
+	#( 91.14,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1981107,	0),
+	#( 5.633,	"WplusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	3948770,	0),
 	( 0.01398,	"ZZZ_13TeV_amcatnlo_pythia8",	249232,	18020),
-	( 1.938,	"WplusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1991348,	0),
+	#( 1.938,	"WplusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1991348,	0),
 	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_1",	23766546,	4986275),
 	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_2",	23766546,	4986275),
 	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_3",	23766546,	4986275),
@@ -92,7 +92,7 @@ samples = [
 	( 364.3,	"TTToSemilepton_powheg_5",	91832423,	0),
 	( 364.3,	"TTToSemilepton_powheg_6",	91832423,	0),
 	( 3.451,	"WplusToLNuWplusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	199858,	0),
-	( 5.633,	"WplusTo2JWminusToLNuJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	3994663,	0),
+	#( 5.633,	"WplusTo2JWminusToLNuJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	3994663,	0),
 	( 32100.0,	"QCD_HT500to700_13TeV",	53744436,	0),
 	( 32100.0,	"QCD_HT500to700_13TeV_ext_1",	53744436,	0),
 	( 32100.0,	"QCD_HT500to700_13TeV_ext_2",	53744436,	0),
@@ -113,7 +113,7 @@ samples = [
 	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_5",	121994032,	20127060),
 	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_6",	121994032,	20127060),
 	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_7",	121994032,	20127060),
-	( 0.03203,	"WminusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99657,	0),
+	#( 0.03203,	"WminusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99657,	0),
 	( 11.36,	"Summer16_ST_s_channel_4f_leptonDecays",	999976,	188501),
 	( 0.5686,	"WplusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	149363,	0),
 	( 17.92,	"WplusTo2JWminusToLNuJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1706220,	0),
@@ -125,8 +125,8 @@ samples = [
 	( 19.5741,	"ST_tW_top_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1",	5372830,	0),
 	( 6831.0,	"QCD_HT700to1000_13TeV",	42658677,	0),
 	( 6831.0,	"QCD_HT700to1000_13TeV_ext",	42658677,	0),
-	( 3.259,	"WminusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	199525,	0),
-	( 91.07,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1923847,	0),
+	#( 3.259,	"WminusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	199525,	0),
+	#( 91.07,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1923847,	0),
 	( 1207.0,	"QCD_HT1000to1500_13TeV",	13080692,	0),
 	( 1207.0,	"QCD_HT1000to1500_13TeV_ext",	13080692,	0),
 	( 1627.45,	"WJetsToLNu_HT_100To200_13TeV",	79165703,	0),
@@ -136,11 +136,11 @@ samples = [
 	( 1627.45,	"WJetsToLNu_HT_100To200_13TeV_ext2_1",	79165703,	0),
 	( 1627.45,	"WJetsToLNu_HT_100To200_13TeV_ext2_2",	79165703,	0),
 	( 136.02,	"Summer16_ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4",	5993570,	0),
-	( 0.07584,	"WplusToLNuWplusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99992,	0),
+	#( 0.07584,	"WplusToLNuWplusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99992,	0),
 	( 0.5297,	"TTZToQQ",	749367,	199113),
 	( 0.2223,	"WminusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	168679,	0),
-	( 18.25,	"WplusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	393171,	0),
-	( 0.3449,	"ZTo2LZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	49999,	0),
+	#( 18.25,	"WplusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	393171,	0),
+	#( 0.3449,	"ZTo2LZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	49999,	0),
 	( 1712000.0,	"QCD_HT200to300_13TeV",	54280031,	0),
 	( 1712000.0,	"QCD_HT200to300_13TeV_ext",	54280031,	0),
 	( 1712000.0,	"QCD_HT200to300_13TeV_ext_1",	54280031,	0),
@@ -149,25 +149,25 @@ samples = [
 	( 347700.0,	"QCD_HT300to500_13TeV",	26924854,	0),
 	( 347700.0,	"QCD_HT300to500_13TeV_ext",	26924854,	0),
 	( 0.7414,	"WminusToLNuZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	160194,	0),
-	( 0.3488,	"WminusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	489280,	0),
+	#( 0.3488,	"WminusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	489280,	0),
 	( 59.18,	"WJetsToLNu_HT_400To600_13TeV",	7754252,	0),
 	( 59.18,	"WJetsToLNu_HT_400To600_13TeV_ext1",	7754252,	0),
-	( 10.0,	"WminusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	169938,	0),
+	#( 10.0,	"WminusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	169938,	0),
 	( 10.31,	"ZZ_13TeV_pythia8",	990051,	0),
 	( 0.5067,	"WminusToLNuWminusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	190106,	0),
-	( 5.401,	"WplusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	188998,	0),
+	#( 5.401,	"WplusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	188998,	0),
 	( 1.60809,	"WJetsToLNu_HT_1200To2500_13TeV",	6708656,	0),
 	( 1.60809,	"WJetsToLNu_HT_1200To2500_13TeV_ext1",	6708656,	0),
 	( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	5057358,	953706),
-	( 0.575,	"WplusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	499432,	0),
+	#( 0.575,	"WplusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	499432,	0),
 	( 80.95,	"Summer16_ST_t_channel_antitop_4f_inclusiveDecays_TuneCUETP8M2T4",	3927980,	0),
 	( 0.1651,	"WWZ_13TeV_amcatnlo_pythia8",	269990,	15372),
-	( 8.793,	"WplusToLNuWplusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	198848,	0),
+	#( 8.793,	"WplusToLNuWplusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	198848,	0),
 	( 25.24,	"QCD_HT2000toInf_13TeV",	5875869,	0),
 	( 25.24,	"QCD_HT2000toInf_13TeV_ext",	5875869,	0),
 	( 3.361,	"ZTo2LZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	99392,	0),
-	( 1.166,	"WminusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	981540,	0),
-	( 2.982,	"WminusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	198896,	0),
+	#( 1.166,	"WminusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	981540,	0),
+	#( 2.982,	"WminusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	198896,	0),
 	( 0.4062,	"TTWJetsToQQ",	833257,	201483),
     ]
 
