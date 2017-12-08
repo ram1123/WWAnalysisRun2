@@ -475,7 +475,9 @@ int main (int argc, char** argv)
     WWTree->top1_NNLO_Weight = 1.;
     WWTree->top2_NNLO_Weight = 1.;
     WWTree->id_eff_Weight = 1.;
+    WWTree->id_eff_Weight2 = 1.;
     WWTree->trig_eff_Weight = 1.;
+    WWTree->trig_eff_Weight2 = 1.;
 
     if (gen->weight>0)
       WWTree->genWeight=1.;
@@ -806,8 +808,8 @@ int main (int argc, char** argv)
     }
     
     WWTree->pfMET = sqrt(info->pfMET*info->pfMET);
-    WWTree->pfMET_jes_up = W_Met_jes_up.Pt();
-    WWTree->pfMET_jes_dn = W_Met_jes_dn.Pt();
+    WWTree->pfMET_jes_up = W_Met_jes_up.Pt();		// Calculated with corrected pfMET
+    WWTree->pfMET_jes_dn = W_Met_jes_dn.Pt();		// Calculated with corrected pfMET
     WWTree->pfMET_Phi = info->pfMETphi;
     WWTree->pfMET_Corr = info->pfMETC;
     WWTree->pfMET_Corr_phi = info->pfMETCphi;
@@ -1214,8 +1216,6 @@ int main (int argc, char** argv)
 	WWTree->ungroomed_PuppiAK8_jet_eta = jet->eta;
 	WWTree->ungroomed_PuppiAK8_jet_phi = jet->phi;
 	WWTree->ungroomed_PuppiAK8_jet_e   = TempAK8.E();
-	//WWTree->ungroomed_PuppiAK8_jet_pt_jes_up = (jet->pt[i]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[i])*ReducedTree->PuppiAK8Jets_PuppiAK8correctionUp[i];
-	//WWTree->ungroomed_PuppiAK8_jet_pt_jes_dn = (jet->pt[i]/ReducedTree->PuppiAK8Jets_PuppiAK8correction[i])*ReducedTree->PuppiAK8Jets_PuppiAK8correctionDown[i];
       
 	WWTree->PuppiAK8_jet_mass  = jet->mass;
 	WWTree->PuppiAK8_jet_mass_pr  = addjet->mass_prun;
@@ -1295,9 +1295,11 @@ int main (int argc, char** argv)
 	fJetUnc_AK8puppi->setJetPt(JET_PuppiAK8.Pt());
 	fJetUnc_AK8puppi->setJetEta(JET_PuppiAK8.Eta());
 	double unc = fJetUnc_AK8puppi->getUncertainty(true);
-	JET_PuppiAK8_jes_up.SetPtEtaPhiM((1.+unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.+unc)*JET_PuppiAK8.M());	
+	//JET_PuppiAK8_jes_up.SetPtEtaPhiM((1.+unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.+unc)*JET_PuppiAK8.M());	
+	JET_PuppiAK8_jes_up.SetPtEtaPhiM((1.+unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.+unc)*WWTree->PuppiAK8_jet_mass_so_corr);	
 	// calculate Down variation
-	JET_PuppiAK8_jes_dn.SetPtEtaPhiM((1.-unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.-unc)*JET_PuppiAK8.M());	
+	//JET_PuppiAK8_jes_dn.SetPtEtaPhiM((1.-unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.-unc)*JET_PuppiAK8.M());	
+	JET_PuppiAK8_jes_dn.SetPtEtaPhiM((1.-unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.-unc)*WWTree->PuppiAK8_jet_mass_so_corr);	
       }
     
     
@@ -1312,11 +1314,11 @@ int main (int argc, char** argv)
     WWTree->ungroomed_AK8jet_pt_jes_up = JET_jes_up.Pt();
     WWTree->ungroomed_AK8jet_eta_jes_up = JET_jes_up.Eta();
     WWTree->ungroomed_AK8jet_phi_jes_up = JET_jes_up.Phi();
-    WWTree->ungroomed_AK8jet_mass_jes_up = JET_jes_up.M();
+    WWTree->ungroomed_AK8jet_mass_jes_up = JET_jes_up.M();	// calculated with softdrop corrected mass
     WWTree->ungroomed_AK8jet_pt_jes_dn = JET_jes_dn.Pt();
     WWTree->ungroomed_AK8jet_eta_jes_dn = JET_jes_dn.Eta();
     WWTree->ungroomed_AK8jet_phi_jes_dn = JET_jes_dn.Phi();
-    WWTree->ungroomed_AK8jet_mass_jes_dn = JET_jes_dn.M();
+    WWTree->ungroomed_AK8jet_mass_jes_dn = JET_jes_dn.M();	// calculated with softdrop corrected mass
     WWTree->ungroomed_PuppiAK8_jet_pt_jes_up = JET_PuppiAK8_jes_up.Pt();
     WWTree->ungroomed_PuppiAK8_jet_eta_jes_up = JET_PuppiAK8_jes_up.Eta();
     WWTree->ungroomed_PuppiAK8_jet_phi_jes_up = JET_PuppiAK8_jes_up.Phi();
@@ -1658,6 +1660,7 @@ int main (int argc, char** argv)
         cutEff[10]++;
     
     WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight;
+    WWTree->totalEventWeight_2Lep = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight*WWTree->trig_eff_Weight2*WWTree->id_eff_Weight2;
 
     
     WWTree->nEvents = TotalNumberOfEvents;
@@ -1673,10 +1676,14 @@ int main (int argc, char** argv)
 //////////////////////////////////////////////////
     if (WWTree->isVBF && nGoodPuppiAK8jets!=0){
     WWTree->PtBalance_type0 = ((JET_PuppiAK8+LEP1 + NU0).Pt())/(JET_PuppiAK8.Pt()+(LEP1 + NU0).Pt());
+    WWTree->PtBalance_type0_jes_up = ((JET_PuppiAK8_jes_up+LEP1 + NU0_jes_up).Pt())/(JET_PuppiAK8_jes_up.Pt()+(LEP1 + NU0_jes_up).Pt());
+    WWTree->PtBalance_type0_jes_dn = ((JET_PuppiAK8_jes_dn+LEP1 + NU0_jes_dn).Pt())/(JET_PuppiAK8_jes_dn.Pt()+(LEP1 + NU0_jes_dn).Pt());
     WWTree->PtBalance_type2 = ((JET_PuppiAK8+LEP1 + NU2).Pt())/(JET_PuppiAK8.Pt()+(LEP1 + NU2).Pt());
     WWTree->PtBalance_run2  = ((JET_PuppiAK8+LEP1 + NU1).Pt())/(JET_PuppiAK8.Pt()+(LEP1 + NU1).Pt());
 
     WWTree->BosonCentrality_type0 = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+NU0).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j1_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+NU0).Eta())  );
+    WWTree->BosonCentrality_type0_jes_up = GetMin( GetMin(JET_PuppiAK8_jes_up.Eta(),(LEP1+NU0_jes_up).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta_jes_up, WWTree->vbf_maxpt_j2_eta_jes_up) , GetMax(WWTree->vbf_maxpt_j1_eta_jes_up,WWTree->vbf_maxpt_j2_eta_jes_up) - GetMax(JET_PuppiAK8_jes_up.Eta(),(LEP1+NU0_jes_up).Eta())  );
+    WWTree->BosonCentrality_type0_jes_dn = GetMin( GetMin(JET_PuppiAK8_jes_dn.Eta(),(LEP1+NU0_jes_dn).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta_jes_dn, WWTree->vbf_maxpt_j2_eta_jes_dn) , GetMax(WWTree->vbf_maxpt_j1_eta_jes_dn,WWTree->vbf_maxpt_j2_eta_jes_dn) - GetMax(JET_PuppiAK8_jes_dn.Eta(),(LEP1+NU0_jes_dn).Eta())  );
     WWTree->BosonCentrality_type2 = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+NU2).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j1_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+NU2).Eta())  );
     WWTree->BosonCentrality_run2  = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+NU1).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j1_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+NU1).Eta())  );
     if (JET_PuppiAK8.Pt()>0){
@@ -1756,8 +1763,12 @@ int main (int argc, char** argv)
      WWTree->RpT_type2 = (JET_PuppiAK8.Pt()*(LEP1 + NU2).Pt())/(VBF1.Pt()*VBF2.Pt());
      WWTree->RpT_run2 =  (JET_PuppiAK8.Pt()*(LEP1 + NU1).Pt())/(VBF1.Pt()*VBF2.Pt());
      WWTree->ZeppenfeldWH = JET_PuppiAK8.Eta() - (VBF1.Eta() + VBF2.Eta())/2.0;
+     WWTree->ZeppenfeldWH_jes_up = JET_PuppiAK8_jes_up.Eta() - (VBF1_jes_up.Eta() + VBF2_jes_up.Eta())/2.0;
+     WWTree->ZeppenfeldWH_jes_dn = JET_PuppiAK8_jes_dn.Eta() - (VBF1_jes_up.Eta() + VBF2_jes_up.Eta())/2.0;
      }
-     WWTree->ZeppenfeldWL_type0 = (LEP1 + NU0).Rapidity() - (VBF1.Eta() + VBF2.Eta())/2.0;
+     WWTree->ZeppenfeldWL_type0 = (LEP1 + NU0).Eta() - (VBF1.Eta() + VBF2.Eta())/2.0;
+     WWTree->ZeppenfeldWL_type0_jes_up = (LEP1 + NU0_jes_up).Eta() - (VBF1_jes_up.Eta() + VBF2_jes_up.Eta())/2.0;
+     WWTree->ZeppenfeldWL_type0_jes_dn = (LEP1 + NU0_jes_dn).Eta() - (VBF1_jes_dn.Eta() + VBF2_jes_dn.Eta())/2.0;
      WWTree->ZeppenfeldWL_type2 = (LEP1 + NU2).Eta() - (VBF1.Eta() + VBF2.Eta())/2.0;
      WWTree->ZeppenfeldWL_run2 = (LEP1 + NU1).Eta() - (VBF1.Eta() + VBF2.Eta())/2.0;
      WWTree->LeptonProjection_type0 = (LEP1.Pt()*cos(LEP1.Theta()-(LEP1 + NU0).Theta()))/(LEP1 + NU0).Pt();
@@ -1767,6 +1778,8 @@ int main (int argc, char** argv)
     if (WWTree->isVBF && nGoodPuppiAK8jets!=0 && WWTree->l_pt2>0){
     WWTree->PtBalance_2Lep = ((JET_PuppiAK8+LEP1 + LEP2).Pt())/(JET_PuppiAK8.Pt()+(LEP1 + LEP2).Pt());
     WWTree->BosonCentrality_2Lep = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+LEP2).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j1_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+LEP2).Eta())  );
+    WWTree->BosonCentrality_2Lep_jes_up = GetMin( GetMin(JET_PuppiAK8_jes_up.Eta(),(LEP1+LEP2).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta_jes_up, WWTree->vbf_maxpt_j2_eta_jes_up) , GetMax(WWTree->vbf_maxpt_j1_eta_jes_up,WWTree->vbf_maxpt_j2_eta_jes_up) - GetMax(JET_PuppiAK8_jes_up.Eta(),(LEP1+LEP2).Eta())  );
+    WWTree->BosonCentrality_2Lep_jes_dn = GetMin( GetMin(JET_PuppiAK8_jes_dn.Eta(),(LEP1+LEP2).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta_jes_dn, WWTree->vbf_maxpt_j2_eta_jes_dn) , GetMax(WWTree->vbf_maxpt_j1_eta_jes_dn,WWTree->vbf_maxpt_j2_eta_jes_dn) - GetMax(JET_PuppiAK8_jes_dn.Eta(),(LEP1+LEP2).Eta())  );
     if (JET_PuppiAK8.Pt()>0){
     double a_costheta1, a_costheta2, a_costhetastar, a_Phi, a_Phi1;
 
@@ -1784,6 +1797,8 @@ int main (int argc, char** argv)
      WWTree->RpT_2Lep = (JET_PuppiAK8.Pt()*(LEP1 + LEP2).Pt())/(VBF1.Pt()*VBF2.Pt());
      }
      WWTree->ZeppenfeldWL_2Lep = (LEP1 + LEP2).Eta() - (VBF1.Eta() + VBF2.Eta())/2.0;
+     WWTree->ZeppenfeldWL_2Lep_jes_up = (LEP1 + LEP2).Eta() - (VBF1_jes_up.Eta() + VBF2_jes_up.Eta())/2.0;
+     WWTree->ZeppenfeldWL_2Lep_jes_dn = (LEP1 + LEP2).Eta() - (VBF1_jes_dn.Eta() + VBF2_jes_dn.Eta())/2.0;
      WWTree->LeptonProjection_2Lep = (LEP1.Pt()*cos(LEP1.Theta()-(LEP1 + LEP2).Theta()))/(LEP1 + LEP2).Pt();
     }
 

@@ -38,6 +38,21 @@ class setOutputTree {
   float totalEventWeight;
   float totalEventWeight_2;
   float totalEventWeight_3;
+
+  float totalEventWeight_2Lep;
+  float PtBalance_type0_jes_up;
+  float PtBalance_type0_jes_dn;
+  float BosonCentrality_type0_jes_up;
+  float BosonCentrality_type0_jes_dn;
+  float ZeppenfeldWH_jes_up;
+  float ZeppenfeldWH_jes_dn;
+  float ZeppenfeldWL_type0_jes_up;
+  float ZeppenfeldWL_type0_jes_dn;
+  float BosonCentrality_2Lep_jes_up;
+  float BosonCentrality_2Lep_jes_dn;
+  float ZeppenfeldWL_2Lep_jes_up;
+  float ZeppenfeldWL_2Lep_jes_dn;
+
   float pu_Weight;
   float pu_Weight_up;
   float pu_Weight_down;
