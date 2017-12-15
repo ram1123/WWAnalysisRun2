@@ -38,6 +38,7 @@ os.system('xrdfs root://cmseos.fnal.gov/ mkdir ' + outputFolder)
 # create directory in pwd for log files
 os.system('mkdir -p ' + OutputLogPath)
 
+
 # Function to create a tar file
 def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, "w:gz") as tar:
@@ -54,7 +55,7 @@ os.system('rm CMSSW*.tgz')
 make_tarfile(CMSSWRel+".tgz", cmsswDirPath[1])
 
 # send the created tarball to eos
-os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov//store/user/rasharma/' + CMSSWRel+".tgz")
+os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolder+'/' + CMSSWRel+".tgz")
 #with open("ThingsUpdated.txt","a") as myfile:
 #	CmdOutput = subprocess.check_output('git log --pretty=format:"%h - %an, %cd : %s" -2')
 #	myfile.write("=========================================\n\n")
