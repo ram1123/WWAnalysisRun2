@@ -113,7 +113,7 @@ int main (int argc, char** argv)
   const baconhep::TTrigger triggerMenu(iHLTFile);  
   std::cout<<"Apply trigger: "<<applyTrigger<<std::endl;
 
-  TLorentzVector W_type0,W_type2, W_run2,W_puppi_type2, W_puppi_type0, W_puppi_run2, LEP1, LEP2, SJ1_PuppiAK8, SJ2_PuppiAK8, SJ1, SJ2;
+  TLorentzVector W_type0,W_type0_jes_up, W_type0_jes_dn, W_type0_jer_up, W_type0_jer_dn, W_type2, W_run2,W_puppi_type2, W_puppi_type0, W_puppi_run2, LEP1, LEP2, SJ1_PuppiAK8, SJ2_PuppiAK8, SJ1, SJ2;
   TLorentzVector NU0,NU1,NU2,NU0_puppi,NU1_puppi,NU2_puppi;
   TLorentzVector NU0_jes_up, NU0_jes_dn;
   TLorentzVector NU0_puppi_jes_up, NU0_puppi_jes_dn;
@@ -879,21 +879,42 @@ int main (int argc, char** argv)
 
   
     W_type0 = LEP1 + NU0;
+    W_type0_jes_up = LEP1 + NU0_jes_up;
+    W_type0_jes_dn = LEP1 + NU0_jes_dn;
+    W_type0_jer_up = LEP1 + NU0_jer_up;
+    W_type0_jer_dn = LEP1 + NU0_jer_dn;
     W_type2 = LEP1 + NU2;
     W_run2 = LEP1 + NU1;
   
     WWTree->v_pt_type0 = W_type0.Pt();
+    WWTree->v_eta_type0 = W_type0.Eta();
+    WWTree->v_mt_type0 = TMath::Sqrt(2*LEP1.Et()*NU0.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0))));
+    WWTree->v_mass_type0 = W_type0.M();
+    WWTree->v_pt_type0_jes_up = W_type0_jes_up.Pt();
+    WWTree->v_eta_type0_jes_up = W_type0_jes_up.Eta();
+    WWTree->v_mt_type0_jes_up = TMath::Sqrt(2*LEP1.Et()*NU0_jes_up.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jes_up))));
+    WWTree->v_mass_type0_jes_up = W_type0_jes_up.M();
+    WWTree->v_pt_type0_jes_dn = W_type0_jes_dn.Pt();
+    WWTree->v_eta_type0_jes_dn = W_type0_jes_dn.Eta();
+    WWTree->v_mt_type0_jes_dn = TMath::Sqrt(2*LEP1.Et()*NU0_jes_dn.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jes_dn))));
+    WWTree->v_mass_type0_jes_dn = W_type0_jes_dn.M();
+    WWTree->v_pt_type0_jer_up = W_type0_jer_up.Pt();
+    WWTree->v_eta_type0_jer_up = W_type0_jer_up.Eta();
+    WWTree->v_mt_type0_jer_up = TMath::Sqrt(2*LEP1.Et()*NU0_jer_up.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jer_up))));
+    WWTree->v_mass_type0_jer_up = W_type0_jer_up.M();
+    WWTree->v_pt_type0_jer_dn = W_type0_jer_dn.Pt();
+    WWTree->v_eta_type0_jer_dn = W_type0_jer_dn.Eta();
+    WWTree->v_mt_type0_jer_dn = TMath::Sqrt(2*LEP1.Et()*NU0_jer_dn.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jer_dn))));
+    WWTree->v_mass_type0_jer_dn = W_type0_jer_dn.M();
+
     WWTree->v_pt_type2 = W_type2.Pt();
     WWTree->v_pt_run2 = W_run2.Pt();
     WWTree->v_eta_type2 = W_type2.Eta();
-    WWTree->v_eta_type0 = W_type0.Eta();
     WWTree->v_eta_run2 = W_run2.Eta();
     WWTree->v_phi = W_type2.Phi();
     WWTree->v_mt_type2 = TMath::Sqrt(2*LEP1.Et()*NU2.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU2))));
-    WWTree->v_mt_type0 = TMath::Sqrt(2*LEP1.Et()*NU0.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0))));
     WWTree->v_mt_run2 = TMath::Sqrt(2*LEP1.Et()*NU1.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU1))));
     WWTree->v_mass_type2 = W_type2.M();
-    WWTree->v_mass_type0 = W_type0.M();
     WWTree->v_mass_run2 = W_run2.M();
   
     //////////////THE PUPPI MET
@@ -1700,7 +1721,7 @@ int main (int argc, char** argv)
     WWTree->BosonCentrality_type0_jes_dn = GetMin( GetMin(JET_PuppiAK8_jes_dn.Eta(),(LEP1+NU0_jes_dn).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta_jes_dn, WWTree->vbf_maxpt_j2_eta_jes_dn) , GetMax(WWTree->vbf_maxpt_j1_eta_jes_dn,WWTree->vbf_maxpt_j2_eta_jes_dn) - GetMax(JET_PuppiAK8_jes_dn.Eta(),(LEP1+NU0_jes_dn).Eta())  );
 
     WWTree->BosonCentrality_type0_jer_up = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+NU0_jer_up).Eta())-GetMin(WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j2_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+NU0_jer_up).Eta())  );
-    WWTree->BosonCentrality_type0_jer_dn = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+NU0_jer_dn).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j1_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+NU0_jer_dn).Eta())  );
+    WWTree->BosonCentrality_type0_jer_dn = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+NU0_jer_dn).Eta())-GetMin(WWTree->vbf_maxpt_j2_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j2_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+NU0_jer_dn).Eta())  );
 
     WWTree->BosonCentrality_type2 = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+NU2).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j1_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+NU2).Eta())  );
     WWTree->BosonCentrality_run2  = GetMin( GetMin(JET_PuppiAK8.Eta(),(LEP1+NU1).Eta())-GetMin(WWTree->vbf_maxpt_j1_eta, WWTree->vbf_maxpt_j2_eta) , GetMax(WWTree->vbf_maxpt_j1_eta,WWTree->vbf_maxpt_j2_eta) - GetMax(JET_PuppiAK8.Eta(),(LEP1+NU1).Eta())  );

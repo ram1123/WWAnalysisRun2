@@ -82,6 +82,29 @@ Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Pi
 
 	grep -r --exclude=\*.{root,o,exe,swp,bcup} genGravMass *
 
+## Search data/mc on DAS
+
+	das_client.py --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0
+
+There is a script to check many samples at once. Script name is `DasGoClientSummary.py`.
+
+### How to use script DasGoClientSummary.py
+
+1. Check if it runs fine:
+
+		grep "Job Nubmer" <LogFileName>
+   
+   Lets say you are checking this for N samples. Then it should have all numbers from 1 to N.
+
+2. Grab dataset name using this command:
+
+		grep Dataset screenlog.0 | awk -F "/" '{print $2,"\t",$3}'
+
+3. Grab number of events using command:
+
+		grep nevents screenlog.0 | awk -F "," '{print $3}' | awk -F ":" '{print $2}'
+
+4. To investigate we can paste output of step 2 and 3 in spreadsheet and look at it.
 ## Command to generate aQGC parametres summary from reweight cards
 
 	grep launch aQGC_WMhadZlepJJ_EWK_LO_NPle1_mjj100pt10_reweight_card.dat | awk -F "=" '{print $2}' | awk -F "_" '{ gsub("p",".",$2); gsub("m","-",$2); print $1,$2}'

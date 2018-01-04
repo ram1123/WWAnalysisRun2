@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import datetime
 import os
 
 from ConfigParser import RawConfigParser
@@ -19,8 +20,7 @@ from pprint import pprint
 #print "name of samples:"
 #pprint(Name)
 
-#source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_2017-10-26_11h23/"
-source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_2017-10-31_21h45/"
+source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_2018_01_03_14h54/"
 
 os.system('xrdfs root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
 
@@ -114,7 +114,8 @@ if ifhaddOnly != 1:
 	#sampleInfo.sort()
 	pprint(sampleInfo)
 	
-	outScript = open("DibosonBoostedElMuSamples13TeV.txt","w");
+	OutPutFile = "DibosonBoostedElMuSamples13TeV_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+".txt";
+	outScript = open(OutPutFile,"w");
 	outScript.write("# name           file_location  xspb/lumipb  otherscale nMCevents       nMCNegEvents    colorcode       stackit\n")
 	for i,files in enumerate(sampleInfo):
 		for sample in crossSections.keys():
