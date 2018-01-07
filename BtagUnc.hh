@@ -169,6 +169,7 @@ float getBtagEventReweight(int NminBjets, std::vector <const baconhep::TJet*> &v
     std::cout<<"dataProd_0: " << dataProd_0 << std::endl; 
     std::cout<<"mcProd_0:   " << mcProd_0 << std::endl; 
     */
+
     return wtbtag = dataProd_0/mcProd_0;
     
     //re-weighting for events with exactly 1 b-tag jet
@@ -270,7 +271,7 @@ float getBtagEventReweightEtaBin(int NminBjets, std::vector <const baconhep::TJe
   
   for(unsigned int ij=0; ij<vJet.size(); ++ij){
     float mcTag = 1.;
-    float mcNoTag = 0.;
+    float mcNoTag = 1.;
     float dataTag = 1.;
     float dataNoTag = 0.;
     mcProd_1 = 1.; dataProd_1 = 1.;
@@ -332,12 +333,13 @@ float getBtagEventReweightEtaBin(int NminBjets, std::vector <const baconhep::TJe
   
   // re-weighting for events with 0 jets
   if(NminBjets==0){
-    /*
-    std::cout<<"0 btag"<<std::endl;
-    std::cout<<"dataProd_0: " << dataProd_0 << std::endl; 
+    if (isnan(dataProd_0/mcProd_0)){
+    std::cout<<"0 btag"<<"\t";
+    std::cout<<"dataProd_0: " << dataProd_0 << "\t"; 
     std::cout<<"mcProd_0:   " << mcProd_0 << std::endl; 
-    */
-    return wtbtag = dataProd_0/mcProd_0;
+    }
+
+    return wtbtag = (mcProd_0 == 0.0 || dataProd_0 == 0.0) ? 1.0 : dataProd_0/mcProd_0;
     
     //re-weighting for events with exactly 1 b-tag jet
   } else if(NminBjets==-1){
@@ -346,7 +348,7 @@ float getBtagEventReweightEtaBin(int NminBjets, std::vector <const baconhep::TJe
     std::cout<<"dataSum: " << dataSum << std::endl;
     std::cout<<"mcSum:   " << mcSum << std::endl;
     */
-    return wtbtag = dataSum/mcSum;
+    return wtbtag = (mcSum ==0.0 || dataSum ==0.0 ) ? 1.0 : dataSum/mcSum;
     
     // re-weighting for events with 1 or more b-tag jets
   } else if(NminBjets==1){
@@ -355,7 +357,7 @@ float getBtagEventReweightEtaBin(int NminBjets, std::vector <const baconhep::TJe
     std::cout<<"dataProd: "<<(1 - dataProd_0) <<std::endl;
     std::cout<<"mcProd:   "<<(1 - mcProd_0) <<std::endl;
     */
-    return wtbtag = (1 - dataProd_0)/(1 - mcProd_0);
+    return wtbtag = (dataProd_0 == 1.0 || mcProd_0 ==1.0) ? 1.0 : (1 - dataProd_0)/(1 - mcProd_0);
     // re-weighting for events with 2 or more b-tag jets
   } else if(NminBjets==2){
     /*
@@ -363,7 +365,7 @@ float getBtagEventReweightEtaBin(int NminBjets, std::vector <const baconhep::TJe
     std::cout<<"1 - dataProd_0 - dataSum: " << 1 - dataProd_0 - dataSum <<std::endl;
     std::cout<<"1 - mcProd_0 - mcSum:     " << 1 - mcProd_0 - mcSum <<std::endl;
     */
-    return wtbtag = (1 - dataProd_0 - dataSum)/(1 - mcProd_0 - mcSum);
+    return wtbtag = (dataProd_0 + dataSum == 1.0 || mcProd_0 + mcSum == 1.0) ? 1.0 : (1 - dataProd_0 - dataSum)/(1 - mcProd_0 - mcSum);
     
   } 
   

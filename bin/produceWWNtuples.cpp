@@ -244,7 +244,7 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles = 10;
+  if (isLocal==1) nInputFiles = 1;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -1535,27 +1535,6 @@ int main (int argc, char** argv)
       // !!! VBF non-Puppi missing !!!
       //------------------------------
     }
-    	vector<float> btagSFv       = getJetSFs(goodJetsv, bTagReader, "central", "central");
-    	vector<float> btagSFUpHFv   = getJetSFs(goodJetsv, bTagReader, "up",      "central");
-    	vector<float> btagSFDownHFv = getJetSFs(goodJetsv, bTagReader, "down",    "central");
-    	vector<float> btagSFUpLFv   = getJetSFs(goodJetsv, bTagReader, "central", "up");
-    	vector<float> btagSFDownLFv = getJetSFs(goodJetsv, bTagReader, "central", "down"); 
-
-    	WWTree->btag0Wgt       = getBtagEventReweightEtaBin(0, goodJetsv, btagSFv);
-    	WWTree->btag1Wgt       = getBtagEventReweightEtaBin(1, goodJetsv, btagSFv);
-    	WWTree->btag2Wgt       = getBtagEventReweightEtaBin(2, goodJetsv, btagSFv);
-
-    	WWTree->btag0WgtUpHF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpHFv);
-    	WWTree->btag0WgtDownHF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownHFv);
-    	WWTree->btag0WgtUpLF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpLFv);
-    	WWTree->btag0WgtDownLF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownLFv);
-    	WWTree->btag1WgtUpHF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpHFv);
-    	WWTree->btag1WgtDownHF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownHFv);
-    	WWTree->btag1WgtUpLF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpLFv);
-    	WWTree->btag1WgtDownLF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownLFv);
-    	
-    	btagSFv.clear();	btagSFUpHFv.clear();	btagSFDownHFv.clear();
-    	btagSFUpLFv.clear();	btagSFDownLFv.clear();
 
     if (indexGoodVBFJets.size()>=2) 
     {
@@ -1690,6 +1669,42 @@ int main (int argc, char** argv)
     if (OnlyTwoVBFTypeJets == 1) WWTree->isVBF=1;
     if (OnlyTwoVBFTypeJets == 0 ) continue;
         cutEff[10]++;
+    /////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //		Calculate b-tag weight
+    //		
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    	vector<float> btagSFv       = getJetSFs(goodJetsv, bTagReader, "central", "central");
+    	vector<float> btagSFUpHFv   = getJetSFs(goodJetsv, bTagReader, "up",      "central");
+    	vector<float> btagSFDownHFv = getJetSFs(goodJetsv, bTagReader, "down",    "central");
+    	vector<float> btagSFUpLFv   = getJetSFs(goodJetsv, bTagReader, "central", "up");
+    	vector<float> btagSFDownLFv = getJetSFs(goodJetsv, bTagReader, "central", "down"); 
+
+    	WWTree->btag0Wgt       = getBtagEventReweightEtaBin(0, goodJetsv, btagSFv);
+    	WWTree->btag1Wgt       = getBtagEventReweightEtaBin(1, goodJetsv, btagSFv);
+    	WWTree->btag2Wgt       = getBtagEventReweightEtaBin(2, goodJetsv, btagSFv);
+
+	//if (isnan(btagSFv) == 1) cout<<"********************* btag SF is nan"<<endl;
+	if (isnan(WWTree->btag0Wgt) == 1 || WWTree->btag0Wgt == 0) { 
+	cout<<"********************* btag weight is nan"<<endl;
+	//for (unsigned int i=0; i<btagSFv.size(); i++)
+	//cout<<"Vector = "<<btagSFv[i]<<"\t";
+	//cout<<endl;
+	}
+
+    	WWTree->btag0WgtUpHF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpHFv);
+    	WWTree->btag0WgtDownHF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownHFv);
+    	WWTree->btag0WgtUpLF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpLFv);
+    	WWTree->btag0WgtDownLF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownLFv);
+    	WWTree->btag1WgtUpHF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpHFv);
+    	WWTree->btag1WgtDownHF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownHFv);
+    	WWTree->btag1WgtUpLF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpLFv);
+    	WWTree->btag1WgtDownLF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownLFv);
+    	
+    	btagSFv.clear();	btagSFUpHFv.clear();	btagSFDownHFv.clear();
+    	btagSFUpLFv.clear();	btagSFDownLFv.clear();
+    /////////////////////////////////////////////////////////////////////////////////////////	END btag weight calculation
     
     WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight;
     WWTree->totalEventWeight_2Lep = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight*WWTree->trig_eff_Weight2*WWTree->id_eff_Weight2;
