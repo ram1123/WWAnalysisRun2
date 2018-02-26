@@ -533,6 +533,7 @@ int main (int argc, char** argv)
     electronBr->GetEntry(jentry);
     const baconhep::TElectron *leadele = NULL;
     const baconhep::TElectron *subele = NULL;
+    double iso = 1.5;
     for (int i=0; i<electronArr->GetEntries(); i++) {
       const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
       if (ele->pt<=pt_cut) continue;
@@ -543,15 +544,18 @@ int main (int argc, char** argv)
       ELE.SetPtEtaPhiE(ele->pt,ele->eta,ele->phi,ele->ecalEnergy);
       tightEle.push_back(ELE);
       nTightEle++;
+      iso = ele->chHadIso + TMath::Max(ele->neuHadIso + ele->gammaIso - 0.5*(ele->puIso), double(0));
       if(!leadele || ele->pt>leadele->pt)
 	{
 	  if(!(ele->pt>leadelept_cut)) continue;
 	  subele = leadele;
 	  leadele = ele;
+	  WWTree->l_iso1 = iso*ele->pt;
 	}
       else if (!subele || ele->pt > subele->pt)
 	{
 	  subele = ele;
+	  WWTree->l_iso2 = iso*ele->pt;
 	}
     }
     if(leadele)
@@ -575,6 +579,7 @@ int main (int argc, char** argv)
     const baconhep::TMuon *leadmu = NULL;
     const baconhep::TMuon *submu = NULL;
     double leadmue=-999, submue = -999;
+    iso = 1.5;
     for(Int_t i=0; i<muonArr->GetEntries(); i++) {
       const baconhep::TMuon *mu = (baconhep::TMuon*)((*muonArr)[i]);
       if (mu->pt<pt_cut) continue;
@@ -585,17 +590,20 @@ int main (int argc, char** argv)
       nTightMu++;
       MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1057);
       tightMuon.push_back(MU);
+      iso = mu->chHadIso + TMath::Max(mu->neuHadIso + mu->gammaIso - 0.5*(mu->puIso), double(0));
       if(!leadmu || mu->pt>leadmu->pt)
 	{
 	  if(!(mu->pt>leadmupt_cut)) continue;
 	  submu = leadmu;
 	  leadmu = mu;
 	  leadmue = MU.E();
+	  WWTree->l_iso1 = iso*mu->pt;
 	}
       else if (!submu || mu->pt > submu->pt)
 	{
 	  submu = mu;
 	  submue = MU.E();
+	  WWTree->l_iso2 = iso*mu->pt;
 	}
     }   
     if(leadmu)
@@ -1490,7 +1498,7 @@ int main (int argc, char** argv)
 
       //fill B-Tag info
       
-      if (fabs(jet->eta) < 2.4 && jet->pt>30){
+      if (fabs(jet->eta) < 2.4 && jet->pt>20){
       		if (jet->csv>0.5426)  WWTree->nBTagJet_loose++;
       		if (jet->csv>0.8484)  WWTree->nBTagJet_medium++;
       		if (jet->csv>0.9535)  WWTree->nBTagJet_tight++;

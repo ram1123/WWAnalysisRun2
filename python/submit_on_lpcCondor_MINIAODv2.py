@@ -22,14 +22,18 @@ category = ["el","mu"];
 
 lumi = 35900.0
 
+changes = raw_input("\n\nWrite change summary: ")
+
+print "==> ",changes
+
 # Get date and time for output directory
 ## ADD "test" IN OUTPUT FOLDER IF YOU ARE TESTING SO THAT LATER YOU REMEMBER TO WHICH DIRECTORY YOU HAVE TO REMOVE FROM EOS
 if TestRun:
 	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+"_TEST/";
 	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M') + "_TEST";
 else:
-	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
-	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	outputFolder = "/store/user/rasharma/SecondStep/WWTree_IsoVarSaved_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	OutputLogPath = "OutPut_Logs/Logs_IsoVarSaved_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
 
 print "Name of output dir: ",outputFolder
 # create a directory on eos
@@ -55,11 +59,13 @@ make_tarfile(CMSSWRel+".tgz", cmsswDirPath[1])
 
 # send the created tarball to eos
 os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolder+'/' + CMSSWRel+".tgz")
-#with open("ThingsUpdated.txt","a") as myfile:
-#	CmdOutput = subprocess.check_output('git log --pretty=format:"%h - %an, %cd : %s" -2')
-#	myfile.write("=========================================\n\n")
-#	myfile.write(CmdOutput)
-#myfile.close()
+
+os.system('git diff > mypatch.patch')
+os.system("sed -i '1s/^/Changes Summary : "+changes+"\\n/' mypatch.patch")
+os.system('echo -e "\n\n============\n== Latest commit number \n\n" >> mypatch.patch ')
+os.system('git log -1 --format="%H" >> mypatch.patch ')
+os.system('xrdcp -f mypatch.patch root://cmseos.fnal.gov/'+outputFolder+'/mypatch.patch')
+
 os.system('xrdcp -f ThingsUpdated.txt root://cmseos.fnal.gov/' + outputFolder)
 os.system('cp ThingsUpdated.txt ' + OutputLogPath)
 
@@ -95,19 +101,19 @@ samples = [
     	( 0.387,	"WminusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		489280,   0),
     	( 0.376,	"ZTo2LZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		49999,   0),
     	#	DY jets
-    	( 4274.1645,	"DYToLL_0J_13TeV-amcatnloFXFX-pythia8",			1749590,	161090),
-    	( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_1",		35950579,	9808428),
-    	( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_2",		35950579,	9808428),
-    	( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_3",		35950579,	9808428),
-    	( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_4",		35950579,	9808428),
-    	( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_5",		35950579,	9808428),
-    	( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_6",		35950579,	9808428),
-    	( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_7",		35950579,	9808428),
-    	( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_1",		21571879,	7649488),
-    	( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_2",		21571879,	7649488),
-    	( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_3",		21571879,	7649488),
-    	( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_4",		21571879,	7649488),
-    	( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_5",		21571879,	7649488),
+    	#( 4274.1645,	"DYToLL_0J_13TeV-amcatnloFXFX-pythia8",			1749590,	161090),
+    	#( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_1",		35950579,	9808428),
+    	#( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_2",		35950579,	9808428),
+    	#( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_3",		35950579,	9808428),
+    	#( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_4",		35950579,	9808428),
+    	#( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_5",		35950579,	9808428),
+    	#( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_6",		35950579,	9808428),
+    	#( 1012.296845,	"DYToLL_1J_13TeV-amcatnloFXFX-pythia8_7",		35950579,	9808428),
+    	#( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_1",		21571879,	7649488),
+    	#( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_2",		21571879,	7649488),
+    	#( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_3",		21571879,	7649488),
+    	#( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_4",		21571879,	7649488),
+    	#( 334.717838,	"DYToLL_2J_13TeV-amcatnloFXFX-pythia8_5",		21571879,	7649488),
     	( 54.481360,	"DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",	2798791,	0),
     	( 102.4628,	"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_1",	4866978,	0),
     	( 102.4628,	"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_2",	4866978,	0),
@@ -125,13 +131,13 @@ samples = [
     	( 1012.296845,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_7",	52602172,	0),
     	( 1012.296845,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_8",	52602172,	0),
     	( 1012.296845,	"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_9",	52602172,	0),
-	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_1",	121994032,	20127060),
-	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_2",	121994032,	20127060),
-	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_3",	121994032,	20127060),
-	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_4",	121994032,	20127060),
-	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_5",	121994032,	20127060),
-	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_6",	121994032,	20127060),
-	( 5765.4,	"DYJetsToLL_M-50_amcatnlo_7",	121994032,	20127060),
+	#( 5765.4,	"DYJetsToLL_M-50_amcatnlo_1",	121994032,	20127060),
+	#( 5765.4,	"DYJetsToLL_M-50_amcatnlo_2",	121994032,	20127060),
+	#( 5765.4,	"DYJetsToLL_M-50_amcatnlo_3",	121994032,	20127060),
+	#( 5765.4,	"DYJetsToLL_M-50_amcatnlo_4",	121994032,	20127060),
+	#( 5765.4,	"DYJetsToLL_M-50_amcatnlo_5",	121994032,	20127060),
+	#( 5765.4,	"DYJetsToLL_M-50_amcatnlo_6",	121994032,	20127060),
+	#( 5765.4,	"DYJetsToLL_M-50_amcatnlo_7",	121994032,	20127060),
     	#( 4435.5258,	"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",	0),
     	#	Wjets
 	( 1627.45,	"WJetsToLNu_HT_100To200_13TeV",	79165703,	0),

@@ -96,11 +96,13 @@ void setOutputTree::initializeVariables()
   l_phi1       	=-999;
   l_e1		=-999;
   l_charge1	=-999;
+  l_iso1	=-999;
   l_pt2		=-999;
   l_eta2	=-999;
   l_phi2	=-999;
   l_e2		=-999;
   l_charge2	=-999;
+  l_iso2	=-999;
   dilep_pt	=-999;
   dilep_eta	=-999;
   dilep_phi	=-999;
@@ -795,6 +797,7 @@ void setOutputTree::setBranches()
   fTree->Branch("l_phi1",&l_phi1,"l_phi1/F");
   fTree->Branch("l_e1",&l_e1,"l_e1/F");
   fTree->Branch("l_charge1",&l_charge1,"l_charge1/F");
+  fTree->Branch("l_iso1",&l_iso1,"l_iso1/F");
   fTree->Branch("l_pt2",&l_pt2,"l_pt2/F");
   fTree->Branch("l_eta2",&l_eta2,"l_eta2/F");
   fTree->Branch("l_phi2",&l_phi2,"l_phi2/F");
@@ -804,6 +807,7 @@ void setOutputTree::setBranches()
   fTree->Branch("dilep_phi",&dilep_phi,"dilep_phi/F");
   fTree->Branch("dilep_m",&dilep_m,"dilep_m/F");
   fTree->Branch("l_charge2",&l_charge2,"l_charge2/F");
+  fTree->Branch("l_iso2",&l_iso2,"l_iso2/F");
   fTree->Branch("ungroomed_AK8jet_pt",&ungroomed_AK8jet_pt,"ungroomed_AK8jet_pt/F");
   fTree->Branch("ungroomed_AK8jet_pt_jes_up",&ungroomed_AK8jet_pt_jes_up,"ungroomed_AK8jet_pt_jes_up/F");
   fTree->Branch("ungroomed_AK8jet_pt_jes_dn",&ungroomed_AK8jet_pt_jes_dn,"ungroomed_AK8jet_pt_jes_dn/F");

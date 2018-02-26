@@ -114,11 +114,13 @@ class setOutputTree {
   float l_phi1;
   float l_e1;
   float l_charge1;
+  float l_iso1;
   float l_pt2;
   float l_eta2;
   float l_phi2;
   float l_e2;
   float l_charge2;
+  float l_iso2;
   float dilep_pt;
   float dilep_eta;
   float dilep_phi;
