@@ -544,18 +544,18 @@ int main (int argc, char** argv)
       ELE.SetPtEtaPhiE(ele->pt,ele->eta,ele->phi,ele->ecalEnergy);
       tightEle.push_back(ELE);
       nTightEle++;
-      iso = ele->chHadIso + TMath::Max(ele->neuHadIso + ele->gammaIso - 0.5*(ele->puIso), double(0));
+      iso = ele->chHadIso + TMath::Max( 0.0,(ele->gammaIso + ele->neuHadIso - info->rhoIso*eleEffArea(ele->eta)) );
       if(!leadele || ele->pt>leadele->pt)
 	{
 	  if(!(ele->pt>leadelept_cut)) continue;
 	  subele = leadele;
 	  leadele = ele;
-	  WWTree->l_iso1 = iso*ele->pt;
+	  WWTree->l_iso1 = iso/ele->pt;
 	}
       else if (!subele || ele->pt > subele->pt)
 	{
 	  subele = ele;
-	  WWTree->l_iso2 = iso*ele->pt;
+	  WWTree->l_iso2 = iso/ele->pt;
 	}
     }
     if(leadele)
@@ -597,13 +597,13 @@ int main (int argc, char** argv)
 	  submu = leadmu;
 	  leadmu = mu;
 	  leadmue = MU.E();
-	  WWTree->l_iso1 = iso*mu->pt;
+	  WWTree->l_iso1 = iso/mu->pt;
 	}
       else if (!submu || mu->pt > submu->pt)
 	{
 	  submu = mu;
 	  submue = MU.E();
-	  WWTree->l_iso2 = iso*mu->pt;
+	  WWTree->l_iso2 = iso/mu->pt;
 	}
     }   
     if(leadmu)
