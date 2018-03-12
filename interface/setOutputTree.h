@@ -574,6 +574,9 @@ float PuppiAK8jet_qjet;
   float vbf_maxpt_jj_Deta_jes_up;
   float vbf_maxpt_jj_Deta_jes_dn;
   float vbf_maxpt_deltaR;
+  float deltaphi_METvbfJ1;
+  float deltaphi_METvbfJ2;
+  float deltaphi_METmin;	// min of delta phi with ak8, and two ak4 jets
   float vbfPuppi_maxpt_j1_pt;
   float vbfPuppi_maxpt_j1_pt_jes_up;
   float vbfPuppi_maxpt_j1_pt_jes_dn;

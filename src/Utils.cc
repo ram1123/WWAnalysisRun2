@@ -115,10 +115,10 @@ bool passEleVetoSel(const baconhep::TElectron *electron, const double rho)
 {
   if(electron->isConv) return false;
 
-  //double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
+  double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
 
   if(fabs(electron->scEta)<1.479) {
-//    if(iso >= 0.175*3.*(electron->pt) ) return false;
+    if(iso < 0.175*(electron->pt) || iso > 0.16*(electron->pt)) return false;
 
     if(electron->sieie              >= 0.01150)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00749)                        return false;
@@ -127,7 +127,7 @@ bool passEleVetoSel(const baconhep::TElectron *electron, const double rho)
     if(fabs(1.0 - electron->eoverp) >= 0.29900*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  2)                              return false;
   } else {
-//    if(iso >= 0.159*3.*(electron->pt) ) return false;
+    if(iso < 0.159*(electron->pt) || iso > 0.16*(electron->pt) ) return false;
 
     if(electron->sieie              >= 0.03700)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00895)                        return false;
@@ -144,10 +144,10 @@ bool passEleLooseSel(const baconhep::TElectron *electron, const double rho)
 {
   if(electron->isConv) return false;
 
-  //double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
+  double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
 
   if(fabs(electron->scEta)<1.479) {
-//    if(iso >= 0.0994*3.*(electron->pt) ) return false;
+    if(iso < 0.0994*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
 
     if(electron->sieie              >= 0.01100)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00477)                        return false;
@@ -156,7 +156,7 @@ bool passEleLooseSel(const baconhep::TElectron *electron, const double rho)
     if(fabs(1.0 - electron->eoverp) >= 0.24100*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   } else {
-//    if(iso >= 0.107*3.*(electron->pt) ) return false;
+    if(iso < 0.107*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
 
     if(electron->sieie              >= 0.03140)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00868)                        return false;
@@ -173,10 +173,10 @@ bool passEleMediumSel(const baconhep::TElectron *electron, const double rho)
 {
   if(electron->isConv) return false;
 
-  //double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
+  double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
 
   if(fabs(electron->scEta)<1.479) {
-//    if(iso >= 0.0695*3.*(electron->pt) ) return false;
+    if(iso < 0.0695*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
 
     if(electron->sieie              >= 0.00998)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00311)                        return false;
@@ -185,7 +185,7 @@ bool passEleMediumSel(const baconhep::TElectron *electron, const double rho)
     if(fabs(1.0 - electron->eoverp) >= 0.13400*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   } else {
-//    if(iso >= 0.0821*3.*(electron->pt) ) return false;
+    if(iso < 0.0821*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
 
     if(electron->sieie              >= 0.02980)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00609)                        return false;
@@ -202,10 +202,10 @@ bool passEleTightSel(const baconhep::TElectron *electron, const double rho)
 {
   if(electron->isConv) return false;
 
-  //double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
+  double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
 
   if(fabs(electron->scEta)<1.479) {
-//    if(iso >= 0.0588*3.*(electron->pt) ) return false;
+    if(iso < 0.0588*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
 
     if(electron->sieie              >= 0.00998)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00308)                        return false;
@@ -214,7 +214,7 @@ bool passEleTightSel(const baconhep::TElectron *electron, const double rho)
     if(fabs(1.0 - electron->eoverp) >= 0.12900*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   } else {
-//    if(iso >= 0.0571*3.*(electron->pt) ) return false;
+    if(iso < 0.0571*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
 
     if(electron->sieie              >= 0.02920)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00605)                        return false;
@@ -408,8 +408,8 @@ bool passMuonLooseSel(const baconhep::TMuon *muon)
   if(!(muon->pogIDBits & baconhep::kPOGLooseMuon)) return false;
 
   // PF-isolation with Delta-beta correction
-  //double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
-//  if(iso >= 0.25*3.*(muon->pt)) return false;
+  double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
+  if(iso < 0.25*(muon->pt) || iso > 3.5*(muon->pt)) return false;
 
   return true;
 }
@@ -419,8 +419,8 @@ bool passMuonMediumSel(const baconhep::TMuon *muon)
   if(!(muon->pogIDBits & baconhep::kPOGMediumMuon)) return false;
 
   // PF-isolation with Delta-beta correction
-  //double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
-//  if(iso >= 0.25*3.*(muon->pt)) return false;
+  double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
+  if(iso < 0.25*(muon->pt) || iso > 3.5*(muon->pt)) return false;
 
   return true;
 }
@@ -430,8 +430,8 @@ bool passMuonTightSel(const baconhep::TMuon *muon)
   if(!(muon->pogIDBits & baconhep::kPOGTightMuon)) return false;
 
   // PF-isolation with Delta-beta correction
-  //double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
-//  if(iso >= 0.15*3.*(muon->pt)) return false;
+  double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
+  if(iso < 0.15*(muon->pt) || iso > 3.5*(muon->pt)) return false;
   return true;
 }
 //-------------------------------------------------------------------------------------------------
@@ -440,8 +440,8 @@ bool passMuonSoftSel(const baconhep::TMuon *muon)
   if(!(muon->pogIDBits & baconhep::kPOGSoftMuon)) return false;
 
   // PF-isolation with Delta-beta correction
-  //double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
-//  if(iso >= 0.25*3.*(muon->pt)) return false;
+  double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
+  if(iso < 0.25*(muon->pt) || iso > 3.5*(muon->pt)) return false;
   return true;
 }
 //-------------------------------------------------------------------------------------------------
@@ -450,8 +450,8 @@ bool passMuonHighPtSel(const baconhep::TMuon *muon)
   if(!(muon->pogIDBits & baconhep::kPOGHighPtMuon)) return false;
 
   // PF-isolation with Delta-beta correction                                                                                  
-//  double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
-//  if(iso >= 0.25*3.*(muon->pt)) return false;
+  double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
+  if(iso < 0.25*(muon->pt) || iso > 3.5*(muon->pt)) return false;
   return true;
 }
 // TAUS
