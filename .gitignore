@@ -1,7 +1,5 @@
 *.exe
-*.txt
 *.pyc
-*.dat
 ._*
 *.swp
 *.root

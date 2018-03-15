@@ -1,0 +1,193 @@
+WJetsToLNu_HT_800To1200_13TeV	:	  nEvents = 1544347	nNegEvents = 0
+WJetsToLNu_HT_800To1200_13TeV_ext1	:	  nEvents = 6144610	nNegEvents = 0		
+===> Total nEvents = 7688957	 Total neg events = 0
+******
+ZTo2LZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 99997	nNegEvents = 0		
+===> Total nEvents = 99997	 Total neg events = 0
+******
+WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 1981107	nNegEvents = 0		
+===> Total nEvents = 1981107	 Total neg events = 0
+******
+WplusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 3948770	nNegEvents = 0		
+===> Total nEvents = 3948770	 Total neg events = 0
+******
+ZZZ_13TeV_amcatnlo_pythia8	:	  nEvents = 249232	nNegEvents = 18020		
+===> Total nEvents = 249232	 Total neg events = 18020
+******
+		
+===> Total nEvents = 0	 Total neg events = 0
+******
+		
+===> Total nEvents = 0	 Total neg events = 0
+******
+WplusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 1991348	nNegEvents = 0		
+===> Total nEvents = 1991348	 Total neg events = 0
+******
+WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_1	:	  nEvents = 6317663	nNegEvents = 1323869WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_2	:	  nEvents = 7838807	nNegEvents = 1645703WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_3	:	  nEvents = 9610076	nNegEvents = 2016703		
+===> Total nEvents = 23766546	 Total neg events = 4986275
+******
+TTZToLLNuNu_M-10	:	  nEvents = 1992334	nNegEvents = 532202TTZToLLNuNu_M-10_ext2	:	  nEvents = 5976852	nNegEvents = 1594355		
+===> Total nEvents = 7969186	 Total neg events = 2126557
+******
+WJetsToLNu_HT_200To400_13TeV	:	  nEvents = 4226968	nNegEvents = 0WJetsToLNu_HT_200To400_13TeV_ext1	:	  nEvents = 14809265	nNegEvents = 0WJetsToLNu_HT_200To400_13TeV_ext2	:	  nEvents = 19889583	nNegEvents = 0		
+===> Total nEvents = 38925816	 Total neg events = 0
+******
+WJetsToLNu_HT_2500ToInf_13TeV	:	  nEvents = 253344	nNegEvents = 0WJetsToLNu_HT_2500ToInf_13TeV_ext1	:	  nEvents = 2267274	nNegEvents = 0		
+===> Total nEvents = 2520618	 Total neg events = 0
+******
+TTWJetsToLNu_ext1	:	  nEvents = 2160030	nNegEvents = 523692TTWJetsToLNu_ext2	:	  nEvents = 3120221	nNegEvents = 758387		
+===> Total nEvents = 5280251	 Total neg events = 1282079
+******
+QCD_HT1500to2000_13TeV	:	  nEvents = 3969722	nNegEvents = 0QCD_HT1500to2000_13TeV_ext	:	  nEvents = 7654998	nNegEvents = 0		
+===> Total nEvents = 11624720	 Total neg events = 0
+******
+TTToSemilepton_powheg_1	:	  nEvents = 14217782	nNegEvents = 0TTToSemilepton_powheg_2	:	  nEvents = 15347836	nNegEvents = 0TTToSemilepton_powheg_3	:	  nEvents = 15740383	nNegEvents = 0TTToSemilepton_powheg_4	:	  nEvents = 15589196	nNegEvents = 0TTToSemilepton_powheg_5	:	  nEvents = 16283466	nNegEvents = 0TTToSemilepton_powheg_6	:	  nEvents = 14653760	nNegEvents = 0		
+===> Total nEvents = 91832423	 Total neg events = 0
+******
+WplusToLNuWplusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 199858	nNegEvents = 0		
+===> Total nEvents = 199858	 Total neg events = 0
+******
+WplusTo2JWminusToLNuJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 3994663	nNegEvents = 0		
+===> Total nEvents = 3994663	 Total neg events = 0
+******
+QCD_HT500to700_13TeV	:	  nEvents = 10404435	nNegEvents = 0QCD_HT500to700_13TeV_ext_1	:	  nEvents = 16328235	nNegEvents = 0QCD_HT500to700_13TeV_ext_2	:	  nEvents = 16130896	nNegEvents = 0QCD_HT500to700_13TeV_ext_3	:	  nEvents = 10880870	nNegEvents = 0		
+===> Total nEvents = 53744436	 Total neg events = 0
+******
+QCD_HT100to200_13TeV_1	:	  nEvents = 14488259	nNegEvents = 0QCD_HT100to200_13TeV_2	:	  nEvents = 10939047	nNegEvents = 0QCD_HT100to200_13TeV_3	:	  nEvents = 10942525	nNegEvents = 0QCD_HT100to200_13TeV_4	:	  nEvents = 16402757	nNegEvents = 0QCD_HT100to200_13TeV_5	:	  nEvents = 16913018	nNegEvents = 0QCD_HT100to200_13TeV_6	:	  nEvents = 10928438	nNegEvents = 0		
+===> Total nEvents = 80614044	 Total neg events = 0
+******
+WplusToLNuWminusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 1640169	nNegEvents = 0		
+===> Total nEvents = 1640169	 Total neg events = 0
+******
+		
+===> Total nEvents = 0	 Total neg events = 0
+******
+ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8	:	  nEvents = 15345161	nNegEvents = 2828391		
+===> Total nEvents = 15345161	 Total neg events = 2828391
+******
+WplusToLNuZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 349000	nNegEvents = 0		
+===> Total nEvents = 349000	 Total neg events = 0
+******
+SingleElectronRun2016F_03Feb2017_v1	:	  nEvents = 1	nNegEvents = 0SingleElectronRun2016H_03Feb2017_ver2_v1_1	:	  nEvents = 1	nNegEvents = 0SingleElectronRun2016H_03Feb2017_ver2_v1_2	:	  nEvents = 1	nNegEvents = 0SingleElectronRun2016H_03Feb2017_ver3_v1	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016B-03Feb2017_ver1-v1	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016B-03Feb2017_ver2-v2_1	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016B-03Feb2017_ver2-v2_2	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016B-03Feb2017_ver2-v2_3	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016B-03Feb2017_ver2-v2_4	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016B-03Feb2017_ver2-v2_5	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016C-03Feb2017-v1	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016D-03Feb2017-v1_1	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016D-03Feb2017-v1_2	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016D-03Feb2017-v1_3	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016E-03Feb2017-v1_1	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016E-03Feb2017-v1_2	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016G-03Feb2017-v1_1	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016G-03Feb2017-v1_2	:	  nEvents = 1	nNegEvents = 0SingleElectron_Run2016G-03Feb2017-v1_3	:	  nEvents = 1	nNegEvents = 0	
+===> Total nEvents = 19	 Total neg events = 0
+******
+DYJetsToLL_M-50_amcatnlo_1	:	  nEvents = 17415058	nNegEvents = 2874519DYJetsToLL_M-50_amcatnlo_2	:	  nEvents = 17413443	nNegEvents = 2872559DYJetsToLL_M-50_amcatnlo_3	:	  nEvents = 17404903	nNegEvents = 2871857DYJetsToLL_M-50_amcatnlo_4	:	  nEvents = 17574029	nNegEvents = 2900748DYJetsToLL_M-50_amcatnlo_5	:	  nEvents = 17366135	nNegEvents = 2866709DYJetsToLL_M-50_amcatnlo_6	:	  nEvents = 17416059	nNegEvents = 2869578DYJetsToLL_M-50_amcatnlo_7	:	  nEvents = 17404405	nNegEvents = 2871090		
+===> Total nEvents = 121994032	 Total neg events = 20127060
+******
+WminusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 99657	nNegEvents = 0		
+===> Total nEvents = 99657	 Total neg events = 0
+******
+Summer16_ST_s_channel_4f_leptonDecays	:	  nEvents = 999976	nNegEvents = 188501		
+===> Total nEvents = 999976	 Total neg events = 188501
+******
+WplusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 149363	nNegEvents = 0		
+===> Total nEvents = 149363	 Total neg events = 0
+******
+WplusTo2JWminusToLNuJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 1706220	nNegEvents = 0		
+===> Total nEvents = 1706220	 Total neg events = 0
+******
+WJetsToLNu_HT_600To800_13TeV	:	  nEvents = 3700689	nNegEvents = 0WJetsToLNu_HT_600To800_13TeV_ext1	:	  nEvents = 0	nNegEvents = 0WJetsToLNu_HT_600To800_13TeV_ext1_1	:	  nEvents = 7046209	nNegEvents = 0WJetsToLNu_HT_600To800_13TeV_ext1_2	:	  nEvents = 7831706	nNegEvents = 0		
+===> Total nEvents = 18578604	 Total neg events = 0
+******
+WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8	:	  nEvents = 26516586	nNegEvents = 5318729		
+===> Total nEvents = 26516586	 Total neg events = 5318729
+******
+ST_tW_top_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1	:	  nEvents = 5372830	nNegEvents = 0		
+===> Total nEvents = 5372830	 Total neg events = 0
+******
+		
+		===> Total nEvents = 0	 Total neg events = 0
+******
+		===> Total nEvents = 0	 Total neg events = 0
+******
+QCD_HT700to1000_13TeV	:	  nEvents = 15578398	nNegEvents = 0QCD_HT700to1000_13TeV_ext	:	  nEvents = 27080279	nNegEvents = 0		
+===> Total nEvents = 42658677	 Total neg events = 0
+******
+WminusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 199525	nNegEvents = 0		
+===> Total nEvents = 199525	 Total neg events = 0
+******
+		===> Total nEvents = 0	 Total neg events = 0
+******
+WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 1923847	nNegEvents = 0		
+===> Total nEvents = 1923847	 Total neg events = 0
+******
+QCD_HT1000to1500_13TeV	:	  nEvents = 4766444	nNegEvents = 0QCD_HT1000to1500_13TeV_ext	:	  nEvents = 8314248	nNegEvents = 0		
+===> Total nEvents = 13080692	 Total neg events = 0
+******
+WJetsToLNu_HT_100To200_13TeV	:	  nEvents = 10115048	nNegEvents = 0WJetsToLNu_HT_100To200_13TeV_ext1_1	:	  nEvents = 9779356	nNegEvents = 0WJetsToLNu_HT_100To200_13TeV_ext1_2	:	  nEvents = 9859615	nNegEvents = 0WJetsToLNu_HT_100To200_13TeV_ext1_3	:	  nEvents = 9864180	nNegEvents = 0WJetsToLNu_HT_100To200_13TeV_ext2_1	:	  nEvents = 17198538	nNegEvents = 0WJetsToLNu_HT_100To200_13TeV_ext2_2	:	  nEvents = 22348966	nNegEvents = 0		
+===> Total nEvents = 79165703	 Total neg events = 0
+******
+Summer16_ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4	:	  nEvents = 5993570	nNegEvents = 0		
+===> Total nEvents = 5993570	 Total neg events = 0
+******
+		===> Total nEvents = 0	 Total neg events = 0
+******
+WplusToLNuWplusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 99992	nNegEvents = 0		
+===> Total nEvents = 99992	 Total neg events = 0
+******
+TTZToQQ	:	  nEvents = 749367	nNegEvents = 199113		
+===> Total nEvents = 749367	 Total neg events = 199113
+******
+WminusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 168679	nNegEvents = 0		
+===> Total nEvents = 168679	 Total neg events = 0
+******
+SingleMuonRun2016B_03Feb2017_ver1_v1	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016B_03Feb2017_ver2_v2_1	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016B_03Feb2017_ver2_v2_2	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016B_03Feb2017_ver2_v2_3	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016C_03Feb2017_v1	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016D_03Feb2017_v1_1	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016D_03Feb2017_v1_2	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016E_03Feb2017_v1_1	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016E_03Feb2017_v1_2	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016F_03Feb2017_v1_1	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016F_03Feb2017_v1_2	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016G_03Feb2017_v1_1	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016G_03Feb2017_v1_2	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016G_03Feb2017_v1_3	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016H_03Feb2017_ver2_v1_1	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016H_03Feb2017_ver2_v1_2	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016H_03Feb2017_ver2_v1_3	:	  nEvents = 1	nNegEvents = 0SingleMuonRun2016H_03Feb2017_ver3_v1	:	  nEvents = 1	nNegEvents = 0		
+===> Total nEvents = 18	 Total neg events = 0
+******
+WplusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 393171	nNegEvents = 0		
+===> Total nEvents = 393171	 Total neg events = 0
+******
+ZTo2LZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 49999	nNegEvents = 0		
+===> Total nEvents = 49999	 Total neg events = 0
+******
+QCD_HT200to300_13TeV	:	  nEvents = 15592145	nNegEvents = 0QCD_HT200to300_13TeV_ext	:	  nEvents = 0	nNegEvents = 0QCD_HT200to300_13TeV_ext_1	:	  nEvents = 20872620	nNegEvents = 0QCD_HT200to300_13TeV_ext_2	:	  nEvents = 17815266	nNegEvents = 0		
+===> Total nEvents = 54280031	 Total neg events = 0
+******
+ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1	:	  nEvents = 5424956	nNegEvents = 0		===> Total nEvents = 5424956	 Total neg events = 0
+******
+QCD_HT300to500_13TeV	:	  nEvents = 17005515	nNegEvents = 0QCD_HT300to500_13TeV_ext	:	  nEvents = 9919339	nNegEvents = 0		===> Total nEvents = 26924854	 Total neg events = 0
+******
+WminusToLNuZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 160194	nNegEvents = 0		===> Total nEvents = 160194	 Total neg events = 0
+******
+WminusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 489280	nNegEvents = 0		===> Total nEvents = 489280	 Total neg events = 0
+******
+WJetsToLNu_HT_400To600_13TeV	:	  nEvents = 1963353	nNegEvents = 0WJetsToLNu_HT_400To600_13TeV_ext1	:	  nEvents = 5790899	nNegEvents = 0		===> Total nEvents = 7754252	 Total neg events = 0
+******
+WminusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 169938	nNegEvents = 0		===> Total nEvents = 169938	 Total neg events = 0
+******
+ZZ_13TeV_pythia8	:	  nEvents = 990051	nNegEvents = 0		===> Total nEvents = 990051	 Total neg events = 0
+******
+		===> Total nEvents = 0	 Total neg events = 0
+******
+WminusToLNuWminusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 190106	nNegEvents = 0		===> Total nEvents = 190106	 Total neg events = 0
+******
+WplusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 188998	nNegEvents = 0		===> Total nEvents = 188998	 Total neg events = 0
+******
+WJetsToLNu_HT_1200To2500_13TeV	:	  nEvents = 154700	nNegEvents = 0WJetsToLNu_HT_1200To2500_13TeV_ext1	:	  nEvents = 6553956	nNegEvents = 0		===> Total nEvents = 6708656	 Total neg events = 0
+******
+		===> Total nEvents = 0	 Total neg events = 0
+******
+WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8	:	  nEvents = 5057358	nNegEvents = 953706		===> Total nEvents = 5057358	 Total neg events = 953706
+******
+WplusTo2JZTo2LJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 499432	nNegEvents = 0		===> Total nEvents = 499432	 Total neg events = 0
+******
+		===> Total nEvents = 0	 Total neg events = 0
+******
+Summer16_ST_t_channel_antitop_4f_inclusiveDecays_TuneCUETP8M2T4	:	  nEvents = 3927980	nNegEvents = 0		===> Total nEvents = 3927980	 Total neg events = 0
+******
+WWZ_13TeV_amcatnlo_pythia8	:	  nEvents = 269990	nNegEvents = 15372		===> Total nEvents = 269990	 Total neg events = 15372
+******
+WplusToLNuWplusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 198848	nNegEvents = 0		===> Total nEvents = 198848	 Total neg events = 0
+******
+QCD_HT2000toInf_13TeV	:	  nEvents = 1950601	nNegEvents = 0QCD_HT2000toInf_13TeV_ext	:	  nEvents = 3925268	nNegEvents = 0		===> Total nEvents = 5875869	 Total neg events = 0
+******
+ZTo2LZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 99392	nNegEvents = 0		===> Total nEvents = 99392	 Total neg events = 0
+******
+WminusToLNuZTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 981540	nNegEvents = 0		===> Total nEvents = 981540	 Total neg events = 0
+******
+		===> Total nEvents = 0	 Total neg events = 0
+******
+WminusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8	:	  nEvents = 198896	nNegEvents = 0		===> Total nEvents = 198896	 Total neg events = 0
+******
+TTWJetsToQQ	:	  nEvents = 833257	nNegEvents = 201483		===> Total nEvents = 833257	 Total neg events = 201483
+******

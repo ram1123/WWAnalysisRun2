@@ -18,13 +18,16 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 	cd CMSSW_8_0_26_patch1/src
 	cmsenv
 	git clone git@github.com:ksung25/BaconAna.git
+	cd BaconAna
+	git checkout 33ffe39
 	mkdir WWAnalysis
 	cd WWAnalysis
 	git clone https://github.com/ram1123/WWAnalysisRun2.git;
 	cd WWAnalysisRun2
 	git checkout bacon_80x
+	cd ../../
 	scramv1 b -j 8
-	python python/produceWWNtuples.py -l el
+	python python/produceWWNtuples.py -i /store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ -n WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8 -o WWTree_WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8 -w 0.9114 -no 1991227 -noNeg 0 -lumi 35900.0 --ismc 1 -trig 1 -c lpc -loc 1 
 
 * To submit the batch job (**LXPLUS**):
 	* Go to directory:
