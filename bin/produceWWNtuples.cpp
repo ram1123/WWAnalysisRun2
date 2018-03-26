@@ -514,6 +514,7 @@ int main (int argc, char** argv)
     electronBr->GetEntry(jentry);
     const baconhep::TElectron *leadele = NULL;
     const baconhep::TElectron *subele = NULL;
+    double leadeleE=-999, subeleE=-999;
     double iso = 1.5;
     for (int i=0; i<electronArr->GetEntries(); i++) {
       const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
@@ -522,7 +523,7 @@ int main (int argc, char** argv)
       if(!passEleLooseSel(ele,info->rhoIso)) continue;
       nLooseEle++;
       if(!passEleTightSel(ele,info->rhoIso)) continue;
-      ELE.SetPtEtaPhiE(ele->pt,ele->eta,ele->phi,ele->ecalEnergy);
+      ELE.SetPtEtaPhiM(ele->pt,ele->eta,ele->phi,0.0005109989461);
       tightEle.push_back(ELE);
       nTightEle++;
       iso = ele->chHadIso + TMath::Max( 0.0,(ele->gammaIso + ele->neuHadIso - info->rhoIso*eleEffArea(ele->eta)) );
@@ -531,11 +532,13 @@ int main (int argc, char** argv)
 	  if(!(ele->pt>leadelept_cut)) continue;
 	  subele = leadele;
 	  leadele = ele;
+	  leadeleE = ELE.E();
 	  WWTree->l_iso1 = iso/ele->pt;
 	}
       else if (!subele || ele->pt > subele->pt)
 	{
 	  subele = ele;
+	  subeleE = ELE.E();
 	  WWTree->l_iso2 = iso/ele->pt;
 	}
     }
@@ -544,7 +547,7 @@ int main (int argc, char** argv)
 	WWTree->l_pt1  = leadele->pt;
 	WWTree->l_eta1 = leadele->eta;
 	WWTree->l_phi1 = leadele->phi;	
-	WWTree->l_e1 = leadele->ecalEnergy;	
+	WWTree->l_e1 = leadeleE;
 	WWTree->l_charge1 = leadele->q;
       }
     if(subele)
@@ -552,7 +555,7 @@ int main (int argc, char** argv)
 	WWTree->l_pt2  = subele->pt;
 	WWTree->l_eta2 = subele->eta;
 	WWTree->l_phi2 = subele->phi;	
-	WWTree->l_e2 = subele->ecalEnergy;	
+	WWTree->l_e2 = subeleE;
 	WWTree->l_charge2 = subele->q;
       }
     muonArr->Clear();
@@ -569,7 +572,7 @@ int main (int argc, char** argv)
       nLooseMu++;
       if(!passMuonTightSel(mu)) continue;
       nTightMu++;
-      MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1057);
+      MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1056583745);
       tightMuon.push_back(MU);
       iso = mu->chHadIso + TMath::Max(mu->neuHadIso + mu->gammaIso - 0.5*(mu->puIso), double(0));
       if(!leadmu || mu->pt>leadmu->pt)
@@ -693,6 +696,8 @@ int main (int argc, char** argv)
     //          type = 3: if real roots, pick the largest value of the cosine*
     
     TLorentzVector W_Met;
+    WWTree->pfMET_Corr = info->pfMETC;
+    WWTree->pfMET_Corr_phi = info->pfMETCphi;
     if (WWTree->l_pt2<0) {
     float Wmass = 80.385;
   
@@ -918,7 +923,7 @@ int main (int argc, char** argv)
     WWTree->v_mass_type2 = W_type2.M();
     WWTree->v_mass_run2 = W_run2.M();
     }
-    if(LEP1.Pt()<=0 || LEP2.Pt() <= 0 ){ std::cerr<<" Negative Lepton - Neutrino Pt "<<std::endl; continue ; }
+    //if(LEP1.Pt()<=0 || LEP2.Pt() <= 0 ){ std::cerr<<" Negative Lepton - Neutrino Pt "<<std::endl; continue ; }
     if (WWTree->l_pt2>0) cutEff[14]++;  // There is no MET in two lepton case. So, cutEff[4] is placed in previous if condition.
   
       
@@ -1101,10 +1106,10 @@ int main (int argc, char** argv)
 
     //////////////////ANGULAR VARIABLES
     WWTree->deltaR_Wjet_GenReco = deltaR(WWTree->hadW_eta_gen,WWTree->hadW_phi_gen,JET.Eta(),JET.Phi());
-    WWTree->deltaR_lPuppiak8jet = deltaR(JET_PuppiAK8.Eta(),JET_PuppiAK8.Phi(),LEP1.Eta(),LEP1.Phi());
 
 
     if (WWTree->l_pt2<0){
+    	WWTree->deltaR_lPuppiak8jet = deltaR(JET_PuppiAK8.Eta(),JET_PuppiAK8.Phi(),LEP1.Eta(),LEP1.Phi());
         WWTree->deltaphi_METPuppiak8jet = deltaPhi(JET_PuppiAK8.Phi(),WWTree->pfMET_Corr_phi);
         WWTree->deltaphi_VPuppiak8jet = deltaPhi(JET_PuppiAK8.Phi(),W_type0.Phi());
         if (WWTree->deltaR_lPuppiak8jet>(TMath::Pi()/2.0) && fabs(WWTree->deltaphi_METPuppiak8jet)>2.0 && fabs(WWTree->deltaphi_VPuppiak8jet)>2.0 && nGoodPuppiAK8jets>0)
@@ -1115,7 +1120,7 @@ int main (int argc, char** argv)
         WWTree->mass_lvj_type0_PuppiAK8 = (LEP1 + NU0 + JET_PuppiAK8).M();
         WWTree->mass_lvj_type2_PuppiAK8 = (LEP1 + NU2 + JET_PuppiAK8).M();
         WWTree->mass_lvj_run2_PuppiAK8  = (LEP1 + NU1 + JET_PuppiAK8).M();
-        if (isnan(WWTree->mass_lvj_run2) == 1)
+        if (isnan(WWTree->mass_lvj_run2) == 1 || isnan(WWTree->mass_lvj_type0_PuppiAK8) == 1 || isnan(WWTree->mass_lvj_type2_PuppiAK8 == 1))
     	   cout<<"==============> Run2 mass is NAN"<<"\t LEP1 mass = "<<LEP1.M()<<"\tNUmass = "<<NU1.M()<<"\t"<<NU1.Px()<<"\t"<<NU1.Py()<<"\t"<<NU1.Pz()<<"\t"<<NU1.E()<<endl;
         WWTree->mass_lvj_type0_PuppiAK8_jes_up = (LEP1 + NU0_jes_up + JET_PuppiAK8_jes_up).M();
         WWTree->mass_lvj_type0_PuppiAK8_jes_dn = (LEP1 + NU0_jes_dn + JET_PuppiAK8_jes_dn).M();
@@ -1159,7 +1164,7 @@ int main (int argc, char** argv)
     
     
 
-    if (WWTree->mass_lvj_type0_PuppiAK8 < 0) continue;		// cut on mWW mass
+    if (WWTree->mass_lvj_type0_PuppiAK8 < 0 && WWTree->mass_llj_PuppiAK8 < 0) continue;		// cut on mWW mass
     if (WWTree->l_pt2<0) cutEff[6]++;
     else cutEff[16]++;
     
@@ -1219,7 +1224,7 @@ int main (int argc, char** argv)
 
       //fill B-Tag info
       
-      if (fabs(jet->eta) < 2.4 && jet->pt>20){
+      if (fabs(jet->eta) < 2.4 && jet->pt>30){
       		if (jet->csv>0.5426)  WWTree->nBTagJet_loose++;
       		if (jet->csv>0.8484)  WWTree->nBTagJet_medium++;
       		if (jet->csv>0.9535)  WWTree->nBTagJet_tight++;
