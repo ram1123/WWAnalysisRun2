@@ -14,7 +14,8 @@ if len(sys.argv) != 2:
 
 #source = sys.argv[1]
 
-source = "/eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples_New/" + sys.argv[1]+"/"
+#source = "/eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples_New/" + sys.argv[1]+"/"
+source = "/eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/" + sys.argv[1]+"/"
 print "Path of input ROOT file : ",source
 #os.system("eos root://cmseos.fnal.gov ls "+sys.argv[1])
 
@@ -44,11 +45,16 @@ for i in range(0,len(Arrayfilepath)):
         #print("xrdcp -f "+ Arrayfilepath[i]+" "+ source)
 	# eos root://cmseos.fnal.gov mv
         #print("eos root://cmseos.fnal.gov mv "+ Arrayfilepath[i]+" "+ source+"/"+ArrayfileName[i])
-        OutFile.write("eos root://cmseos.fnal.gov mv "+ Arrayfilepath[i]+" "+ source+"/"+ArrayfileName[i]+'\n')
+        #OutFile.write("eos root://cmseos.fnal.gov mv "+ Arrayfilepath[i]+" "+ source+"/"+ArrayfileName[i]+'\n')
+        OutFile.write("xrdcp -f "+ Arrayfilepath[i]+" "+ source+"/"+ArrayfileName[i]+'\n')
         #os.system("eos root://cmseos.fnal.gov mv "+ Arrayfilepath[i]+" "+ source)
 	#print('')
 
+OutFile.write("\n\n\n")
+OutFile.write('echo "-------------------------"\n')
+OutFile.write('echo "ls '+source+' "\n')
+OutFile.write('echo "eosrm -r '+source+'/Samples "\n')
 OutFile.close()
 print "Run command: source ",OutFileName
-#os.system('source '+str(OutFileName))
+os.system('source '+str(OutFileName))
 #os.system('rm '+str(OutFile))

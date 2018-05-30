@@ -20,7 +20,7 @@ from pprint import pprint
 #print "name of samples:"
 #pprint(Name)
 
-source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_QCD_1p5_2018_02_24_12h37/"
+source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_CommonNtuple_For1and2Lepton_2018_05_15_04h15/"
 
 os.system('xrdfs root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
 

@@ -87,7 +87,7 @@ Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Pi
 
 ## Search data/mc on DAS
 
-	das_client.py --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0
+	dasgoclient --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0
 
 There is a script to check many samples at once. Script name is `DasGoClientSummary.py`.
 

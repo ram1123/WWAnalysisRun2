@@ -32,8 +32,8 @@ if TestRun:
 	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+"_TEST/";
 	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M') + "_TEST";
 else:
-	outputFolder = "/store/user/rasharma/SecondStep/WWTree_IsoVarSaved_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
-	OutputLogPath = "OutPut_Logs/Logs_IsoVarSaved_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	outputFolder = "/store/user/rasharma/SecondStep/WWTree_CommonNtuple_For1and2Lepton_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	OutputLogPath = "OutPut_Logs/Logs_CommonNtuple_For1and2Lepton_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
 
 print "Name of output dir: ",outputFolder
 # create a directory on eos
@@ -60,7 +60,8 @@ make_tarfile(CMSSWRel+".tgz", cmsswDirPath[1])
 # send the created tarball to eos
 os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolder+'/' + CMSSWRel+".tgz")
 
-os.system('git diff > mypatch.patch')
+os.system('echo "Add git diff to file logs." > mypatch.patch')
+os.system('git diff >> mypatch.patch')
 os.system("sed -i '1s/^/Changes Summary : "+changes+"\\n/' mypatch.patch")
 os.system('echo -e "\n\n============\n== Latest commit number \n\n" >> mypatch.patch ')
 os.system('git log -1 --format="%H" >> mypatch.patch ')
@@ -70,6 +71,27 @@ os.system('xrdcp -f ThingsUpdated.txt root://cmseos.fnal.gov/' + outputFolder)
 os.system('cp ThingsUpdated.txt ' + OutputLogPath)
 
 samples = [
+	#	Charged Higgs sample
+	( 0.0232745,	"ChargedHiggsToWZToLLQQ_M1000_13TeV-madgraph-pythia8",		89354, 0),
+	( 0.5332947,	"ChargedHiggsToWZToLLQQ_M300_13TeV-madgraph-pythia8",     	99998,	0),
+	( 0.6404795,	"ChargedHiggsToWZToLLQQ_M200_13TeV-madgraph-pythia8",     	99997,	0),
+	( 0.2290123,	"ChargedHiggsToWZToLLQQ_M400_13TeV-madgraph-pythia8",     	99994,	0),
+	( 0.0841788,	"ChargedHiggsToWZToLLQQ_M600_13TeV-madgraph-pythia8",     	99996,	0),
+	( 0.0549078,	"ChargedHiggsToWZToLLQQ_M800_13TeV-madgraph-pythia8",     	99986,	0),
+	( 0.0601563,	"ChargedHiggsToWZToLLQQ_M700_13TeV-madgraph-pythia8",     	99994,	0),
+	( 0.1372523,	"ChargedHiggsToWZToLLQQ_M500_13TeV-madgraph-pythia8",     	98337,	0),
+	( 0.0003318,	"ChargedHiggsToWZToLLQQ_M1500_13TeV-madgraph-pythia8",     	99968,	0),
+	( 0.0400691,	"ChargedHiggsToWZToLNuQQ_M900_13TeV-madgraph-pythia8",		97295, 0),
+	( 0.0231972,	"ChargedHiggsToWZToLNuQQ_M1000_13TeV-madgraph-pythia8",		99241, 0),
+	( 0.5393799,	"ChargedHiggsToWZToLNuQQ_M300_13TeV-madgraph-pythia8",     	99998,	0),
+	( 0.1362330,	"ChargedHiggsToWZToLNuQQ_M500_13TeV-madgraph-pythia8",     	99996,	0),
+	( 0.0594338,	"ChargedHiggsToWZToLNuQQ_M700_13TeV-madgraph-pythia8",     	99626,	0),
+	( 0.6243295,	"ChargedHiggsToWZToLNuQQ_M200_13TeV-madgraph-pythia8",     	99999,	0),
+	( 0.0531052,	"ChargedHiggsToWZToLNuQQ_M800_13TeV-madgraph-pythia8",     	99993,	0),
+	( 0.2342963,	"ChargedHiggsToWZToLNuQQ_M400_13TeV-madgraph-pythia8",     	99997,	0),
+	( 0.0001099,	"ChargedHiggsToWZToLNuQQ_M2000_13TeV-madgraph-pythia8",     	99959,	0),
+	( 0.0003404,	"ChargedHiggsToWZToLNuQQ_M1500_13TeV-madgraph-pythia8",     	95776,	0),
+	( 0.0801379,	"ChargedHiggsToWZToLNuQQ_M600_13TeV-madgraph-pythia8",     	97780,	0),
     	#	EWK SM Signal
     	( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1991227,   0),
     	( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1983847,   0),
@@ -287,11 +309,20 @@ outScript.write("\n"+'xrdcp -s root://cmseos.fnal.gov/'+outputFolder + '/'+CMSSW
 outScript.write("\n"+'tar -xf '+ CMSSWRel +'.tgz' );
 outScript.write("\n"+'rm '+ CMSSWRel +'.tgz' );
 outScript.write("\n"+'cd ' + CMSSWRel + '/src/WWAnalysis/WWAnalysisRun2' );
+outScript.write("\n"+'echo "====> List files : " ');
+outScript.write("\n"+'ls -alh');
+outScript.write("\n"+'echo "====> Remove any file with name similar to WWTree*.root... " ');
+outScript.write("\n"+'rm WWTree*.root');
 outScript.write("\n"+'scramv1 b ProjectRename');
 outScript.write("\n"+'eval `scram runtime -sh`');
+outScript.write("\n"+'echo "====> List files : " ');
+outScript.write("\n"+'ls -alh');
 outScript.write("\n"+command);
-outScript.write("\n"+'echo "====> List output files : " ');
+outScript.write("\n"+'echo "====> List files : " ');
+outScript.write("\n"+'ls -alh');
+outScript.write("\n"+'echo "====> List root files : " ');
 outScript.write("\n"+'ls WWTree*.root');
+outScript.write("\n"+'echo "====> copying WWTree*.root file to stores area..." ');
 outScript.write("\n"+'xrdcp -f WWTree*.root root://cmseos.fnal.gov/' + outputFolder);
 outScript.write("\n"+'rm WWTree*.root');
 outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');

@@ -139,6 +139,8 @@ int main (int argc, char** argv)
   
 
   char command1[3000];
+  char command2[3000];
+
   if ( cluster == "lxplus")
   	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   else 
@@ -146,7 +148,9 @@ int main (int argc, char** argv)
 	//sprintf(command1,"eos root://cmseos.fnal.gov find -f %s | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());	// WORKS ONLY WITH INTERACTIVE NODE
 
   std::cout<<command1<<std::endl;
+  sprintf(command2,"sed -i '/failed$/d' listTemp_OutPutRootFile.txt");
   system(command1);
+  system(command2);
   char list1[2000];
   sprintf (list1, "listTemp_%s.txt", outputFile.c_str());
   ifstream rootList (list1);
@@ -959,9 +963,7 @@ int main (int argc, char** argv)
 	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
         //if (!passJetLooseSel(jet)) continue;
 	//if (jet->chHadFrac <= 0 && jet->nCharged <= 0 &&  jet->chEmFrac >= 0.99) continue;
-	//if (jet->mass < 40 || jet->mass > 150) continue;
-	//if (addjet->mass_sd0 < 40 || addjet->mass_sd0 > 150) continue;
-	if (addjet->mass_sd0 < 20 ) continue;
+	if (addjet->mass_sd0 < 40 || addjet->mass_sd0 > 150) continue;
 	if (addjet->mass_prun>tempTTbarMass) {
 	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
 	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
