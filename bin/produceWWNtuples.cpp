@@ -55,6 +55,7 @@
 #include "../interface/analysisUtils.h"
 #include "../interface/readJSONFile.h"
 #include "../interface/Utils.hh"
+#include "../interface/GeneralizedEndpoint.h"
 
 using namespace std;
 
@@ -99,8 +100,8 @@ int main (int argc, char** argv)
   const baconhep::TTrigger triggerMenu(iHLTFile);  
   std::cout<<"Apply trigger: "<<applyTrigger<<std::endl;
 
-  TLorentzVector W_type0,W_type0_jes_up, W_type0_jes_dn, W_type0_jer_up, W_type0_jer_dn, W_type2, W_run2,W_puppi_type2, W_puppi_type0, W_puppi_run2;
-  TLorentzVector LEP1, LEP2, SJ1_PuppiAK8, SJ2_PuppiAK8, SJ1, SJ2;
+  TLorentzVector W_type0,W_type0_jes_up, W_type0_jes_dn, W_type0_jer_up, W_type0_jer_dn, W_type2, W_run2,W_puppi_type2, W_puppi_type0, W_puppi_run2, W_type0_LEP_Up, W_type0_LEP_Down;
+  TLorentzVector LEP1, LEP2, LEP1_Up, LEP1_Down, LEP2_Up, LEP2_Down, SJ1_PuppiAK8, SJ2_PuppiAK8, SJ1, SJ2;
   TLorentzVector NU0,NU1,NU2,NU0_puppi,NU1_puppi,NU2_puppi;
   TLorentzVector NU0_jes_up, NU0_jes_dn;
   TLorentzVector NU0_puppi_jes_up, NU0_puppi_jes_dn;
@@ -140,7 +141,6 @@ int main (int argc, char** argv)
 
   char command1[3000];
   char command2[3000];
-
   if ( cluster == "lxplus")
   	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   else 
@@ -148,7 +148,7 @@ int main (int argc, char** argv)
 	//sprintf(command1,"eos root://cmseos.fnal.gov find -f %s | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());	// WORKS ONLY WITH INTERACTIVE NODE
 
   std::cout<<command1<<std::endl;
-  sprintf(command2,"sed -i '/failed$/d' listTemp_OutPutRootFile.txt");
+  sprintf(command2,"sed -i '/failed$/d' listTemp_%s.txt", outputFile.c_str());
   system(command1);
   system(command2);
   char list1[2000];
@@ -232,7 +232,7 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles = 21;
+  if (isLocal==1) nInputFiles = 5;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -259,8 +259,11 @@ int main (int argc, char** argv)
   {
      infile = TFile::Open(sampleName[i]);
      eventTree = (TTree*)infile->Get("Events");
+     //std::cout << "\t File no. " << i << "\t"<< sampleName[i] <<std:: endl;
      
      TotalNumberOfEvents+=eventTree->GetEntries();
+
+     cout<< "DEBUG: 1: "<< TotalNumberOfEvents << endl;
      if(isMC)
      { 
         eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
@@ -509,6 +512,7 @@ int main (int argc, char** argv)
       if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits) ||  triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
   
     /////////////////THE SELECTED LEPTON
+    GeneralizedEndpoint ScaleSystematic;
     int nTightEle=0, nLooseEle=0;
     int nTightMu=0, nLooseMu=0;
     double pt_cut = 20;
@@ -596,7 +600,9 @@ int main (int argc, char** argv)
     }   
     if(leadmu)
       {
-	WWTree->l_pt1  = leadmu->pt;
+	WWTree->l_pt1  = ScaleSystematic.GeneralizedEndpointPt(leadmu->pt, leadmu->q, leadmu->eta, leadmu->phi, 0, 0);
+	WWTree->l_pt1_Up  = ScaleSystematic.GeneralizedEndpointPt(leadmu->pt, leadmu->q, leadmu->eta, leadmu->phi, 1, 0);
+	WWTree->l_pt1_Down  = ScaleSystematic.GeneralizedEndpointPt(leadmu->pt, leadmu->q, leadmu->eta, leadmu->phi, 2, 0);
 	WWTree->l_eta1 = leadmu->eta;
 	WWTree->l_phi1 = leadmu->phi;	
 	WWTree->l_e1 = leadmue;	
@@ -604,7 +610,9 @@ int main (int argc, char** argv)
       }
     if(submu)
       {
-	WWTree->l_pt2  = submu->pt;
+	WWTree->l_pt2  = ScaleSystematic.GeneralizedEndpointPt(submu->pt, submu->q, submu->eta, submu->phi, 0, 0);
+	WWTree->l_pt2_Up  = ScaleSystematic.GeneralizedEndpointPt(submu->pt, submu->q, submu->eta, submu->phi, 1, 0);
+	WWTree->l_pt2_Down  = ScaleSystematic.GeneralizedEndpointPt(submu->pt, submu->q, submu->eta, submu->phi, 2, 0);
 	WWTree->l_eta2 = submu->eta;
 	WWTree->l_phi2 = submu->phi;	
 	WWTree->l_e2 = submue;	
@@ -631,12 +639,26 @@ int main (int argc, char** argv)
     
     LEP1.SetPtEtaPhiE(WWTree->l_pt1,WWTree->l_eta1,WWTree->l_phi1,WWTree->l_e1);
     LEP2.SetPtEtaPhiE(WWTree->l_pt2,WWTree->l_eta2,WWTree->l_phi2,WWTree->l_e2);
+    LEP1_Up.SetPtEtaPhiE(WWTree->l_pt1_Up,WWTree->l_eta1,WWTree->l_phi1,WWTree->l_e1);
+    LEP2_Up.SetPtEtaPhiE(WWTree->l_pt2_Up,WWTree->l_eta2,WWTree->l_phi2,WWTree->l_e2);
+    LEP1_Down.SetPtEtaPhiE(WWTree->l_pt1_Down,WWTree->l_eta1,WWTree->l_phi1,WWTree->l_e1);
+    LEP2_Down.SetPtEtaPhiE(WWTree->l_pt2_Down,WWTree->l_eta2,WWTree->l_phi2,WWTree->l_e2);
     if(WWTree->l_pt2>0)
       {
 	WWTree->dilep_pt  = (LEP1+LEP2).Pt();
 	WWTree->dilep_eta = (LEP1+LEP2).Eta();
 	WWTree->dilep_phi = (LEP1+LEP2).Phi();	
 	WWTree->dilep_m = (LEP1+LEP2).M();	
+
+	WWTree->dilep_pt_Up  = (LEP1_Up+LEP2_Up).Pt();
+	WWTree->dilep_eta_Up = (LEP1_Up+LEP2_Up).Eta();
+	WWTree->dilep_phi_Up = (LEP1_Up+LEP2_Up).Phi();	
+	WWTree->dilep_m_Up = (LEP1_Up+LEP2_Up).M();	
+
+	WWTree->dilep_pt_Down  = (LEP1_Down+LEP2_Down).Pt();
+	WWTree->dilep_eta_Down = (LEP1_Down+LEP2_Down).Eta();
+	WWTree->dilep_phi_Down = (LEP1_Down+LEP2_Down).Phi();	
+	WWTree->dilep_m_Down = (LEP1_Down+LEP2_Down).M();	
       }
 
     //ID & GSF efficiency SF for electrons (https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Electron_efficiencies_and_scale)
@@ -663,27 +685,67 @@ int main (int argc, char** argv)
 	//  apply ID SF's
 	if (WWTree->run<278820){
 		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuA);
-		if (WWTree->l_pt2>0) WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuA);}
+		WWTree->id_eff_Weight_Up = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIDMuA);
+		WWTree->id_eff_Weight_Down = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIDMuA);
+		if (WWTree->l_pt2>0) {
+			WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuA);
+			WWTree->id_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIDMuA);
+			WWTree->id_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIDMuA);
+		}
+	}
 	else{
 		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuB);
-		if (WWTree->l_pt2>0) WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuB);}
+		WWTree->id_eff_Weight_Up = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIDMuB);
+		WWTree->id_eff_Weight_Down = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIDMuB);
+		if (WWTree->l_pt2>0) {
+			WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuB);
+			WWTree->id_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIDMuB);
+			WWTree->id_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIDMuB);
+		}
+	}
 
 	//  apply ISO SF's
 	if (WWTree->run<278820){
 		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuA);
-		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuA);}
+		WWTree->id_eff_Weight_Up = WWTree->id_eff_Weight_Up*GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIsoMuA);
+		WWTree->id_eff_Weight_Down = WWTree->id_eff_Weight_Down*GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIsoMuA);
+
+		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuA);
+		WWTree->id_eff_Weight2_Up = WWTree->id_eff_Weight2_Up*GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIsoMuA);
+		WWTree->id_eff_Weight2_Down = WWTree->id_eff_Weight2_Down*GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIsoMuA);
+		}
 	else{
 		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuB);
-		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuB);}
+		WWTree->id_eff_Weight_Up = WWTree->id_eff_Weight_Up*GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIsoMuB);
+		WWTree->id_eff_Weight_Down = WWTree->id_eff_Weight_Down*GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIsoMuB);
+
+		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuB);
+		WWTree->id_eff_Weight2_Up = WWTree->id_eff_Weight2_Up*GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIsoMuB);
+		WWTree->id_eff_Weight2_Down = WWTree->id_eff_Weight2_Down*GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIsoMuB);
+		}
 	
 	// apply Trigger SF's
 	if (WWTree->run<278820){
 		WWTree->trig_eff_Weight  = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuA);
-		WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuA);}
+		WWTree->trig_eff_Weight_Up  = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1_Up), hTriggerMuA);
+		WWTree->trig_eff_Weight_Down  = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1_Down), hTriggerMuA);
+		if (WWTree->l_pt2>0) {
+			WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuA);
+			WWTree->trig_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hTriggerMuA);
+			WWTree->trig_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hTriggerMuA);
+		}
+	}
 	else{
 		WWTree->trig_eff_Weight  = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuB);
-		WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuB);}
-    }
+		WWTree->trig_eff_Weight_Up  = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hTriggerMuB);
+		WWTree->trig_eff_Weight_Down  = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hTriggerMuB);
+		if (WWTree->l_pt2>0) {
+			WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuB);
+			WWTree->trig_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hTriggerMuB);
+			WWTree->trig_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hTriggerMuB);
+		}
+        }
+	}
 	
     //////////////THE MET
     
@@ -893,13 +955,22 @@ int main (int argc, char** argv)
     W_type0_jer_dn = LEP1 + NU0_jer_dn;
     W_type2 = LEP1 + NU2;
     W_run2 = LEP1 + NU1;
+
+    W_type0_LEP_Up = LEP1_Up +NU0;
+    W_type0_LEP_Down = LEP1_Down +NU0;
     
 
   
     WWTree->v_pt_type0 = W_type0.Pt();
+    WWTree->v_pt_type0_LEP_Up = W_type0_LEP_Up.Pt();
+    WWTree->v_pt_type0_LEP_Down = W_type0_LEP_Down.Pt();
+
     WWTree->v_eta_type0 = W_type0.Eta();
     WWTree->v_mt_type0 = TMath::Sqrt(2*LEP1.Et()*NU0.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0))));
     WWTree->v_mass_type0 = W_type0.M();
+    WWTree->v_mass_type0_LEP_Up = W_type0_LEP_Up.M();
+    WWTree->v_mass_type0_LEP_Down = W_type0_LEP_Down.M();
+
     WWTree->v_pt_type0_jes_up = W_type0_jes_up.Pt();
     WWTree->v_eta_type0_jes_up = W_type0_jes_up.Eta();
     WWTree->v_mt_type0_jes_up = TMath::Sqrt(2*LEP1.Et()*NU0_jes_up.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jes_up))));
