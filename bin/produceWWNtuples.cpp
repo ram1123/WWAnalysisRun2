@@ -263,7 +263,6 @@ int main (int argc, char** argv)
      
      TotalNumberOfEvents+=eventTree->GetEntries();
 
-     cout<< "DEBUG: 1: "<< TotalNumberOfEvents << endl;
      if(isMC)
      { 
         eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
@@ -637,12 +636,12 @@ int main (int argc, char** argv)
     else cutEff[12]++;
 
     
-    LEP1.SetPtEtaPhiE(WWTree->l_pt1,WWTree->l_eta1,WWTree->l_phi1,WWTree->l_e1);
-    LEP2.SetPtEtaPhiE(WWTree->l_pt2,WWTree->l_eta2,WWTree->l_phi2,WWTree->l_e2);
-    LEP1_Up.SetPtEtaPhiE(WWTree->l_pt1_Up,WWTree->l_eta1,WWTree->l_phi1,WWTree->l_e1);
-    LEP2_Up.SetPtEtaPhiE(WWTree->l_pt2_Up,WWTree->l_eta2,WWTree->l_phi2,WWTree->l_e2);
-    LEP1_Down.SetPtEtaPhiE(WWTree->l_pt1_Down,WWTree->l_eta1,WWTree->l_phi1,WWTree->l_e1);
-    LEP2_Down.SetPtEtaPhiE(WWTree->l_pt2_Down,WWTree->l_eta2,WWTree->l_phi2,WWTree->l_e2);
+    LEP1.SetPtEtaPhiM(WWTree->l_pt1,WWTree->l_eta1,WWTree->l_phi1,0.0005109989461);
+    LEP2.SetPtEtaPhiM(WWTree->l_pt2,WWTree->l_eta2,WWTree->l_phi2,0.0005109989461);
+    LEP1_Up.SetPtEtaPhiM(WWTree->l_pt1_Up,WWTree->l_eta1,WWTree->l_phi1,0.0005109989461);
+    LEP2_Up.SetPtEtaPhiM(WWTree->l_pt2_Up,WWTree->l_eta2,WWTree->l_phi2,0.0005109989461);
+    LEP1_Down.SetPtEtaPhiM(WWTree->l_pt1_Down,WWTree->l_eta1,WWTree->l_phi1,0.0005109989461);
+    LEP2_Down.SetPtEtaPhiM(WWTree->l_pt2_Down,WWTree->l_eta2,WWTree->l_phi2,0.0005109989461);
     if(WWTree->l_pt2>0)
       {
 	WWTree->dilep_pt  = (LEP1+LEP2).Pt();
