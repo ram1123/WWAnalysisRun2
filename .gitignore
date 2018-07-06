@@ -7,3 +7,12 @@
 */*~
 LSF*
 *.stdout
+*.d
+*.so
+*.pcm
+screenlog.0
+runstep2condor.*
+*.pdf
+*.png
+*.tgz
+OutPut_Logs/*
