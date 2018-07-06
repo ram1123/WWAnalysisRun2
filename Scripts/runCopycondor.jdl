@@ -1,0 +1,51 @@
+Executable = runCopycondor.sh
+Universe = vanilla
+Requirements =FileSystemDomain=="fnal.gov" && Arch=="X86_64"
+Notification = ERROR
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+x509userproxy = $ENV(X509_USER_PROXY)
+Output = ChargedHiggsToWZToLLQQ_M900_13TeV-madgraph-pythia8_Copy.stdout
+Error = ChargedHiggsToWZToLLQQ_M900_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = ChargedHiggsToWZToLLQQ_M900_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M800_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M800_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M800_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M700_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M700_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M700_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M900_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M900_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M900_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M500_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M500_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M500_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M600_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M600_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M600_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M300_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M300_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M300_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M400_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M400_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M400_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M1500_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M1500_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M1500_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M200_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M200_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M200_13TeV-madgraph-pythia8
+Queue
+Output = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M1000_13TeV-madgraph-pythia8_Copy.stdout
+Error = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M1000_13TeV-madgraph-pythia8_Copy.stdout
+Arguments = DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M1000_13TeV-madgraph-pythia8
+Queue

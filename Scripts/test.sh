@@ -1,0 +1,17 @@
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLLQQ_M300_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLLQQ_M200_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLLQQ_M400_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLLQQ_M600_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLLQQ_M800_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M300_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M500_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M700_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M200_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M800_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M400_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M2000_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLLQQ_M700_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLLQQ_M500_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLLQQ_M1500_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M1500_13TeV-madgraph-pythia8 -t Events
+python getnEvents.py -i /eos/uscms/store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ChargedHiggsToWZToLNuQQ_M600_13TeV-madgraph-pythia8 -t Events
