@@ -20,7 +20,7 @@ from pprint import pprint
 #print "name of samples:"
 #pprint(Name)
 
-source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_CommonNtuple_For1and2Lepton_2018_05_15_04h15/"
+source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_CommonNtuple_For1and2Lepton_MuonPtScale_2018_07_24_10h36/"
 
 os.system('xrdfs root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
 
@@ -34,8 +34,8 @@ for root, dirs, filenames in os.walk(source):
 		if filepath.endswith(".root"):
 			Arrayfilepath.append(filepath)
 
-#pprint(Arrayfilepath)
-#pprint("====================================================")
+pprint(Arrayfilepath)
+pprint("====================================================")
 
 import difflib
 #print difflib.get_close_matches('WWTree_DYJetsToLL_M-50_amcatnlo_', Arrayfilepath, 100, 0.6)
@@ -53,10 +53,12 @@ for sample in crossSections.keys():
 	temp = []
 	#temp.append("hadd "+sample+".root")
 	temp.append(sample+".root")
+	print "\n\n\n\n\n\n\n\n\n\n\n"
 	print "====================> ",sample
 	nEvents=0
 	nNegEvents=0
 	for i,files in enumerate(Arrayfilepath):
+		#print "DEBUG: ",files,"\n\t",sample
 		if files.find(sample) != -1:
 			#temp.append(files)
 			print files

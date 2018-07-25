@@ -298,8 +298,6 @@ int main (int argc, char** argv)
   JetCorrectorParameters paramAK8chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFchs.txt");
   JetCorrectorParameters paramAK8puppi("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFPuppi.txt");
   JetCorrectionUncertainty *fJetUnc_AK4chs = new JetCorrectionUncertainty(paramAK4chs);
-  JetCorrectionUncertainty *fJetUnc_AK4puppi = new JetCorrectionUncertainty(paramAK4puppi);
-  JetCorrectionUncertainty *fJetUnc_AK8chs = new JetCorrectionUncertainty(paramAK8chs);
   JetCorrectionUncertainty *fJetUnc_AK8puppi = new JetCorrectionUncertainty(paramAK8puppi);
 
   //---------start loop on events------------
@@ -616,6 +614,8 @@ int main (int argc, char** argv)
 	WWTree->l_phi1 = leadmu->phi;	
 	WWTree->l_e1 = leadmue;	
 	WWTree->l_charge1 = leadmu->q;
+	//if ( (WWTree->l_charge1 != 1) or (WWTree->l_charge1!=-1))
+	//cout<<"Charge = "<< WWTree->l_charge1<<endl;
       }
     if(submu)
       {
@@ -1112,6 +1112,7 @@ int main (int argc, char** argv)
 	WWTree->PuppiAK8_jetID_loose  = passJetLooseSel(jet);
 
 
+
   WWTree->PuppiAK8jet_e3_b1  = addjet->e3_b1;
   WWTree->PuppiAK8jet_e3_v1_b1 = addjet->e3_v1_b1;
   WWTree->PuppiAK8jet_e3_v2_b1 = addjet->e3_v2_b1;
@@ -1249,7 +1250,10 @@ int main (int argc, char** argv)
         WWTree->eta_llj_PuppiAK8 = (LEP1 + LEP2 + JET_PuppiAK8).Eta();
         WWTree->phi_llj_PuppiAK8 = (LEP1 + LEP2 + JET_PuppiAK8).Phi();
         WWTree->mass_llj_PuppiAK8 = (LEP1 + LEP2 + JET_PuppiAK8).M();
+        WWTree->mass_llj_PuppiAK8_jes_up = (LEP1 + LEP2 + JET_PuppiAK8_jes_up).M();
+        WWTree->mass_llj_PuppiAK8_jes_dn = (LEP1 + LEP2 + JET_PuppiAK8_jes_dn).M();
         WWTree->mass_llj_PuppiAK8_LEP_Up   = (LEP1_Up   + LEP2_Up   + JET_PuppiAK8).M();
+	//cout<<"===> mass_llj_PuppiAK8_LEP_Up = "<< WWTree->mass_llj_PuppiAK8_LEP_Up << endl;
         WWTree->mass_llj_PuppiAK8_LEP_Down = (LEP1_Down + LEP2_Down + JET_PuppiAK8).M();
     }
     
@@ -1289,10 +1293,6 @@ int main (int argc, char** argv)
     WWTree->nBTagJet_medium_unmerged=0;
     WWTree->nBTagJet_tight_unmerged=0;
 
-    int indexCloserJet = -1;
-    int indexCloserJetLep = -1;
-    float deltaRbtag_prev=100.;
-    float deltaRbtag_prev_loose=100.;
     int OnlyTwoVBFTypeJets = 0;
     
     std::vector<int> indexGoodVBFJets;
