@@ -10,6 +10,7 @@ class setOutputTree {
  public:
 
   TTree* fTree;
+
   float LHEWeight[1164] = {};
   int run;
   int event;
@@ -19,12 +20,16 @@ class setOutputTree {
   int nNegEvents;
   int lumi;
   int nPV;
+
   int issignal;
   int issignal_PuppiAK8;
   int issignal_AK4jetjet;
   int issignal_PuppiAK4jetjet;
   int isVBF;
   int isPuppiVBF;
+
+  int isResolved;
+
   float wSampleWeight;
   float genWeight;
   float top1_NNLO_Weight;
@@ -38,8 +43,8 @@ class setOutputTree {
   float totalEventWeight;
   float totalEventWeight_2;
   float totalEventWeight_3;
-
   float totalEventWeight_2Lep;
+
   float PtBalance_type0_jes_up;
   float PtBalance_type0_jes_dn;
   float PtBalance_type0_jer_up;
@@ -62,6 +67,7 @@ class setOutputTree {
   float pu_Weight;
   float pu_Weight_up;
   float pu_Weight_down;
+
   float pfMET;
   float pfMET_jes_up;
   float pfMET_jes_dn;
@@ -87,6 +93,7 @@ class setOutputTree {
   float pfMET_Corr_phiuncdn; 
   float pfMET_Corr_phijrsup; 
   float pfMET_Corr_phijrsdn; 
+
   float pfMETpuppi;
   float pfMETpuppi_jes_up;
   float pfMETpuppi_jes_dn;
@@ -102,13 +109,16 @@ class setOutputTree {
   float pfMETpuppi_Corr_Cov00; 
   float pfMETpuppi_Corr_Cov01; 
   float pfMETpuppi_Corr_Cov11; 
+
   float nu_pz_type0;
   float nu_pz_type2;
   float nu_pz_run2;
   float nu_pz_run2_oth;
   int nu_pz_run2_type;
   int nu_pz_isre;
+
   int type;
+
   float l_pt1;
   float l_eta1;
   float l_phi1;
@@ -121,10 +131,12 @@ class setOutputTree {
   float l_e2;
   float l_charge2;
   float l_iso2;
+
   float dilep_pt;
   float dilep_eta;
   float dilep_phi;
   float dilep_m;
+
   float ungroomed_AK8jet_pt;
   float ungroomed_AK8jet_pt_jes_up;
   float ungroomed_AK8jet_pt_jes_dn; 
@@ -139,9 +151,9 @@ class setOutputTree {
   float ungroomed_AK8jet_phi_jes_dn; 
   float ungroomed_AK8jet_e;
   float ungroomed_AK8jet_charge;
-  float AK8jet_mass;
   float ungroomed_AK8jet_mass_jes_up;
   float ungroomed_AK8jet_mass_jes_dn; 
+  float AK8jet_mass;
   float AK8jet_mass_pr;
   float AK8jet_mass_pr_jes_up;
   float AK8jet_mass_pr_jes_dn;
@@ -153,6 +165,7 @@ class setOutputTree {
   float AK8jet_mass_tr;
   float AK8jet_mass_fi;
   float AK8jet_tau2tau1;
+
   float AK8jet_sj1_pt;
   float AK8jet_sj1_eta;
   float AK8jet_sj1_phi;
@@ -164,41 +177,42 @@ class setOutputTree {
   float AK8jet_sj2_m;
   float AK8jet_sj2_q;
   int   AK8_jetID_loose;
-float AK8jet_e3_b1;
-float AK8jet_e3_v1_b1;
-float AK8jet_e3_v2_b1;
-float AK8jet_e4_v1_b1;
-float AK8jet_e4_v2_b1;
-float AK8jet_e3_b2;
-float AK8jet_e3_v1_b2;
-float AK8jet_e3_v2_b2;
-float AK8jet_e4_v1_b2;
-float AK8jet_e4_v2_b2;
-float AK8jet_e2_sdb1;
-float AK8jet_e3_sdb1;
-float AK8jet_e3_v1_sdb1;
-float AK8jet_e3_v2_sdb1;
-float AK8jet_e4_v1_sdb1;
-float AK8jet_e4_v2_sdb1;
-float AK8jet_e2_sdb2;
-float AK8jet_e3_sdb2;
-float AK8jet_e3_v1_sdb2;
-float AK8jet_e3_v2_sdb2;
-float AK8jet_e4_v1_sdb2;
-float AK8jet_e4_v2_sdb2;
-float AK8jet_e2_sdb4;
-float AK8jet_e3_sdb4;
-float AK8jet_e3_v1_sdb4;
-float AK8jet_e3_v2_sdb4;
-float AK8jet_e4_v1_sdb4;
-float AK8jet_e4_v2_sdb4;
-float AK8jet_e2_sdb05;
-float AK8jet_e3_sdb05;
-float AK8jet_e3_v1_sdb05;
-float AK8jet_e3_v2_sdb05;
-float AK8jet_e4_v1_sdb05;
-float AK8jet_e4_v2_sdb05;
-float AK8jet_qjet;
+  float AK8jet_e3_b1;
+  float AK8jet_e3_v1_b1;
+  float AK8jet_e3_v2_b1;
+  float AK8jet_e4_v1_b1;
+  float AK8jet_e4_v2_b1;
+  float AK8jet_e3_b2;
+  float AK8jet_e3_v1_b2;
+  float AK8jet_e3_v2_b2;
+  float AK8jet_e4_v1_b2;
+  float AK8jet_e4_v2_b2;
+  float AK8jet_e2_sdb1;
+  float AK8jet_e3_sdb1;
+  float AK8jet_e3_v1_sdb1;
+  float AK8jet_e3_v2_sdb1;
+  float AK8jet_e4_v1_sdb1;
+  float AK8jet_e4_v2_sdb1;
+  float AK8jet_e2_sdb2;
+  float AK8jet_e3_sdb2;
+  float AK8jet_e3_v1_sdb2;
+  float AK8jet_e3_v2_sdb2;
+  float AK8jet_e4_v1_sdb2;
+  float AK8jet_e4_v2_sdb2;
+  float AK8jet_e2_sdb4;
+  float AK8jet_e3_sdb4;
+  float AK8jet_e3_v1_sdb4;
+  float AK8jet_e3_v2_sdb4;
+  float AK8jet_e4_v1_sdb4;
+  float AK8jet_e4_v2_sdb4;
+  float AK8jet_e2_sdb05;
+  float AK8jet_e3_sdb05;
+  float AK8jet_e3_v1_sdb05;
+  float AK8jet_e3_v2_sdb05;
+  float AK8jet_e4_v1_sdb05;
+  float AK8jet_e4_v2_sdb05;
+  float AK8jet_qjet;
+
   float AK4_jetjet_pt;
   float AK4_jetjet_mass;
   float AK4_jetjet_deltaeta;
@@ -220,6 +234,7 @@ float AK8jet_qjet;
   float ttb_jet_mass_fi;
   float ttb_jet_tau2tau1;
   float ttb_deltaeta_lak8jet;
+
   float ungroomed_PuppiAK8_jet_pt;
   float ungroomed_PuppiAK8_jet_pt_jes_up;
   float ungroomed_PuppiAK8_jet_pt_jes_dn; 
@@ -234,9 +249,9 @@ float AK8jet_qjet;
   float ungroomed_PuppiAK8_jet_phi_jes_dn; 
   float ungroomed_PuppiAK8_jet_e;
   float ungroomed_PuppiAK8_jet_charge;
-  float PuppiAK8_jet_mass;
   float ungroomed_PuppiAK8_jet_mass_jes_up;
   float ungroomed_PuppiAK8_jet_mass_jes_dn; 
+  float PuppiAK8_jet_mass;
   float PuppiAK8_jet_mass_pr;
   float PuppiAK8_jet_mass_pr_jes_up;
   float PuppiAK8_jet_mass_pr_jes_dn;
@@ -260,41 +275,42 @@ float AK8jet_qjet;
   float PuppiAK8_jet_sj2_m;
   float PuppiAK8_jet_sj2_q;
   int  PuppiAK8_jetID_loose;
-float PuppiAK8jet_e3_b1;
-float PuppiAK8jet_e3_v1_b1;
-float PuppiAK8jet_e3_v2_b1;
-float PuppiAK8jet_e4_v1_b1;
-float PuppiAK8jet_e4_v2_b1;
-float PuppiAK8jet_e3_b2;
-float PuppiAK8jet_e3_v1_b2;
-float PuppiAK8jet_e3_v2_b2;
-float PuppiAK8jet_e4_v1_b2;
-float PuppiAK8jet_e4_v2_b2;
-float PuppiAK8jet_e2_sdb1;
-float PuppiAK8jet_e3_sdb1;
-float PuppiAK8jet_e3_v1_sdb1;
-float PuppiAK8jet_e3_v2_sdb1;
-float PuppiAK8jet_e4_v1_sdb1;
-float PuppiAK8jet_e4_v2_sdb1;
-float PuppiAK8jet_e2_sdb2;
-float PuppiAK8jet_e3_sdb2;
-float PuppiAK8jet_e3_v1_sdb2;
-float PuppiAK8jet_e3_v2_sdb2;
-float PuppiAK8jet_e4_v1_sdb2;
-float PuppiAK8jet_e4_v2_sdb2;
-float PuppiAK8jet_e2_sdb4;
-float PuppiAK8jet_e3_sdb4;
-float PuppiAK8jet_e3_v1_sdb4;
-float PuppiAK8jet_e3_v2_sdb4;
-float PuppiAK8jet_e4_v1_sdb4;
-float PuppiAK8jet_e4_v2_sdb4;
-float PuppiAK8jet_e2_sdb05;
-float PuppiAK8jet_e3_sdb05;
-float PuppiAK8jet_e3_v1_sdb05;
-float PuppiAK8jet_e3_v2_sdb05;
-float PuppiAK8jet_e4_v1_sdb05;
-float PuppiAK8jet_e4_v2_sdb05;
-float PuppiAK8jet_qjet;
+  float PuppiAK8jet_e3_b1;
+  float PuppiAK8jet_e3_v1_b1;
+  float PuppiAK8jet_e3_v2_b1;
+  float PuppiAK8jet_e4_v1_b1;
+  float PuppiAK8jet_e4_v2_b1;
+  float PuppiAK8jet_e3_b2;
+  float PuppiAK8jet_e3_v1_b2;
+  float PuppiAK8jet_e3_v2_b2;
+  float PuppiAK8jet_e4_v1_b2;
+  float PuppiAK8jet_e4_v2_b2;
+  float PuppiAK8jet_e2_sdb1;
+  float PuppiAK8jet_e3_sdb1;
+  float PuppiAK8jet_e3_v1_sdb1;
+  float PuppiAK8jet_e3_v2_sdb1;
+  float PuppiAK8jet_e4_v1_sdb1;
+  float PuppiAK8jet_e4_v2_sdb1;
+  float PuppiAK8jet_e2_sdb2;
+  float PuppiAK8jet_e3_sdb2;
+  float PuppiAK8jet_e3_v1_sdb2;
+  float PuppiAK8jet_e3_v2_sdb2;
+  float PuppiAK8jet_e4_v1_sdb2;
+  float PuppiAK8jet_e4_v2_sdb2;
+  float PuppiAK8jet_e2_sdb4;
+  float PuppiAK8jet_e3_sdb4;
+  float PuppiAK8jet_e3_v1_sdb4;
+  float PuppiAK8jet_e3_v2_sdb4;
+  float PuppiAK8jet_e4_v1_sdb4;
+  float PuppiAK8jet_e4_v2_sdb4;
+  float PuppiAK8jet_e2_sdb05;
+  float PuppiAK8jet_e3_sdb05;
+  float PuppiAK8jet_e3_v1_sdb05;
+  float PuppiAK8jet_e3_v2_sdb05;
+  float PuppiAK8jet_e4_v1_sdb05;
+  float PuppiAK8jet_e4_v2_sdb05;
+  float PuppiAK8jet_qjet;
+
   float AK4_jet1_pt;
   float AK4_jet1_pt_jes_up;
   float AK4_jet1_pt_jes_dn;
@@ -313,6 +329,36 @@ float PuppiAK8jet_qjet;
   float AK4_jet2_eta;
   float AK4_jet2_phi;
   float AK4_jet2_e;
+  //--resolved--
+  float AK4_Vjet1_pt;
+  float AK4_Vjet1_pt_jes_up;
+  float AK4_Vjet1_pt_jes_dn;
+  float AK4_Vjet1_pt_jer;
+  float AK4_Vjet1_pt_jer_up;
+  float AK4_Vjet1_pt_jer_dn;
+  float AK4_Vjet1_eta;
+  float AK4_Vjet1_phi;
+  float AK4_Vjet1_e;
+  float AK4_Vjet2_pt;
+  float AK4_Vjet2_pt_jes_up;
+  float AK4_Vjet2_pt_jes_dn;
+  float AK4_Vjet2_pt_jer;
+  float AK4_Vjet2_pt_jer_up;
+  float AK4_Vjet2_pt_jer_dn;
+  float AK4_Vjet2_eta;
+  float AK4_Vjet2_phi;
+  float AK4_Vjet2_e;
+  float AK4_Vjj_pt;
+  float AK4_Vjj_pt_jes_up;
+  float AK4_Vjj_pt_jes_dn;
+  float AK4_Vjj_pt_jer;
+  float AK4_Vjj_pt_jer_up;
+  float AK4_Vjj_pt_jer_dn;
+  float AK4_Vjj_eta;
+  float AK4_Vjj_phi;
+  float AK4_Vjj_m;
+  //--resolved--
+
   float PuppiAK4_jet1_pt;
   float PuppiAK4_jet1_pt_jes_up;
   float PuppiAK4_jet1_pt_jes_dn;
