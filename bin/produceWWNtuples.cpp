@@ -87,7 +87,48 @@ int main (int argc, char** argv)
   else {	cout<<"\n\nERROR:	Enter valid vbf selection criteria....\n\n"<<endl;
   		exit(0);  
 	}
-  
+
+  // gen-level cuts
+  const float LEP_PT_GEN_CUT = 30;
+  const float LEP_ETA_GEN_CUT = 2.5;
+  const float JET_PT_GEN_CUT = 30;
+  const float V_J_PT_GEN_CUT = 200;
+  const float DELTA_ETA_JJ_GEN_CUT = 2;
+  const float M_JJ_GEN_CUT = 500;
+  //lepton cuts
+  const float LEP_PT_VETO_CUT = 20;
+  const float EL_PT_CUT = 30;
+  const float EL_ETA_CUT = 2.5;
+  const float MU_PT_CUT = 27;
+  const float MU_ETA_CUT = 2.4;
+  //ak8 jet cuts
+  const float AK8_PT_CUT = 200;
+  const float AK8_ETA_CUT = 2.4;
+  const float AK8_MIN_SDM = 40.0;
+  const float AK8_MAX_SDM = 150.0;
+  //ak4 jet cuts
+  const float AK4_PT_VETO_CUT = 20;
+  const float AK4_ETA_CUT = 2.4;
+  const float AK4_PT_CUT = 30;
+  const float AK4_JJ_MIN_M = 40.0;
+  const float AK4_JJ_MAX_M = 150.0;
+  const float VBF_MJJ_CUT= 500;
+  //cleaning cuts
+  const float AK8_DR_CUT = 1.0;
+  const float AK4_AK8_DR_CUT = 0.8;
+  const float AK4_DR_CUT = 0.3;
+  //2016 csv tag thresholds
+  const float CSV_LOOSE_2016 = 0.5426;
+  const float CSV_MEDIUM_2016 = 0.8484;
+  const float CSV_TIGHT_2016 = 0.9535;
+  // object masses
+  const float EL_MASS = 0.0005109989461;
+  const float MU_MASS = 0.1056583745;
+  const float W_MASS = 80.385;
+  const float Z_MASS = 91.1876;
+  //misc
+  const int RUN_BOUND = 278820;
+
   std::string iHLTFile="${CMSSW_BASE}/src/BaconAna/DataFormats/data/HLTFile_25ns";
   const std::string cmssw_base = getenv("CMSSW_BASE");
   std::string cmssw_base_env = "${CMSSW_BASE}";
@@ -384,7 +425,7 @@ int main (int argc, char** argv)
 	{
 	  const baconhep::TGenParticle* genloop = (baconhep::TGenParticle*) ((*genPartArr)[i]);
 	  Int_t parentPdg=dynamic_cast<baconhep::TGenParticle *>(genPartArr->At(genloop->parent>-1 ? genloop->parent : 0))->pdgId;
-	  if( (abs(genloop->pdgId) == 11 || abs(genloop->pdgId) == 13 ) && abs(parentPdg) == 24)
+	  if( (abs(genloop->pdgId) == 11 || abs(genloop->pdgId) == 13 ) && abs(parentPdg) == 24) 
 	    {
 	      genLep.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
 	      v_genLep.push_back(genLep);
@@ -446,7 +487,10 @@ int main (int argc, char** argv)
 	  
 	  count_genEvents++;
 	}
-	if ( WWTree->lep_pt_gen > 30 && abs(WWTree->lep_eta_gen) < 2.5 && WWTree->AK4_jj_DeltaEta_gen>2 && WWTree->hadW_pt_gen>200 && WWTree->AK4_1_pt_gen >30 && WWTree->AK4_2_pt_gen>30 && WWTree->AK4_jj_mass_gen > 500 ){
+	if ( WWTree->lep_pt_gen > LEP_PT_GEN_CUT && abs(WWTree->lep_eta_gen) < LEP_ETA_GEN_CUT && 
+	     WWTree->AK4_1_pt_gen > JET_PT_GEN_CUT && WWTree->AK4_2_pt_gen > JET_PT_GEN_CUT && 
+	     WWTree->AK4_jj_DeltaEta_gen > DELTA_ETA_JJ_GEN_CUT && WWTree->AK4_jj_mass_gen > M_JJ_GEN_CUT && 
+	     WWTree->hadW_pt_gen > V_J_PT_GEN_CUT ) {
 	        GenPassCut = 1;
 	 }
     	for (int i = 0; i<lheWgtArr->GetEntries();i++)     // Note that i is starting from 446.
@@ -490,7 +534,7 @@ int main (int argc, char** argv)
   
     //PILE-UP WEIGHT
     if (isMC==1) {
-       if(int(info->nPUmean)<75){
+      if(int(info->nPUmean)<75){//HARDCODED
            WWTree->pu_Weight = puWeights->GetBinContent(info->nPUmean); //our pu recipe
            WWTree->pu_Weight_up = puWeightsUp->GetBinContent(info->nPUmean); //our pu recipe
            WWTree->pu_Weight_down = puWeightsDown->GetBinContent(info->nPUmean); //our pu recipe
@@ -504,15 +548,15 @@ int main (int argc, char** argv)
        } 
     }
 
-    if(applyTrigger==1)
+    if(applyTrigger==1) //HARDCODED
       if(!(triggerMenu.pass("HLT_IsoMu24_v*",info->triggerBits) || triggerMenu.pass("HLT_IsoTkMu24_v*",info->triggerBits) ||  triggerMenu.pass("HLT_Ele27_WPTight_Gsf_v*",info->triggerBits))) continue;
   
     /////////////////THE SELECTED LEPTON
     int nTightEle=0, nLooseEle=0;
     int nTightMu=0, nLooseMu=0;
-    double pt_cut = 20;
-    double leadelept_cut = 30;
-    double leadmupt_cut = 27;
+    //double pt_cut = 20;
+    //double leadelept_cut = 30;
+    //double leadmupt_cut = 27;
     electronArr->Clear();
     electronBr->GetEntry(jentry);
     const baconhep::TElectron *leadele = NULL;
@@ -521,18 +565,18 @@ int main (int argc, char** argv)
     double iso = 1.5;
     for (int i=0; i<electronArr->GetEntries(); i++) {
       const baconhep::TElectron *ele = (baconhep::TElectron*)((*electronArr)[i]);
-      if (ele->pt<=pt_cut) continue;
-      if (fabs(ele->eta)>=2.5) continue;
+      if (ele->pt<=LEP_PT_VETO_CUT) continue;
+      if (fabs(ele->eta)>=EL_ETA_CUT) continue;
       if(!passEleLooseSel(ele,info->rhoIso)) continue;
       nLooseEle++;
       if(!passEleTightSel(ele,info->rhoIso)) continue;
-      ELE.SetPtEtaPhiM(ele->pt,ele->eta,ele->phi,0.0005109989461);
+      ELE.SetPtEtaPhiM(ele->pt,ele->eta,ele->phi,EL_MASS);
       tightEle.push_back(ELE);
       nTightEle++;
       iso = ele->chHadIso + TMath::Max( 0.0,(ele->gammaIso + ele->neuHadIso - info->rhoIso*eleEffArea(ele->eta)) );
       if(!leadele || ele->pt>leadele->pt)
 	{
-	  if(!(ele->pt>leadelept_cut)) continue;
+	  if(!(ele->pt>EL_PT_CUT)) continue;
 	  subele = leadele;
 	  leadele = ele;
 	  leadeleE = ELE.E();
@@ -569,18 +613,18 @@ int main (int argc, char** argv)
     iso = 1.5;
     for(Int_t i=0; i<muonArr->GetEntries(); i++) {
       const baconhep::TMuon *mu = (baconhep::TMuon*)((*muonArr)[i]);
-      if (mu->pt<pt_cut) continue;
-      if (fabs(mu->eta)>=2.4) continue;
+      if (mu->pt<LEP_PT_VETO_CUT) continue;
+      if (fabs(mu->eta)>=MU_ETA_CUT) continue;
       if(!passMuonLooseSel(mu)) continue;
       nLooseMu++;
       if(!passMuonTightSel(mu)) continue;
       nTightMu++;
-      MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,0.1056583745);
+      MU.SetPtEtaPhiM(mu->pt,mu->eta,mu->phi,MU_MASS);
       tightMuon.push_back(MU);
       iso = mu->chHadIso + TMath::Max(mu->neuHadIso + mu->gammaIso - 0.5*(mu->puIso), double(0));
       if(!leadmu || mu->pt>leadmu->pt)
 	{
-	  if(!(mu->pt>leadmupt_cut)) continue;
+	  if(!(mu->pt>MU_PT_CUT)) continue;
 	  submu = leadmu;
 	  leadmu = mu;
 	  leadmue = MU.E();
@@ -609,7 +653,7 @@ int main (int argc, char** argv)
 	WWTree->l_e2 = submue;	
 	WWTree->l_charge2 = submu->q;
       }
-    if(!(WWTree->l_pt1>0)) continue;
+    if(!(WWTree->l_pt1>0)) continue; //HARDCODED
     if ((nTightMu+nTightEle)==0) continue; //no leptons with required ID
     if((nLooseEle+nLooseMu)>2) continue;
     if(nTightMu>0 && nLooseEle>0) continue;
@@ -621,7 +665,7 @@ int main (int argc, char** argv)
       leptonName = "mu";	// Added this part for neutrino pz calculation in case there is w-boson.
     }else{
       WWTree->type=1;
-      leptonName = "el";
+      leptonName = "el"; //HARDCODED
     }
     
     if (WWTree->l_pt2<0)	cutEff[2]++;
@@ -660,7 +704,7 @@ int main (int argc, char** argv)
     //ID&ISO efficiency SF for muons (https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults)
     if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
 	//  apply ID SF's
-	if (WWTree->run<278820){
+	if (WWTree->run<RUN_BOUND){
 		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuA);
 		if (WWTree->l_pt2>0) WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuA);}
 	else{
@@ -668,7 +712,7 @@ int main (int argc, char** argv)
 		if (WWTree->l_pt2>0) WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuB);}
 
 	//  apply ISO SF's
-	if (WWTree->run<278820){
+	if (WWTree->run<RUN_BOUND){
 		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuA);
 		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuA);}
 	else{
@@ -676,7 +720,7 @@ int main (int argc, char** argv)
 		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuB);}
 	
 	// apply Trigger SF's
-	if (WWTree->run<278820){
+	if (WWTree->run<RUN_BOUND){
 		WWTree->trig_eff_Weight  = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuA);
 		WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuA);}
 	else{
@@ -956,10 +1000,10 @@ int main (int argc, char** argv)
 	TLorentzVector TempAK8;
 	TempAK8.SetPtEtaPhiM(jet->pt,fabs(jet->eta),jet->phi,jet->mass);
 	bool isCleanedJet = true;
-	if (jet->pt<200 || fabs(jet->eta)>2.4)  continue; //be careful: this is not inside the synchntuple code
+	if (jet->pt<AK8_PT_CUT || fabs(jet->eta)>AK8_ETA_CUT)  continue; //be careful: this is not inside the synchntuple code
         //if (!passJetLooseSel(jet)) continue;
 	//if (jet->chHadFrac <= 0 && jet->nCharged <= 0 &&  jet->chEmFrac >= 0.99) continue;
-	if (addjet->mass_sd0 < 40 || addjet->mass_sd0 > 150) continue;
+	if (addjet->mass_sd0 < AK8_MIN_SDM || addjet->mass_sd0 > AK8_MAX_SDM) continue;
 	if (addjet->mass_prun>tempTTbarMass) {
 	  if ( (jet->eta>0 && WWTree->l_eta1<0) || 
 	      (jet->eta<0 && WWTree->l_eta1>0)) { //jet and lepton in opposite hemisphere for ttb
@@ -967,17 +1011,17 @@ int main (int argc, char** argv)
 	    tempTTbarMass=addjet->mass_prun;
 	  }
 	}
-	if (abs(addjet->mass_sd0 - 80.385) > tempMassW) continue; //save the jet closest to w-mass
+	if (abs(addjet->mass_sd0 - W_MASS) > tempMassW) continue; //save the jet closest to w-mass
 	
 	//CLEANING FROM LEPTONS
 	for ( std::size_t j=0; j<tightEle.size(); j++) {
 	  if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
-		     jet->eta, jet->phi) < 1.0)
+		     jet->eta, jet->phi) < AK8_DR_CUT)
 	    isCleanedJet = false;
 	}
 	for ( std::size_t j=0; j<tightMuon.size(); j++) {
 	  if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
-		     jet->eta, jet->phi) < 1.0)
+		     jet->eta, jet->phi) < AK8_DR_CUT)
 	    isCleanedJet = false;
 	}
       
@@ -1060,7 +1104,7 @@ int main (int argc, char** argv)
 
 	WWTree->PuppiAK8jet_qjet = addjet->qjet;
 	
-	tempMassW = abs(WWTree->PuppiAK8_jet_mass_so - 80.385);
+	tempMassW = abs(WWTree->PuppiAK8_jet_mass_so - W_MASS);
 	nGoodPuppiAK8jets++;
 	//hadWPuppiAK8pos = i;
       }
@@ -1115,35 +1159,35 @@ int main (int argc, char** argv)
 	  //TLorentzVector AK4_JET1_jes_up, AK4_JET1_jes_dn;
 	  //TLorentzVector AK4_JET2_jes_up, AK4_JET2_jes_dn;
 
-	  if (jet->pt<=20 && AK4_JET1_jes_up.Pt()<=20 && AK4_JET1_jes_dn.Pt()<=20 ) continue;
+	  if (jet->pt<=AK4_PT_VETO_CUT && AK4_JET1_jes_up.Pt()<= AK4_PT_VETO_CUT && AK4_JET1_jes_dn.Pt()<= AK4_PT_VETO_CUT ) continue;
 	  if (!passJetLooseSel(jet)) continue;
 
 	  if (WWTree->nGoodPuppiAK8jets > 0 && deltaR(WWTree->ungroomed_PuppiAK8_jet_eta, WWTree->ungroomed_PuppiAK8_jet_phi,
-                                                      jet->eta,jet->phi) < 0.8 ) isCleaned=false;
+                                                      jet->eta,jet->phi) < AK4_AK8_DR_CUT ) isCleaned=false;
 
 	  for ( std::size_t j=0; j<goodAK4Jets.size(); j++) {
             if (deltaR(goodAK4Jets.at(j).Eta(), goodAK4Jets.at(j).Phi(),
-		       jet->eta, jet->phi) <0.3) {
+		       jet->eta, jet->phi) <AK4_DR_CUT) {
               isCleaned = false;
             }
           }
 
           for ( std::size_t j=0; j<tightEle.size(); j++) {
             if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
-                       jet->eta,   jet->phi) < 0.3) {
+                       jet->eta,   jet->phi) < AK4_DR_CUT) {
               isCleaned = false;
             }
           }
           for ( std::size_t j=0; j<tightMuon.size(); j++) {
             if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
-                       jet->eta,   jet->phi) < 0.3) {
+                       jet->eta,   jet->phi) < AK4_DR_CUT) {
               isCleaned = false;
             }
           }
 	  
 	  if (!isCleaned) continue;
 
-          if (fabs(jet->eta) < 2.4 && jet->pt>30){
+          if (fabs(jet->eta) < AK4_ETA_CUT && jet->pt> AK4_PT_CUT){
 	    goodAK4Jets.push_back(TLorentzVector(0,0,0,0));
             goodAK4Jets.back().SetPtEtaPhiM(jet->pt, jet->eta, jet->phi, jet->mass);
 	  }
@@ -1155,7 +1199,7 @@ int main (int argc, char** argv)
         for(uint j=i+1; j<goodAK4Jets.size(); j++) {
           TLorentzVector tmpV=goodAK4Jets.at(i)+goodAK4Jets.at(j);
 
-          if (tmpV.M()>=40 && tmpV.M()<=150 && tmpV.Pt()<200) {
+          if (tmpV.M()>=AK4_JJ_MIN_M && tmpV.M()<=AK4_JJ_MAX_M && tmpV.Pt()<AK8_PT_CUT) {
             WWTree->isResolved = true;
             nGoodPuppiAK8jets++;
             WWTree->AK4_Vjet1_pt = goodAK4Jets.at(i).Pt();
@@ -1181,7 +1225,7 @@ int main (int argc, char** argv)
     WWTree->deltaR_Wjet_GenReco = deltaR(WWTree->hadW_eta_gen,WWTree->hadW_phi_gen,JET.Eta(),JET.Phi());
 
 
-    if (WWTree->l_pt2<0){
+    if (WWTree->l_pt2<0){ //HARDCODED
     	WWTree->deltaR_lPuppiak8jet = deltaR(JET_PuppiAK8.Eta(),JET_PuppiAK8.Phi(),LEP1.Eta(),LEP1.Phi());
         WWTree->deltaphi_METPuppiak8jet = deltaPhi(JET_PuppiAK8.Phi(),WWTree->pfMET_Corr_phi);
         WWTree->deltaphi_VPuppiak8jet = deltaPhi(JET_PuppiAK8.Phi(),W_type0.Phi());
@@ -1292,15 +1336,15 @@ int main (int argc, char** argv)
 	// calculate Down variation
 	VBF1_jes_dn.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, (1.-unc)*jet->mass);	
       
-      if (jet->pt<=20 && VBF1_jes_up.Pt()<=20 && VBF1_jes_dn.Pt()<=20 ) continue;
+      if (jet->pt<=AK4_PT_VETO_CUT && VBF1_jes_up.Pt()<=AK4_PT_VETO_CUT && VBF1_jes_dn.Pt()<=AK4_PT_VETO_CUT ) continue;
       if (!passJetLooseSel(jet)) continue;
 
       //fill B-Tag info
       
-      if (fabs(jet->eta) < 2.4 && jet->pt>30){
-      		if (jet->csv>0.5426)  WWTree->nBTagJet_loose++;
-      		if (jet->csv>0.8484)  WWTree->nBTagJet_medium++;
-      		if (jet->csv>0.9535)  WWTree->nBTagJet_tight++;
+      if (fabs(jet->eta) < AK4_ETA_CUT && jet->pt>AK4_PT_CUT){
+      		if (jet->csv>CSV_LOOSE_2016)  WWTree->nBTagJet_loose++;
+      		if (jet->csv>CSV_MEDIUM_2016)  WWTree->nBTagJet_medium++;
+      		if (jet->csv>CSV_TIGHT_2016)  WWTree->nBTagJet_tight++;
 
 		goodJetsv.push_back(jet);
       }
@@ -1308,14 +1352,14 @@ int main (int argc, char** argv)
       //CLEANING FROM FAT JET
       if (WWTree->nGoodPuppiAK8jets > 0 && !WWTree->isResolved) {
         if (deltaR(WWTree->ungroomed_PuppiAK8_jet_eta, WWTree->ungroomed_PuppiAK8_jet_phi,
-                   jet->eta,jet->phi) < 0.8 )
+                   jet->eta,jet->phi) < AK4_AK8_DR_CUT )
           isCleanedFromFatJet = false;
       } 
 
       if (WWTree->isResolved) {
-        if (deltaR(WWTree->PuppiAK8_jet_sj1_eta, WWTree->PuppiAK8_jet_sj1_phi, jet->eta, jet->phi) <0.3)
+        if (deltaR(WWTree->AK4_Vjet1_eta, WWTree->AK4_Vjet1_phi, jet->eta, jet->phi) <AK4_DR_CUT)
           isCleanedFromFatJet=false;
-        if (deltaR(WWTree->PuppiAK8_jet_sj2_eta, WWTree->PuppiAK8_jet_sj2_phi, jet->eta, jet->phi) <0.3)
+        if (deltaR(WWTree->AK4_Vjet2_eta, WWTree->AK4_Vjet2_phi, jet->eta, jet->phi) <AK4_DR_CUT)
           isCleanedFromFatJet=false;
       }
 
@@ -1323,13 +1367,13 @@ int main (int argc, char** argv)
       //CLEANING FROM LEPTONS
       for ( std::size_t j=0; j<tightEle.size(); j++) {
         if (deltaR(tightEle.at(j).Eta(), tightEle.at(j).Phi(),
-                   jet->eta,   jet->phi) < 0.3) {
+                   jet->eta,   jet->phi) < AK4_DR_CUT) {
           isCleaned = false;
         }
       }
       for ( std::size_t j=0; j<tightMuon.size(); j++) {
         if (deltaR(tightMuon.at(j).Eta(), tightMuon.at(j).Phi(),
-                   jet->eta,   jet->phi) < 0.3) {
+                   jet->eta,   jet->phi) < AK4_DR_CUT) {
           isCleaned = false;
         }
       }
@@ -1339,7 +1383,7 @@ int main (int argc, char** argv)
       
       indexGoodVBFJets.push_back(i); //save index of the "good" vbf jets candidates
       
-      if (fabs(jet->eta)>=2.4) continue;
+      if (fabs(jet->eta)>=AK4_ETA_CUT) continue; //WHY
       
       WWTree->njets++;
       AK4.SetPtEtaPhiM(jet->pt,jet->eta,jet->phi,jet->mass);
@@ -1363,8 +1407,8 @@ int main (int argc, char** argv)
         for ( std::size_t ii=i+1; ii<indexGoodVBFJets.size(); ii++) {
 	  const baconhep::TJet *jet1 = (baconhep::TJet*)((*jetArr)[indexGoodVBFJets.at(i)]);
 	  const baconhep::TJet *jet2 = (baconhep::TJet*)((*jetArr)[indexGoodVBFJets.at(ii)]);
-	  if (jet1->pt < 30) continue;
-	  if (jet2->pt < 30) continue;
+	  if (jet1->pt < AK4_PT_CUT) continue;
+	  if (jet2->pt < AK4_PT_CUT) continue;
           VBF1.SetPtEtaPhiM(jet1->pt,jet1->eta,jet1->phi,jet1->mass);
           VBF2.SetPtEtaPhiM(jet2->pt,jet2->eta,jet2->phi,jet2->mass);
           TOT = VBF1 + VBF2;
@@ -1379,7 +1423,7 @@ int main (int argc, char** argv)
 	  VBF2_jes_up.SetPtEtaPhiM((1.+unc2)*jet2->pt, jet2->eta, jet2->phi, (1.+unc2)*jet2->mass);	
 	  VBF2_jes_dn.SetPtEtaPhiM((1.-unc2)*jet2->pt, jet2->eta, jet2->phi, (1.-unc2)*jet2->mass);	
 
-	  if (TOT.M()<500 && (VBF1_jes_up+VBF2_jes_up).M()<500 && (VBF1_jes_dn+VBF2_jes_dn).M()<500 ) continue;
+	  if (TOT.M()<VBF_MJJ_CUT && (VBF1_jes_up+VBF2_jes_up).M()<VBF_MJJ_CUT && (VBF1_jes_dn+VBF2_jes_dn).M()<VBF_MJJ_CUT ) continue;
 	  if ( VBFSel==1)
 	  {
 		if (TOT.Pt() < tempPtMax) continue;
