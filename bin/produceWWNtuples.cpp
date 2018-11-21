@@ -184,7 +184,7 @@ int main (int argc, char** argv)
   char command2[3000];
 
   if ( cluster == "lxplus")
-  	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
+  	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print $1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   else 
 	sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
 	//sprintf(command1,"eos root://cmseos.fnal.gov find -f %s | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());	// WORKS ONLY WITH INTERACTIVE NODE
@@ -274,7 +274,7 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles = 21;
+  //  if (isLocal==1) nInputFiles = 21;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -302,7 +302,7 @@ int main (int argc, char** argv)
      infile = TFile::Open(sampleName[i]);
      eventTree = (TTree*)infile->Get("Events");
      
-     TotalNumberOfEvents+=eventTree->GetEntries();
+     TotalNumberOfEvents+=10000;//eventTree->GetEntries();
      if(isMC)
      { 
         eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
@@ -352,9 +352,9 @@ int main (int argc, char** argv)
   infile = TFile::Open(sampleName[i]);
   eventTree = (TTree*)infile->Get("Events");
   
-  totalEntries+=eventTree->GetEntries();
+  totalEntries+=10000;//eventTree->GetEntries();
 
-  nEvents=eventTree->GetEntries();
+  nEvents=10000;//eventTree->GetEntries();
 
   cout<<"\t==> Entries = "<<nEvents<<endl;
 
@@ -377,8 +377,8 @@ int main (int argc, char** argv)
        eventTree->SetBranchAddress("LHEWeight",&lheWgtArr); lhePartBr = eventTree->GetBranch("LHEWeight");	       }
      }
 
-  //for (Long64_t jentry=0; jentry<172; jentry++,jentry2++)
-  for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+  for (Long64_t jentry=0; jentry<10000; jentry++,jentry2++)
+  //for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
   {
     //if (jentry2 != 87 && jentry2 != 113) continue;	// For debug
     infoBr->GetEntry(jentry);	    
@@ -1278,10 +1278,8 @@ int main (int argc, char** argv)
     }
     
     
-    
-    
-
     if (WWTree->mass_lvj_type0_PuppiAK8 < 0 && WWTree->mass_llj_PuppiAK8 < 0) continue;		// cut on mWW mass
+    if (WWTree->isResolved) continue;
     if (WWTree->l_pt2<0) cutEff[6]++;
     else cutEff[16]++;
     
