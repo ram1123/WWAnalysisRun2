@@ -173,6 +173,11 @@ int main (int argc, char** argv)
 
   TFile *infile=0;
   TTree *eventTree=0;
+
+  std::ofstream file1;
+  char TxtFileName[300];
+  sprintf(TxtFileName, "%s.txt",outputFile.c_str());
+  file1.open(TxtFileName);
   int cutEff[21]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
   // Read and add pileup in histogram
@@ -232,7 +237,7 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  if (isLocal==1) nInputFiles = 5;
+  if (isLocal==1) nInputFiles = 2;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -1113,46 +1118,46 @@ int main (int argc, char** argv)
 
 
 
-  WWTree->PuppiAK8jet_e3_b1  = addjet->e3_b1;
-  WWTree->PuppiAK8jet_e3_v1_b1 = addjet->e3_v1_b1;
-  WWTree->PuppiAK8jet_e3_v2_b1 = addjet->e3_v2_b1;
-  WWTree->PuppiAK8jet_e4_v1_b1 = addjet->e4_v1_b1;
-  WWTree->PuppiAK8jet_e4_v2_b1 = addjet->e4_v2_b1;
-  WWTree->PuppiAK8jet_e3_b2  = addjet->e3_b2;
-  WWTree->PuppiAK8jet_e3_v1_b2 = addjet->e3_v1_b2;
-  WWTree->PuppiAK8jet_e3_v2_b2 = addjet->e3_v2_b2;
-  WWTree->PuppiAK8jet_e4_v1_b2 = addjet->e4_v1_b2;
-  WWTree->PuppiAK8jet_e4_v2_b2 = addjet->e4_v2_b2;
-  
-  WWTree->PuppiAK8jet_e2_sdb1  = addjet->e2_sdb1 ;
-  WWTree->PuppiAK8jet_e3_sdb1  = addjet->e3_sdb1 ;
-  WWTree->PuppiAK8jet_e3_v1_sdb1 = addjet->e3_v1_sdb1  ;
-  WWTree->PuppiAK8jet_e3_v2_sdb1 = addjet->e3_v2_sdb1  ;
-  WWTree->PuppiAK8jet_e4_v1_sdb1 = addjet->e4_v1_sdb1  ;
-  WWTree->PuppiAK8jet_e4_v2_sdb1 = addjet->e4_v2_sdb1;    
-  
-  WWTree->PuppiAK8jet_e2_sdb2  = addjet->e2_sdb2 ;
-  WWTree->PuppiAK8jet_e3_sdb2  = addjet->e3_sdb2 ;
-  WWTree->PuppiAK8jet_e3_v1_sdb2 = addjet->e3_v1_sdb2  ;
-  WWTree->PuppiAK8jet_e3_v2_sdb2 = addjet->e3_v2_sdb2  ;
-  WWTree->PuppiAK8jet_e4_v1_sdb2 = addjet->e4_v1_sdb2  ;
-  WWTree->PuppiAK8jet_e4_v2_sdb2 = addjet->e4_v2_sdb2;    // Soft Dropped correlation function in puts beta=2
-  
-  //WWTree->PuppiAK8jet_e2_sdb4  = addjet->e2_sdb4 ;
-  //WWTree->PuppiAK8jet_e3_sdb4  = addjet->e3_sdb4 ;
-  //WWTree->PuppiAK8jet_e3_v1_sdb4 = addjet->e3_v1_sdb4  ;
-  //WWTree->PuppiAK8jet_e3_v2_sdb4 = addjet->e3_v2_sdb4  ;
-  //WWTree->PuppiAK8jet_e4_v1_sdb4 = addjet->e4_v1_sdb4  ;
-  //WWTree->PuppiAK8jet_e4_v2_sdb4 = addjet->e4_v2_sdb4;        // Soft Dropped correlation function in puts beta=4
-  //
-  //WWTree->PuppiAK8jet_e2_sdb05 = addjet->e2_sdb05  ;
-  //WWTree->PuppiAK8jet_e3_sdb05 = addjet->e3_sdb05  ;
-  //WWTree->PuppiAK8jet_e3_v1_sdb05  = addjet->e3_v1_sdb05 ;
-  //WWTree->PuppiAK8jet_e3_v2_sdb05  = addjet->e3_v2_sdb05 ;
-  //WWTree->PuppiAK8jet_e4_v1_sdb05  = addjet->e4_v1_sdb05 ;
-  //WWTree->PuppiAK8jet_e4_v2_sdb05  = addjet->e4_v2_sdb05;  // Soft Dropped correlation function in puts beta=0.5
+  	WWTree->PuppiAK8jet_e3_b1  = addjet->e3_b1;
+  	WWTree->PuppiAK8jet_e3_v1_b1 = addjet->e3_v1_b1;
+  	WWTree->PuppiAK8jet_e3_v2_b1 = addjet->e3_v2_b1;
+  	WWTree->PuppiAK8jet_e4_v1_b1 = addjet->e4_v1_b1;
+  	WWTree->PuppiAK8jet_e4_v2_b1 = addjet->e4_v2_b1;
+  	WWTree->PuppiAK8jet_e3_b2  = addjet->e3_b2;
+  	WWTree->PuppiAK8jet_e3_v1_b2 = addjet->e3_v1_b2;
+  	WWTree->PuppiAK8jet_e3_v2_b2 = addjet->e3_v2_b2;
+  	WWTree->PuppiAK8jet_e4_v1_b2 = addjet->e4_v1_b2;
+  	WWTree->PuppiAK8jet_e4_v2_b2 = addjet->e4_v2_b2;
+  	
+  	WWTree->PuppiAK8jet_e2_sdb1  = addjet->e2_sdb1 ;
+  	WWTree->PuppiAK8jet_e3_sdb1  = addjet->e3_sdb1 ;
+  	WWTree->PuppiAK8jet_e3_v1_sdb1 = addjet->e3_v1_sdb1  ;
+  	WWTree->PuppiAK8jet_e3_v2_sdb1 = addjet->e3_v2_sdb1  ;
+  	WWTree->PuppiAK8jet_e4_v1_sdb1 = addjet->e4_v1_sdb1  ;
+  	WWTree->PuppiAK8jet_e4_v2_sdb1 = addjet->e4_v2_sdb1;    
+  	
+  	WWTree->PuppiAK8jet_e2_sdb2  = addjet->e2_sdb2 ;
+  	WWTree->PuppiAK8jet_e3_sdb2  = addjet->e3_sdb2 ;
+  	WWTree->PuppiAK8jet_e3_v1_sdb2 = addjet->e3_v1_sdb2  ;
+  	WWTree->PuppiAK8jet_e3_v2_sdb2 = addjet->e3_v2_sdb2  ;
+  	WWTree->PuppiAK8jet_e4_v1_sdb2 = addjet->e4_v1_sdb2  ;
+  	WWTree->PuppiAK8jet_e4_v2_sdb2 = addjet->e4_v2_sdb2;    // Soft Dropped correlation function in puts beta=2
+  	
+  	//WWTree->PuppiAK8jet_e2_sdb4  = addjet->e2_sdb4 ;
+  	//WWTree->PuppiAK8jet_e3_sdb4  = addjet->e3_sdb4 ;
+  	//WWTree->PuppiAK8jet_e3_v1_sdb4 = addjet->e3_v1_sdb4  ;
+  	//WWTree->PuppiAK8jet_e3_v2_sdb4 = addjet->e3_v2_sdb4  ;
+  	//WWTree->PuppiAK8jet_e4_v1_sdb4 = addjet->e4_v1_sdb4  ;
+  	//WWTree->PuppiAK8jet_e4_v2_sdb4 = addjet->e4_v2_sdb4;        // Soft Dropped correlation function in puts beta=4
+  	//
+  	//WWTree->PuppiAK8jet_e2_sdb05 = addjet->e2_sdb05  ;
+  	//WWTree->PuppiAK8jet_e3_sdb05 = addjet->e3_sdb05  ;
+  	//WWTree->PuppiAK8jet_e3_v1_sdb05  = addjet->e3_v1_sdb05 ;
+  	//WWTree->PuppiAK8jet_e3_v2_sdb05  = addjet->e3_v2_sdb05 ;
+  	//WWTree->PuppiAK8jet_e4_v1_sdb05  = addjet->e4_v1_sdb05 ;
+  	//WWTree->PuppiAK8jet_e4_v2_sdb05  = addjet->e4_v2_sdb05;  // Soft Dropped correlation function in puts beta=0.5
 
-  WWTree->PuppiAK8jet_qjet = addjet->qjet;
+  	WWTree->PuppiAK8jet_qjet = addjet->qjet;
 	
 	tempMassW = abs(WWTree->PuppiAK8_jet_mass_so - 80.385);
 	nGoodPuppiAK8jets++;
@@ -1244,6 +1249,7 @@ int main (int argc, char** argv)
         WWTree->mt_lvj_run2_PuppiAK8  = (LEP1 + NU1 + JET_PuppiAK8).Mt();
     }
     else {
+    	WWTree->deltaR_lPuppiak8jet = deltaR(JET_PuppiAK8.Eta(),JET_PuppiAK8.Phi(),LEP1.Eta(),LEP1.Phi());
     	WWTree->deltaR_l2Puppiak8jet = deltaR(JET_PuppiAK8.Eta(),JET_PuppiAK8.Phi(),LEP2.Eta(),LEP2.Phi());
     	WWTree->deltaR_VLepPuppiak8jet = deltaR(JET_PuppiAK8.Eta(),JET_PuppiAK8.Phi(),(LEP1+LEP2).Eta(),(LEP1+LEP2).Phi());
         WWTree->pt_llj_PuppiAK8 = (LEP1 + LEP2 + JET_PuppiAK8).Pt();
@@ -1428,6 +1434,9 @@ int main (int argc, char** argv)
         TOT = VBF1 + VBF2;
 
 	WWTree->vbf_maxpt_j1_pt = jet1->pt;
+	WWTree->vbf_maxpt_j1_px = VBF1.Px();
+	WWTree->vbf_maxpt_j1_py = VBF1.Py();
+	WWTree->vbf_maxpt_j1_pz = VBF1.Pz();
 	WWTree->vbf_maxpt_j1_eta = jet1->eta;
 	WWTree->vbf_maxpt_j1_phi = jet1->phi;
 	WWTree->vbf_maxpt_j1_e = VBF1.E();
@@ -1436,6 +1445,9 @@ int main (int argc, char** argv)
 	WWTree->vbf_maxpt_j1_charge = jet1->q;
 
 	WWTree->vbf_maxpt_j2_pt = jet2->pt;
+	WWTree->vbf_maxpt_j2_px = VBF2.Px();
+	WWTree->vbf_maxpt_j2_py = VBF2.Py();
+	WWTree->vbf_maxpt_j2_pz = VBF2.Pz();
 	WWTree->vbf_maxpt_j2_eta = jet2->eta;
 	WWTree->vbf_maxpt_j2_phi = jet2->phi;
 	WWTree->vbf_maxpt_j2_e = VBF2.E();
@@ -1553,6 +1565,21 @@ int main (int argc, char** argv)
 //////////////////////////////////////////////////
     if (WWTree->isVBF && nGoodPuppiAK8jets!=0){
       if (WWTree->l_pt2<0){
+       file1 << (LEP1 + NU2).Px() << "\t" << (LEP1 + NU2).Py() << "\t" << (LEP1 + NU2).Pz() << "\t" << (LEP1 + NU2).E() << "\t" 
+	     << JET_PuppiAK8.Px() << "\t" << JET_PuppiAK8.Py() << "\t" << JET_PuppiAK8.Pz() << "\t" << JET_PuppiAK8.E() << "\t"
+	     << WWTree->vbf_maxpt_j1_px << "\t" << WWTree->vbf_maxpt_j1_py << "\t" << WWTree->vbf_maxpt_j1_pz << "\t" << WWTree->vbf_maxpt_j1_e << "\t"
+	     << WWTree->vbf_maxpt_j2_px << "\t" << WWTree->vbf_maxpt_j2_py << "\t" << WWTree->vbf_maxpt_j2_pz << "\t" << WWTree->vbf_maxpt_j2_e << "\t"
+	     << (WWTree->LHEWeight[646]/WWTree->LHEWeight[0]) << "\t" << (WWTree->LHEWeight[797]/WWTree->LHEWeight[0]) << "\t"
+	     << (WWTree->LHEWeight[899]/WWTree->LHEWeight[0]) << "\t" << (WWTree->LHEWeight[994]/WWTree->LHEWeight[0]) << endl;
+//       file1 << (LEP1 + NU2).Px() << "\t" << (LEP1 + NU2).Py() << "\t" << (LEP1 + NU2).Pz() << "\t" << (LEP1 + NU2).E() << "\t" 
+//	     << JET_PuppiAK8.Px() << "\t" << JET_PuppiAK8.Py() << "\t" << JET_PuppiAK8.Pz() << "\t" << JET_PuppiAK8.E() << "\t"
+//	     << WWTree->vbf_maxpt_j1_px << "\t" << WWTree->vbf_maxpt_j1_py << "\t" << WWTree->vbf_maxpt_j1_pz << "\t" << WWTree->vbf_maxpt_j1_e << "\t"
+//	     << WWTree->vbf_maxpt_j2_px << "\t" << WWTree->vbf_maxpt_j2_py << "\t" << WWTree->vbf_maxpt_j2_pz << "\t" << WWTree->vbf_maxpt_j2_e << endl;
+	//cout << (LEP1 + NU2).Px() << "\t" << (LEP1 + NU2).Py() << "\t" << (LEP1 + NU2).Pz() << "\t" << (LEP1 + NU2).E() << "\t" 
+	//     << JET_PuppiAK8.Px() << "\t" << JET_PuppiAK8.Py() << "\t" << JET_PuppiAK8.Pz() << "\t" << JET_PuppiAK8.E() << "\t"
+	//     << WWTree->vbf_maxpt_j1_px << "\t" << WWTree->vbf_maxpt_j1_py << "\t" << WWTree->vbf_maxpt_j1_pz << "\t" << WWTree->vbf_maxpt_j1_e << "\t"
+	//     << WWTree->vbf_maxpt_j2_px << "\t" << WWTree->vbf_maxpt_j2_py << "\t" << WWTree->vbf_maxpt_j2_pz << "\t" << WWTree->vbf_maxpt_j2_e << endl;
+
     	WWTree->deltaphi_METvbfJ1 = deltaPhi(WWTree->vbf_maxpt_j1_phi,WWTree->pfMET_Corr_phi);
     	WWTree->deltaphi_METvbfJ2 = deltaPhi(WWTree->vbf_maxpt_j2_phi,WWTree->pfMET_Corr_phi);
     	WWTree->deltaphi_METmin = GetMin(WWTree->deltaphi_METPuppiak8jet, GetMin(WWTree->deltaphi_METvbfJ1, WWTree->deltaphi_METvbfJ2));
