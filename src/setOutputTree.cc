@@ -43,6 +43,9 @@ void setOutputTree::initializeVariables()
   id_eff_Weight2_Up	=1.;
   id_eff_Weight_Down	=1.;
   id_eff_Weight2_Down	=1.;
+  L1_Prefweight		=999.;
+  L1_PrefweightUp	=999.;
+  L1_PrefweightDown	=999.;
   gen_top1_pt		=-999;
   gen_top2_pt		=-999;
   totalEventWeight	=-999;
@@ -800,6 +803,9 @@ void setOutputTree::setBranches()
   fTree->Branch("id_eff_Weight2_Up",&id_eff_Weight2_Up,"id_eff_Weight2_Up/F");
   fTree->Branch("id_eff_Weight_Down",&id_eff_Weight_Down,"id_eff_Weight_Down/F");
   fTree->Branch("id_eff_Weight2_Down",&id_eff_Weight2_Down,"id_eff_Weight2_Down/F");
+  fTree->Branch("L1_Prefweight",&L1_Prefweight,"L1_Prefweight/F");
+  fTree->Branch("L1_PrefweightUp",&L1_PrefweightUp,"L1_PrefweightUp/F");
+  fTree->Branch("L1_PrefweightDown",&L1_PrefweightDown,"L1_PrefweightDown/F");
   fTree->Branch("totalEventWeight",&totalEventWeight,"totalEventWeight/F");
   fTree->Branch("pu_Weight",&pu_Weight,"pu_Weight/F");
   fTree->Branch("totalEventWeight_2",&totalEventWeight_2,"totalEventWeight_2/F");

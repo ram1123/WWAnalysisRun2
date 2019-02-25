@@ -132,6 +132,7 @@ int main (int argc, char** argv)
   TClonesArray *genPartArr 	= new TClonesArray("baconhep::TGenParticle");
   TClonesArray *muonArr    	= new TClonesArray("baconhep::TMuon");
   TClonesArray *electronArr	= new TClonesArray("baconhep::TElectron");
+  TClonesArray *photonArr	= new TClonesArray("baconhep::TPhoton");
   TClonesArray *vertexArr	= new TClonesArray("baconhep::TVertex");
   TClonesArray *jetArr		= new TClonesArray("baconhep::TJet");
   TClonesArray *vjetArrPuppi	= new TClonesArray("baconhep::TJet");
@@ -224,6 +225,14 @@ int main (int argc, char** argv)
   TF1* puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
   TF1* puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
 
+  //---------------- Root file for L1 ECAL pre-firing -----------------------------------
+  //	Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe
+  //
+  TFile* L1prefire_jet = TFile::Open("L1prefiring_jetpt_2016BtoH.root", "READ");
+  TH2F* hL1prefire_jet = (TH2F*) L1prefire_jet->Get("L1prefiring_jetpt_2016BtoH");
+
+  TFile* L1prefire_ph = TFile::Open("L1prefiring_photonpt_2016BtoH.root", "READ");
+  TH2F* hL1prefire_ph = (TH2F*) L1prefire_ph->Get("L1prefiring_photonpt_2016BtoH");
 
   //---------output tree----------------
   TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
@@ -326,6 +335,7 @@ int main (int argc, char** argv)
   eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
   eventTree->SetBranchAddress("Muon", &muonArr); TBranch *muonBr = eventTree->GetBranch("Muon");
   eventTree->SetBranchAddress("Electron", &electronArr); TBranch *electronBr = eventTree->GetBranch("Electron");
+  eventTree->SetBranchAddress("Photon", &photonArr); TBranch *photonBr = eventTree->GetBranch("Photon");
   eventTree->SetBranchAddress("PV",   &vertexArr); TBranch *vertexBr = eventTree->GetBranch("PV");
   eventTree->SetBranchAddress("AK4CHS",   &jetArr); TBranch *jetBr = eventTree->GetBranch("AK4CHS");    
   eventTree->SetBranchAddress("AK8Puppi",   &vjetArrPuppi); TBranch *vjetBrPuppi = eventTree->GetBranch("AK8Puppi");  
@@ -1288,6 +1298,92 @@ int main (int argc, char** argv)
       WWTree->ttb_deltaeta_lak8jet = deltaEta(WWTree->ttb_ungroomed_jet_eta,WWTree->l_eta1);
     }
     
+    // L1pre fire weight
+    // Ref: 1 : https://github.com/HephyAnalysisSW/StopsDilepton/blob/ff976f7855832a054c68bb45419a9ee9a70945ff/tools/python/L1PrefireWeight.py
+    // Ref: 2 : https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe#Introduction
+    
+
+    photonArr->Clear();
+    photonBr->GetEntry(jentry);
+    double Prefweight = 1.0;
+    double PrefweightUp = 1.0;
+    double PrefweightDown = 1.0;
+    std::vector<int> overlapIndices;
+    double prefRatePh, prefRatePh_stat, prefRateJet, prefRateJet_stat, prefRate, prefRate_stat;
+
+    for (int i=0; i<photonArr->GetEntries(); i++)	// loop on photons
+    {
+       const baconhep::TPhoton *photon = (baconhep::TPhoton*)((*photonArr)[i]);
+       int CleanJet = 1;
+
+       //jetArr->Clear();
+       //jetBr->GetEntry(jentry);
+       for ( int j=0; j<jetArr->GetEntries(); j++) //loop on AK4 jet
+       {
+         const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[j]);
+
+	 if (deltaR(jet->eta, jet->phi, photon->eta, photon->phi) < 0.4)
+	 {
+	    CleanJet = 0;
+	    overlapIndices.push_back(j);
+	    prefRatePh		= hL1prefire_ph->GetBinContent(hL1prefire_ph->FindBin(photon->eta,photon->pt));
+	    prefRatePh_stat	= hL1prefire_ph->GetBinError(hL1prefire_ph->FindBin(photon->eta,photon->pt));
+	    prefRateJet		= hL1prefire_jet->GetBinContent(hL1prefire_jet->FindBin(jet->eta,jet->pt));
+	    prefRateJet_stat	= hL1prefire_jet->GetBinError(hL1prefire_jet->FindBin(jet->eta,jet->pt));
+
+	    if (prefRateJet > prefRatePh)
+	    {
+	    	prefRate	= prefRateJet;
+		prefRate_stat	= prefRateJet_stat;
+	    }
+	    else
+	    {
+	    	prefRate	= prefRatePh;
+		prefRate_stat	= prefRatePh_stat;
+	    }
+	 }
+
+	 if(CleanJet)
+	 {
+	    prefRate	  = hL1prefire_ph->GetBinContent(hL1prefire_ph->FindBin(photon->eta,photon->pt));
+	    prefRate_stat = hL1prefire_ph->GetBinError(hL1prefire_ph->FindBin(photon->eta,photon->pt));
+	 }
+	 
+	 Prefweight      *= (1 - prefRate);
+	 PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+	 PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+       }
+       //cout << "Photon Lpp = " << photon->pt << endl;
+    }
+    //cout << " DEBUG: 1 " << endl;
+       //jetArr->Clear();
+       //jetBr->GetEntry(jentry);
+       for ( int j=0; j<jetArr->GetEntries(); j++) //loop on AK4 jet
+       {
+         const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[j]);
+	 //if (j == overlapIndices[j])	continue;
+	 for (unsigned int l=0; l<overlapIndices.size(); l++)
+	 {
+	    if  (j == overlapIndices[l])  continue;
+	    prefRate		= hL1prefire_jet->GetBinContent(hL1prefire_jet->FindBin(jet->eta,jet->pt));
+	    prefRate_stat	= hL1prefire_jet->GetBinError(hL1prefire_jet->FindBin(jet->eta,jet->pt));
+
+	 Prefweight      *= (1 - prefRate);
+	 PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+	 PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+	 }
+       }
+
+    //cout << " DEBUG: 2 " << endl;
+    overlapIndices.clear();
+
+    WWTree->L1_Prefweight	= Prefweight;
+    WWTree->L1_PrefweightUp	= PrefweightUp;
+    WWTree->L1_PrefweightDown	= PrefweightDown;
+   
+    //cout << " DEBUG: 3 " << endl;
+
+
     /////////VBF and b-tag section
     WWTree->njets=0;
     WWTree->nBTagJet_loose=0;
@@ -1304,8 +1400,8 @@ int main (int argc, char** argv)
     std::vector<int> indexGoodVBFJets;
 
 
-    jetArr->Clear();
-    jetBr->GetEntry(jentry);
+    //jetArr->Clear();
+    //jetBr->GetEntry(jentry);
     for ( int i=0; i<jetArr->GetEntries(); i++) //loop on AK4 jet
     {
       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);

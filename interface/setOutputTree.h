@@ -41,6 +41,9 @@ class setOutputTree {
   float id_eff_Weight2_Up;
   float id_eff_Weight_Down;
   float id_eff_Weight2_Down;
+  float L1_Prefweight;
+  float L1_PrefweightUp;
+  float L1_PrefweightDown;
   float gen_top1_pt;
   float gen_top2_pt;
   float totalEventWeight;
