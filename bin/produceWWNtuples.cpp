@@ -1368,14 +1368,21 @@ int main (int argc, char** argv)
     }
        photonArr->Clear();
        photonBr->GetEntry(jentry);
+       int runn = 0;
        //std::cout << "DEBUG: 3 : Total photons =  " << photonArr->GetEntries() << endl;
        for (int i=0; i<photonArr->GetEntries(); i++)	// loop on photons
        {
 	 const baconhep::TPhoton *photon = (baconhep::TPhoton*)((*photonArr)[i]);
+	 runn = 0;
 	 if (abs(photon->eta)>2.0 && abs(photon->eta)<3.0 && photon->pt>30 && photon->pt<500)
 	 for (unsigned int l=0; l<overlapIndices.size(); l++)
 	 {
 	    if  (i == overlapIndices[l])  continue;
+	    else runn = 1;
+	 }
+
+	 if (runn)
+	 {
 	    prefRate		= hL1prefire_ph->GetBinContent(hL1prefire_ph->FindBin(photon->eta,photon->pt));
 	    prefRate_stat	= hL1prefire_ph->GetBinError(hL1prefire_ph->FindBin(photon->eta,photon->pt));
 
