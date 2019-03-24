@@ -1,3 +1,6 @@
+mypatch.patch
+*.txt
+!Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
 *.exe
 *.pyc
 ._*

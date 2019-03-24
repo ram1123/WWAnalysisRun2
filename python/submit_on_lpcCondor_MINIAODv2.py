@@ -22,6 +22,8 @@ category = ["el","mu"];
 
 lumi = 35900.0
 
+OutDirrr = "WWTree_After_CWR"
+os.system('xrdfs root://cmseos.fnal.gov/ mkdir ' + '/store/user/rasharma/SecondStep/' + OutDirrr)
 changes = raw_input("\n\nWrite change summary: ")
 
 print "==> ",changes
@@ -32,8 +34,8 @@ if TestRun:
 	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+"_TEST/";
 	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M') + "_TEST";
 else:
-	outputFolder = "/store/user/rasharma/SecondStep/WWTree_CommonNtuple_For1and2Lepton_MuonPtScale_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
-	OutputLogPath = "OutPut_Logs/Logs_CommonNtuple_For1and2Lepton_MuonPtScale_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	outputFolder = "/store/user/rasharma/SecondStep/"+OutDirrr+"/"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	OutputLogPath = "OutPut_Logs/Logs_After_CWR/" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
 
 print "Name of output dir: ",outputFolder
 # create a directory on eos
