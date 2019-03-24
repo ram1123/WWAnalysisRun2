@@ -1311,6 +1311,9 @@ int main (int argc, char** argv)
 
     jetArr->Clear();
     jetBr->GetEntry(jentry);
+
+    //std::cout << std::string(51, '*') << std::endl; 
+    //std::cout << "DEBUG: 1 : Total jets =  " << jetArr->GetEntries() << endl;
     for ( int j=0; j<jetArr->GetEntries(); j++) //loop on AK4 jet
     {
        const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[j]);
@@ -1318,11 +1321,12 @@ int main (int argc, char** argv)
        
        photonArr->Clear();
        photonBr->GetEntry(jentry);
+       //std::cout << "DEBUG: 2 : Total photons =  " << photonArr->GetEntries() << endl;
        for (int i=0; i<photonArr->GetEntries(); i++)	// loop on photons
        {
 	 const baconhep::TPhoton *photon = (baconhep::TPhoton*)((*photonArr)[i]);
 
-	 if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && abs(photon->eta)>2.0 && abs(photon->eta)<3.0 && jet->pt>20 && jet->pt<500 && photon->pt>20 && photon->pt<500)
+	 if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && abs(photon->eta)>2.0 && abs(photon->eta)<3.0 && jet->pt>30 && jet->pt<500 && photon->pt>30 && photon->pt<500)
 	 if (deltaR(jet->eta, jet->phi, photon->eta, photon->phi) < 0.4)
 	 {
 	    CleanJet = 0;
@@ -1342,28 +1346,33 @@ int main (int argc, char** argv)
 	    	prefRate	= prefRatePh;
 		prefRate_stat	= prefRatePh_stat;
 	    }
+       	    Prefweight      *= (1 - prefRate);
+       	    PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+       	    PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+	    //std::cout<<"DEBUG: 4: prefRate = "<< prefRatePh << "\t" << prefRateJet << "\t" << prefRate << "\t" << Prefweight << std::endl;
 	 }
 
-	 if(CleanJet)
-	 {
-	    if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && jet->pt>20 && jet->pt<500)
-	    {
-	       prefRate	  = hL1prefire_jet->GetBinContent(hL1prefire_jet->FindBin(jet->eta,jet->pt));
-	       prefRate_stat = hL1prefire_jet->GetBinError(hL1prefire_jet->FindBin(jet->eta,jet->pt));
-	    }
-	 }
-	 Prefweight      *= (1 - prefRate);
-	 PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
-	 PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
-	 
+       }
+       if(CleanJet)
+       {
+          if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && jet->pt>30 && jet->pt<500)
+          {
+             prefRate	  = hL1prefire_jet->GetBinContent(hL1prefire_jet->FindBin(jet->eta,jet->pt));
+             prefRate_stat = hL1prefire_jet->GetBinError(hL1prefire_jet->FindBin(jet->eta,jet->pt));
+       	     Prefweight      *= (1 - prefRate);
+       	     PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+       	     PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+	     //std::cout<<"DEBUG: 5: prefRate = " << prefRate << "\t" << Prefweight << std::endl;
+          }
        }
     }
        photonArr->Clear();
        photonBr->GetEntry(jentry);
+       //std::cout << "DEBUG: 3 : Total photons =  " << photonArr->GetEntries() << endl;
        for (int i=0; i<photonArr->GetEntries(); i++)	// loop on photons
        {
 	 const baconhep::TPhoton *photon = (baconhep::TPhoton*)((*photonArr)[i]);
-	 if (abs(photon->eta)>2.0 && abs(photon->eta)<3.0 && photon->pt>20 && photon->pt<500)
+	 if (abs(photon->eta)>2.0 && abs(photon->eta)<3.0 && photon->pt>30 && photon->pt<500)
 	 for (unsigned int l=0; l<overlapIndices.size(); l++)
 	 {
 	    if  (i == overlapIndices[l])  continue;
@@ -1373,6 +1382,7 @@ int main (int argc, char** argv)
 	 Prefweight      *= (1 - prefRate);
 	 PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
 	 PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+	 //std::cout<<"DEBUG: 6: prefRate = " << prefRate << "\t" << Prefweight << std::endl;
 	 }
        }
 
@@ -1382,6 +1392,7 @@ int main (int argc, char** argv)
     WWTree->L1_Prefweight	= Prefweight;
     WWTree->L1_PrefweightUp	= PrefweightUp;
     WWTree->L1_PrefweightDown	= PrefweightDown;
+    //std::cout << "DEBUG: 7: L1_Prefweight = " << WWTree->L1_Prefweight << endl;
    
     //cout << " DEBUG: 3 " << endl;
 
