@@ -1312,7 +1312,7 @@ int main (int argc, char** argv)
     jetArr->Clear();
     jetBr->GetEntry(jentry);
 
-    //std::cout << std::string(51, '*') << std::endl; 
+    std::cout << std::string(51, '*') << std::endl << std::endl << std::endl; 
     //std::cout << "DEBUG: 1 : Total jets =  " << jetArr->GetEntries() << endl;
     for ( int j=0; j<jetArr->GetEntries(); j++) //loop on AK4 jet
     {
@@ -1325,11 +1325,13 @@ int main (int argc, char** argv)
 
 	    	prefRate	= prefRateJet;
 		prefRate_stat	= prefRateJet_stat;
-	    }
-       	    Prefweight      *= (1 - prefRate);
-       	    PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
-       	    PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
-	    //std::cout<<"DEBUG: 4: prefRate = "<< prefRatePh << "\t" << prefRateJet << "\t" << prefRate << "\t" << Prefweight << std::endl;
+       	 Prefweight      *= (1 - prefRate);
+       	 PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+       	 PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+	 //std::cout<<"DEBUG: 4: prefRate = "<< prefRatePh << "\t" << prefRateJet << "\t" << prefRate << "\t" << Prefweight << std::endl;
+	 std::cout<< "Event: " << jentry << "\t pT = " << jet->pt << "\t eta = " << jet->eta << "\t prefRate = " << prefRate << " +/- " << prefRate_stat << "\t Prefweight = " << Prefweight << endl;
+	 }
+
 
        }
 
