@@ -1309,19 +1309,19 @@ int main (int argc, char** argv)
     std::vector<int> overlapIndices;
     double prefRatePh, prefRatePh_stat, prefRateJet, prefRateJet_stat, prefRate=0.0, prefRate_stat=0.0;
 
-    jetArr->Clear();
-    jetBr->GetEntry(jentry);
-
-    std::cout << std::string(51, '*') << std::endl << std::endl << std::endl; 
+    photonArr->Clear();
+    photonBr->GetEntry(jentry);
+    //std::cout << std::string(51, '*') << std::endl << std::endl << std::endl; 
     //std::cout << "DEBUG: 1 : Total jets =  " << jetArr->GetEntries() << endl;
-    for ( int j=0; j<jetArr->GetEntries(); j++) //loop on AK4 jet
+    for ( int j=0; j<photonArr->GetEntries(); j++) //loop on AK4 jet
     {
-       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[j]);
+       //const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[j]);
+       const baconhep::TPhoton *photon = (baconhep::TPhoton*)((*photonArr)[j]);
 
-	 if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && jet->pt>30 && jet->pt<500 )
+	 if (abs(photon->eta)>2.0 && abs(photon->eta)<3.0 && photon->pt>30 && photon->pt<500 )
 	 {
-	    prefRateJet		= hL1prefire_jet->GetBinContent(hL1prefire_jet->FindBin(jet->eta,jet->pt));
-	    prefRateJet_stat	= hL1prefire_jet->GetBinError(hL1prefire_jet->FindBin(jet->eta,jet->pt));
+	    prefRateJet		= hL1prefire_ph->GetBinContent(hL1prefire_ph->FindBin(photon->eta,photon->pt));
+	    prefRateJet_stat	= hL1prefire_ph->GetBinError(hL1prefire_ph->FindBin(photon->eta,photon->pt));
 
 	    	prefRate	= prefRateJet;
 		prefRate_stat	= prefRateJet_stat;
@@ -1329,7 +1329,7 @@ int main (int argc, char** argv)
        	 PrefweightUp    *= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
        	 PrefweightDown    *= (1.0 - TMath::Max(0.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
 	 //std::cout<<"DEBUG: 4: prefRate = "<< prefRatePh << "\t" << prefRateJet << "\t" << prefRate << "\t" << Prefweight << std::endl;
-	 std::cout<< "Event: " << jentry << "\t pT = " << jet->pt << "\t eta = " << jet->eta << "\t prefRate = " << prefRate << " +/- " << prefRate_stat << "\t Prefweight = " << Prefweight << endl;
+	 //std::cout<< "Event: " << jentry << "\t pT = " << photon->pt << "\t eta = " << photon->eta << "\t prefRate = " << prefRate << " +/- " << prefRate_stat << "\t Prefweight = " << Prefweight << endl;
 	 }
 
 
