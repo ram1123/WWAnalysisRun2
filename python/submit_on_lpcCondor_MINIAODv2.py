@@ -315,13 +315,13 @@ nameDataEl = [
 ];
 
 
-inputlist = "runstep2condor_temp.sh, python/produceWWNtuples.py"
+inputlist = "runstep2condor.sh, python/produceWWNtuples.py"
 
 nameData = {"el": nameDataEl, "mu":nameDataMu};
 
 command = "python python/produceWWNtuples.py -i "+inputFolder+" $*";
 
-outScript = open("runstep2condor_temp.sh","w");
+outScript = open("runstep2condor.sh","w");
 outScript.write('#!/bin/bash');
 outScript.write("\n"+'echo "Starting job on " `date`');
 outScript.write("\n"+'echo "Running on: `uname -a`"');
@@ -352,10 +352,10 @@ outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
 outScript.write("\n"+'rm -rf ' + CMSSWRel);
 outScript.write("\n");
 outScript.close();
-os.system("chmod 777 runstep2condor_temp.sh");
+os.system("chmod 777 runstep2condor.sh");
 
-outJDL = open("runstep2condor_temp.jdl","w");
-outJDL.write("Executable = runstep2condor_temp.sh\n");
+outJDL = open("runstep2condor.jdl","w");
+outJDL.write("Executable = runstep2condor.sh\n");
 outJDL.write("Universe = vanilla\n");
 #outJDL.write("Requirements =FileSystemDomain==\"fnal.gov\" && Arch==\"X86_64\"");
 outJDL.write("Notification = ERROR\n");
@@ -387,5 +387,5 @@ if( doData ):
 outJDL.close();
 print "===> Set Proxy Using:";
 print "\tvoms-proxy-init --voms cms --valid 168:00";
-print "\"condor_submit runstep2condor_temp.jdl\" to submit";
+print "\"condor_submit runstep2condor.jdl\" to submit";
 
