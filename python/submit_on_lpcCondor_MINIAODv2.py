@@ -18,10 +18,13 @@ TestRun = 0
 
 doMC = True;
 doData = True;
+#category = ["el"];
 category = ["el","mu"];
 
 lumi = 35900.0
 
+OutDirrr = "WWTree_After_CWR"
+os.system('xrdfs root://cmseos.fnal.gov/ mkdir ' + '/store/user/rasharma/SecondStep/' + OutDirrr)
 changes = raw_input("\n\nWrite change summary: ")
 
 print "==> ",changes
@@ -32,8 +35,8 @@ if TestRun:
 	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+"_TEST/";
 	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M') + "_TEST";
 else:
-	outputFolder = "/store/user/rasharma/SecondStep/WWTree_CommonNtuple_For1and2Lepton_MuonPtScale_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
-	OutputLogPath = "OutPut_Logs/Logs_CommonNtuple_For1and2Lepton_MuonPtScale_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	outputFolder = "/store/user/rasharma/SecondStep/"+OutDirrr+"/"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	OutputLogPath = "OutPut_Logs/Logs_After_CWR/" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
 
 print "Name of output dir: ",outputFolder
 # create a directory on eos
@@ -41,6 +44,11 @@ os.system('xrdfs root://cmseos.fnal.gov/ mkdir ' + outputFolder)
 # create directory in pwd for log files
 os.system('mkdir -p ' + OutputLogPath + "/Logs")
 
+def exclude_function(filename):
+    if filename.endswith('.log') or filename.endswith('.stdout'):
+            return True
+    else:
+            return False
 
 # Function to create a tar file
 def make_tarfile(output_filename, source_dir):
@@ -62,10 +70,12 @@ os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolde
 
 os.system('echo "Add git diff to file logs." > mypatch.patch')
 os.system('git diff >> mypatch.patch')
+os.system('git diff > mypatch.patch_1')
 os.system("sed -i '1s/^/Changes Summary : "+changes+"\\n/' mypatch.patch")
 os.system('echo -e "\n\n============\n== Latest commit number \n\n" >> mypatch.patch ')
 os.system('git log -1 --format="%H" >> mypatch.patch ')
 os.system('xrdcp -f mypatch.patch root://cmseos.fnal.gov/'+outputFolder+'/mypatch.patch')
+os.system('xrdcp -f mypatch.patch_1 root://cmseos.fnal.gov/'+outputFolder+'/mypatch.patch_1')
 
 samples = [
 	#	Doubly Charged Higgs sample
@@ -104,8 +114,10 @@ samples = [
 	( 0.0003404,	"ChargedHiggsToWZToLNuQQ_M1500_13TeV-madgraph-pythia8",     	95776,	0),
 	( 0.0001099,	"ChargedHiggsToWZToLNuQQ_M2000_13TeV-madgraph-pythia8",     	99959,	0),
     	#	EWK SM Signal
-    	( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1991227,   0),
-    	( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1983847,   0),
+    	( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8_1",	1991227,   0),
+    	( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8_2",	1991227,   0),
+    	( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8_1",	1983847,   0),
+    	( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8_2",	1983847,   0),
     	( 0.0879,	"WplusToLNuWplusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	198848,   0),
     	( 0.0326,	"WminusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	189560,   0),
     	( 0.1825,	"WplusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		393171,   0),
@@ -205,17 +217,17 @@ samples = [
 	( 1.60809,	"WJetsToLNu_HT_1200To2500_13TeV_ext1",	6708656,	0),
 	( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV",	2520618,	0),
 	( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV_ext1",	2520618,	0),
-	#	VV/VVV
-	( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	5057358,	953706),
-	( 16.532,	"ZZ_13TeV_pythia8",	990051,	0),
-	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_1",	23766546,	4986275),
-	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_2",	23766546,	4986275),
-	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_3",	23766546,	4986275),
-	( 3.22,		"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",		15345161,	2828391),
-	( 5.595,	"WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	26516586,	5318729),
-	( 0.1651,	"WWZ_13TeV_amcatnlo_pythia8",	269990,	15372),
-	( 0.01398,	"ZZZ_13TeV_amcatnlo_pythia8",	249232,	18020),
-	#	TTbar and single top
+	##	VV/VVV
+	#( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	5057358,	953706),
+	#( 16.532,	"ZZ_13TeV_pythia8",	990051,	0),
+	#( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_1",	23766546,	4986275),
+	#( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_2",	23766546,	4986275),
+	#( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_3",	23766546,	4986275),
+	#( 3.22,		"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",		15345161,	2828391),
+	#( 5.595,	"WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	26516586,	5318729),
+	#( 0.1651,	"WWZ_13TeV_amcatnlo_pythia8",	269990,	15372),
+	#( 0.01398,	"ZZZ_13TeV_amcatnlo_pythia8",	249232,	18020),
+	##	TTbar and single top
 	( 362.5764,	"TTToSemilepton_powheg_1",	91832423,	0),
 	( 362.5764,	"TTToSemilepton_powheg_2",	91832423,	0),
 	( 362.5764,	"TTToSemilepton_powheg_3",	91832423,	0),
