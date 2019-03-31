@@ -34,9 +34,9 @@ class METzCalculator {
   /// to be compatible with earlier code.
   /// The values are from the 2010 PDG tables.
   void SetLeptonType(std::string leptonName) {
-    if(leptonName == "muon") leptonMass_ = 0.105658367;
-    if(leptonName == "electron") leptonMass_ = 0.00051099891;
-    if(leptonName == "tau") leptonMass_ = 1.77682;
+    if(leptonName == "muon") leptonMass_ = 0.1056583745;
+    if(leptonName == "electron") leptonMass_ = 0.0005109989461;
+    if(leptonName == "tau") leptonMass_ = 1.77686;
   }
 
   /// Calculate MEz
