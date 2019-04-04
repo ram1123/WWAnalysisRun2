@@ -123,7 +123,7 @@ if ifhaddOnly != 1:
 			if files.find(sample) != -1:
 				#print "===> ",files,sample
 				print ymload[sample]["name"],"\t",files,"\t",ymload[sample]["CrossSection"],"\t1\t",int(ListnEvents[i]),"\t",int(ListnNegEvents[i]),"\t",ymload[sample]["ColorCode"],"\t",ymload[sample]["StackIt"]
-				outScript.write(ymload[sample]["name"],"\t",files,"\t",ymload[sample]["CrossSection"],"\t1\t",int(ListnEvents[i]),"\t",int(ListnNegEvents[i]),"\t",ymload[sample]["ColorCode"],"\t",ymload[sample]["StackIt"])
+				outScript.write(ymload[sample]["name"]+"\t"+files+"\t"+str(ymload[sample]["CrossSection"])+"\t1\t"+str(ListnEvents[i])+"\t"+str(ListnNegEvents[i])+"\t"+str(ymload[sample]["ColorCode"])+"\t"+str(ymload[sample]["StackIt"]))
 
 stop = timeit.default_timer()
 print('Time: ', stop - start)  
