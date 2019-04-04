@@ -132,37 +132,24 @@ int main (int argc, char** argv)
   TClonesArray *genPartArr 	= new TClonesArray("baconhep::TGenParticle");
   TClonesArray *muonArr    	= new TClonesArray("baconhep::TMuon");
   TClonesArray *electronArr	= new TClonesArray("baconhep::TElectron");
-  TClonesArray *photonArr	= new TClonesArray("baconhep::TPhoton");
+  //TClonesArray *photonArr	= new TClonesArray("baconhep::TPhoton");
   TClonesArray *vertexArr	= new TClonesArray("baconhep::TVertex");
   TClonesArray *jetArr		= new TClonesArray("baconhep::TJet");
   TClonesArray *vjetArrPuppi	= new TClonesArray("baconhep::TJet");
   TClonesArray *vjetAddArrPuppi	= new TClonesArray("baconhep::TAddJet");
   TClonesArray *lheWgtArr	= new TClonesArray("baconhep::TLHEWeight");
   
-
-  char command1[3000];
-  char command2[3000];
-  if ( cluster == "lxplus")
-  	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
-  else 
-	sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
-	//sprintf(command1,"eos root://cmseos.fnal.gov find -f %s | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());	// WORKS ONLY WITH INTERACTIVE NODE
-
-  std::cout<<command1<<std::endl;
-  sprintf(command2,"sed -i '/failed$/d' listTemp_%s.txt", outputFile.c_str());
-  system(command1);
-  system(command2);
   char list1[2000];
-  sprintf (list1, "listTemp_%s.txt", outputFile.c_str());
+  sprintf (list1, "%s", inputFile.c_str());
   ifstream rootList (list1);
-  char command3[300];
-  sprintf(command3, "rm listTemp_%s.txt", outputFile.c_str());
-  system(command3);
+  //char command3[300];
+  //sprintf(command3, "cat %s", inputFile.c_str());
+  //system(command3);
 
   int fileCounter=0;
 
+  // vector to store root file names
   vector<TString>  sampleName; 
-
   while (!rootList.eof())
   {
 	char iRun_tW[700];
@@ -171,71 +158,67 @@ int main (int argc, char** argv)
 	sampleName.push_back(iRun_tW);
 	fileCounter++;
   }
-
   TFile *infile=0;
   TTree *eventTree=0;
 
-  std::ofstream file1;
-  char TxtFileName[300];
-  sprintf(TxtFileName, "%s.txt",outputFile.c_str());
-  file1.open(TxtFileName);
+  // Array to store the number of events left after each cuts applied in this macro
   int cutEff[21]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
   // Read and add pileup in histogram
-  TFile* pileupFileMC = TFile::Open("puWeights_80x_37ifb.root");
+  TFile* pileupFileMC = TFile::Open("inputfiles/puWeights_90x_41ifb.root");
   TH1D* puWeights = (TH1D*)pileupFileMC->Get("puWeights");
   TH1D* puWeightsUp = (TH1D*)pileupFileMC->Get("puWeightsUp");
   TH1D* puWeightsDown = (TH1D*)pileupFileMC->Get("puWeightsDown");
-  puWeights->SetBins(75,0,75);
-  puWeightsUp->SetBins(75,0,75);
-  puWeightsDown->SetBins(75,0,75);
+  puWeights->SetBins(100,0,100);
+  puWeightsUp->SetBins(100,0,100);
+  puWeightsDown->SetBins(100,0,100);
 
   //---------------- Root Files for ID, ISO, Trigger, GSF correctiosn for ELE and MU both: Starts -------------
-  TFile* IDIsoEle = TFile::Open("egammaEffi_EGM2D_TightCutBasedIDSF.root","READ");
-  TH1F *hIDIsoEle = (TH1F*)IDIsoEle->Get("EGamma_SF2D");
+  //TFile* IDIsoEle = TFile::Open("egammaEffi_EGM2D_TightCutBasedIDSF.root","READ");
+  //TH1F *hIDIsoEle = (TH1F*)IDIsoEle->Get("EGamma_SF2D");
 
-  TFile* GSFCorrEle = TFile::Open("egammaEffi_SF2D_GSF_tracking.root","READ");
-  TH1F *hGSFCorrEle = (TH1F*)GSFCorrEle->Get("EGamma_SF2D");
+  //TFile* GSFCorrEle = TFile::Open("egammaEffi_SF2D_GSF_tracking.root","READ");
+  //TH1F *hGSFCorrEle = (TH1F*)GSFCorrEle->Get("EGamma_SF2D");
 
-  TFile* TriggerEle = TFile::Open("ElectronTrigger_SF.root","READ");
-  TH1F* hTriggerEle = (TH1F*)TriggerEle->Get("HLT_Ele27");
+  //TFile* TriggerEle = TFile::Open("ElectronTrigger_SF.root","READ");
+  //TH1F* hTriggerEle = (TH1F*)TriggerEle->Get("HLT_Ele27");
 
-  TFile* IDMuA = TFile::Open("MuonID_RunBCDEF_23SepReReco_19p72fb.root","READ");
-  TH1F *hIDMuA = (TH1F*)IDMuA->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio");
+  //TFile* IDMuA = TFile::Open("MuonID_RunBCDEF_23SepReReco_19p72fb.root","READ");
+  //TH1F *hIDMuA = (TH1F*)IDMuA->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio");
 
-  TFile* IDMuB = TFile::Open("MuonID_RunGH_23SepReReco_16p146fb.root","READ");
-  TH1F *hIDMuB = (TH1F*)IDMuB->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio");
+  //TFile* IDMuB = TFile::Open("MuonID_RunGH_23SepReReco_16p146fb.root","READ");
+  //TH1F *hIDMuB = (TH1F*)IDMuB->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio");
 
-  TFile* IsoMuA = TFile::Open("MuonIso_RunBCDEF_23SepReReco_19p72fb.root","READ");
-  TH1F *hIsoMuA = (TH1F*)IsoMuA->Get("TightISO_TightID_pt_eta/abseta_pt_ratio");
+  //TFile* IsoMuA = TFile::Open("MuonIso_RunBCDEF_23SepReReco_19p72fb.root","READ");
+  //TH1F *hIsoMuA = (TH1F*)IsoMuA->Get("TightISO_TightID_pt_eta/abseta_pt_ratio");
 
-  TFile* IsoMuB = TFile::Open("MuonIso_RunGH_23SepReReco_16p146fb.root","READ");
-  TH1F *hIsoMuB = (TH1F*)IsoMuB->Get("TightISO_TightID_pt_eta/abseta_pt_ratio");
+  //TFile* IsoMuB = TFile::Open("MuonIso_RunGH_23SepReReco_16p146fb.root","READ");
+  //TH1F *hIsoMuB = (TH1F*)IsoMuB->Get("TightISO_TightID_pt_eta/abseta_pt_ratio");
 
-  TFile* TriggerMuA = TFile::Open("MuonTrigger_RunBCDEF_23SepReReco_19p72fb.root","READ");
-  TH1F* hTriggerMuA = (TH1F*)TriggerMuA->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio");
+  //TFile* TriggerMuA = TFile::Open("MuonTrigger_RunBCDEF_23SepReReco_19p72fb.root","READ");
+  //TH1F* hTriggerMuA = (TH1F*)TriggerMuA->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio");
 
-  TFile* TriggerMuB = TFile::Open("MuonTrigger_RunGH_23SepReReco_16p146fb.root","READ");
-  TH1F* hTriggerMuB = (TH1F*)TriggerMuB->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio");
+  //TFile* TriggerMuB = TFile::Open("MuonTrigger_RunGH_23SepReReco_16p146fb.root","READ");
+  //TH1F* hTriggerMuB = (TH1F*)TriggerMuB->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio");
 
-  //---------------- Root Files for ID, ISO, Trigger, GSF correctiosn for ELE and MU both: ENDS -------------
-  
-  TFile* file = TFile::Open( "puppiCorr.root","READ");
-  TF1* puppisd_corrGEN      = (TF1*)file->Get("puppiJECcorr_gen");
-  TF1* puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
-  TF1* puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
-
-  //---------------- Root file for L1 ECAL pre-firing -----------------------------------
-  //	Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe
+  ////---------------- Root Files for ID, ISO, Trigger, GSF correctiosn for ELE and MU both: ENDS -------------
   //
-  TFile* L1prefire_jet = TFile::Open("L1prefiring_jetpt_2016BtoH.root", "READ");
-  TH2F* hL1prefire_jet = (TH2F*) L1prefire_jet->Get("L1prefiring_jetpt_2016BtoH");
+  //TFile* file = TFile::Open( "puppiCorr.root","READ");
+  //TF1* puppisd_corrGEN      = (TF1*)file->Get("puppiJECcorr_gen");
+  //TF1* puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
+  //TF1* puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
 
-  TFile* L1prefire_jetempt = TFile::Open("L1prefiring_jetempt_2016BtoH.root", "READ");
-  TH2F* hL1prefire_jetempt = (TH2F*) L1prefire_jetempt->Get("L1prefiring_jetempt_2016BtoH");
+  ////---------------- Root file for L1 ECAL pre-firing -----------------------------------
+  ////	Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe
+  ////
+  ////TFile* L1prefire_jet = TFile::Open("L1prefiring_jetpt_2016BtoH.root", "READ");
+  ////TH2F* hL1prefire_jet = (TH2F*) L1prefire_jet->Get("L1prefiring_jetpt_2016BtoH");
 
-  TFile* L1prefire_ph = TFile::Open("L1prefiring_photonpt_2016BtoH.root", "READ");
-  TH2F* hL1prefire_ph = (TH2F*) L1prefire_ph->Get("L1prefiring_photonpt_2016BtoH");
+  //TFile* L1prefire_jetempt = TFile::Open("L1prefiring_jetempt_2016BtoH.root", "READ");
+  //TH2F* hL1prefire_jetempt = (TH2F*) L1prefire_jetempt->Get("L1prefiring_jetempt_2016BtoH");
+
+  ////TFile* L1prefire_ph = TFile::Open("L1prefiring_photonpt_2016BtoH.root", "READ");
+  ////TH2F* hL1prefire_ph = (TH2F*) L1prefire_ph->Get("L1prefiring_photonpt_2016BtoH");
 
   //---------output tree----------------
   TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
@@ -252,70 +235,67 @@ int main (int argc, char** argv)
   if (isLocal==1) nInputFiles = 2;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
-  TH1D *MCpu = new TH1D("MCpu","",75,0,75);
-  TH1D *MCpu_up = new TH1D("MCpu_up","",75,0,75);
-  TH1D *MCpu_down = new TH1D("MCpu_down","",75,0,75);
-  
   Long64_t TotalNumberOfEvents = 0, nNegEvents = 0; 
 
+  //// Set up b-tag scale factor readers
+  //BTagCalibration calib("csvv2", "CSVv2_Moriond17_B_H.csv");
+  //BTagCalibrationReader bTagReader(BTagEntry::OP_LOOSE,  // working point: can be OP_LOOSE, OP_MEDIUM, OP_TIGHT 
+  //                                 "central",             // label for the central value (see the scale factor file)
+  //                                 {"up","down"});        // vector of labels for systematics
+  //bTagReader.load(calib, BTagEntry::FLAV_B, "comb");      // use the "comb" measurements for b-jets
+  //bTagReader.load(calib, BTagEntry::FLAV_C, "comb");      // use the "comb" measurements for c-jets
+  //bTagReader.load(calib, BTagEntry::FLAV_UDSG, "incl");   // use the "incl" measurements for light jets
 
-  // Set up b-tag scale factor readers
-  BTagCalibration calib("csvv2", "CSVv2_Moriond17_B_H.csv");
-  BTagCalibrationReader bTagReader(BTagEntry::OP_LOOSE,  // working point: can be OP_LOOSE, OP_MEDIUM, OP_TIGHT 
-                                   "central",             // label for the central value (see the scale factor file)
-                                   {"up","down"});        // vector of labels for systematics
-  bTagReader.load(calib, BTagEntry::FLAV_B, "comb");      // use the "comb" measurements for b-jets
-  bTagReader.load(calib, BTagEntry::FLAV_C, "comb");      // use the "comb" measurements for c-jets
-  bTagReader.load(calib, BTagEntry::FLAV_UDSG, "incl");   // use the "incl" measurements for light jets
+  //vector to store good b-jets from the collection of AK4 jets. This will be used for calculating b-tag weights.
+  //vector<const baconhep::TJet*> goodJetsv;
   
-
-  vector<const baconhep::TJet*> goodJetsv;
-  
-  // Loop on input files
-  for(int i=0;i<nInputFiles;i++)
+  /*! 
+   *  This for loop on the number of input file is only for calculating
+   *  the total number of events and the total number of negative events
+   *  in the root files.
+   */
+  for(int InputFiles=0; InputFiles<nInputFiles; InputFiles++)
   {
-     infile = TFile::Open(sampleName[i]);
-     eventTree = (TTree*)infile->Get("Events");
-     //std::cout << "\t File no. " << i << "\t"<< sampleName[i] <<std:: endl;
-     
-     TotalNumberOfEvents+=eventTree->GetEntries();
+    infile = TFile::Open(sampleName[InputFiles]);
+    eventTree = (TTree*)infile->Get("Events");
+    //std::cout << "\t File no. " << i << "\t"<< sampleName[i] <<std:: endl;
 
-     if(isMC)
-     { 
-        eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
-  	TBranch *genBr=0;
-     	eventTree->SetBranchAddress("GenEvtInfo", &gen); genBr = eventTree->GetBranch("GenEvtInfo");
-	for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
-	{
-	  //eventTree->GetEntry(jentry);
-	    genBr->GetEntry(jentry);
-    	    infoBr->GetEntry(jentry);	    
-	    MCpu->Fill(info->nPUmean);
-	    MCpu_up->Fill(info->nPUmeanp);
-	    MCpu_down->Fill(info->nPUmeanm);
-	    if (jentry2%50000 == 0) std::cout << "\t File no. " << i << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
-	    if (gen->weight<0)	nNegEvents++;
-	}
-     }
-     delete infile;
-     infile=0, eventTree=0;
+    TotalNumberOfEvents+=eventTree->GetEntries();
+    if(isMC)
+    {
+      eventTree->SetBranchAddress("Info", &info);    
+      TBranch *infoBr = eventTree->GetBranch("Info");
+      
+      TBranch *genBr=0;
+      eventTree->SetBranchAddress("GenEvtInfo", &gen); 
+      genBr = eventTree->GetBranch("GenEvtInfo");
+      
+      for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+      {
+	genBr->GetEntry(jentry);
+    	infoBr->GetEntry(jentry);	    
+	if (jentry2%50000 == 0) std::cout << "\t File no. " << InputFiles << "; Neg Event Count; read entry: " << jentry2 <<"/"<<TotalNumberOfEvents<<std:: endl;
+	if (gen->weight<0)	nNegEvents++;
+      }
+    }
+    delete infile;
+    infile=0, eventTree=0;
   }
-  
-  
   cout<<"==> Total number of events : "<<TotalNumberOfEvents<<endl;
   cout<<"==> Total number of negative events : "<<nNegEvents<<endl;
 
+  // Get the weight
   float weight = std::atof(xSecWeight.c_str())/(std::atof(TotalNumberOfEntries.c_str()) - 2*std::atof(TotalNumberOfNegativeEntries.c_str()));
   cout<<"Weight of cross-sec/events = "<<weight<<endl;
   int totalEntries=0;
 
 
-  JetCorrectorParameters paramAK4puppi("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK4PFPuppi.txt");
-  JetCorrectorParameters paramAK4chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK4PFchs.txt");
-  JetCorrectorParameters paramAK8chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFchs.txt");
-  JetCorrectorParameters paramAK8puppi("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFPuppi.txt");
-  JetCorrectionUncertainty *fJetUnc_AK4chs = new JetCorrectionUncertainty(paramAK4chs);
-  JetCorrectionUncertainty *fJetUnc_AK8puppi = new JetCorrectionUncertainty(paramAK8puppi);
+  //JetCorrectorParameters paramAK4puppi("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK4PFPuppi.txt");
+  //JetCorrectorParameters paramAK4chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK4PFchs.txt");
+  //JetCorrectorParameters paramAK8chs("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFchs.txt");
+  //JetCorrectorParameters paramAK8puppi("Summer16_23Sep2016V4_MC_JEC/Summer16_23Sep2016V4_MC_Uncertainty_AK8PFPuppi.txt");
+  //JetCorrectionUncertainty *fJetUnc_AK4chs = new JetCorrectionUncertainty(paramAK4chs);
+  //JetCorrectionUncertainty *fJetUnc_AK8puppi = new JetCorrectionUncertainty(paramAK8puppi);
 
   //---------start loop on events------------
   std::cout << "---------start loop on events------------" << std::endl;
@@ -338,7 +318,7 @@ int main (int argc, char** argv)
   eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
   eventTree->SetBranchAddress("Muon", &muonArr); TBranch *muonBr = eventTree->GetBranch("Muon");
   eventTree->SetBranchAddress("Electron", &electronArr); TBranch *electronBr = eventTree->GetBranch("Electron");
-  eventTree->SetBranchAddress("Photon", &photonArr); TBranch *photonBr = eventTree->GetBranch("Photon");
+  //eventTree->SetBranchAddress("Photon", &photonArr); TBranch *photonBr = eventTree->GetBranch("Photon");
   eventTree->SetBranchAddress("PV",   &vertexArr); TBranch *vertexBr = eventTree->GetBranch("PV");
   eventTree->SetBranchAddress("AK4CHS",   &jetArr); TBranch *jetBr = eventTree->GetBranch("AK4CHS");    
   eventTree->SetBranchAddress("AK8Puppi",   &vjetArrPuppi); TBranch *vjetBrPuppi = eventTree->GetBranch("AK8Puppi");  
@@ -694,91 +674,91 @@ int main (int argc, char** argv)
 	WWTree->dilep_m_Down = (LEP1_Down+LEP2_Down).M();	
       }
 
-    //ID & GSF efficiency SF for electrons (https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Electron_efficiencies_and_scale)
-    if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {
-	//  apply ID, ISO SF's
-	WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
-	
-	// apply GSF/RECO SF's for electrons
-	WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hGSFCorrEle);
-	WWTree->trig_eff_Weight = 1.0/(GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hTriggerEle));
-    	
-	if(WWTree->l_pt2>0){
-	   //  apply ID, ISO SF's
-	   WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, WWTree->l_eta2, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
-
-	   // apply GSF/RECO SF's for electrons
-	   WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, WWTree->l_eta2, hGSFCorrEle);
-	   WWTree->trig_eff_Weight2 = 1.0/(GetSFs_Lepton(WWTree->l_pt2, WWTree->l_eta2, hTriggerEle));
-	}
-    }
-
-    //ID&ISO efficiency SF for muons (https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults)
-    if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
-	//  apply ID SF's
-	if (WWTree->run<278820){
-		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuA);
-		WWTree->id_eff_Weight_Up = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIDMuA);
-		WWTree->id_eff_Weight_Down = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIDMuA);
-		if (WWTree->l_pt2>0) {
-			WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuA);
-			WWTree->id_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIDMuA);
-			WWTree->id_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIDMuA);
-		}
-	}
-	else{
-		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuB);
-		WWTree->id_eff_Weight_Up = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIDMuB);
-		WWTree->id_eff_Weight_Down = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIDMuB);
-		if (WWTree->l_pt2>0) {
-			WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuB);
-			WWTree->id_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIDMuB);
-			WWTree->id_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIDMuB);
-		}
-	}
-
-	//  apply ISO SF's
-	if (WWTree->run<278820){
-		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuA);
-		WWTree->id_eff_Weight_Up = WWTree->id_eff_Weight_Up*GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIsoMuA);
-		WWTree->id_eff_Weight_Down = WWTree->id_eff_Weight_Down*GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIsoMuA);
-
-		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuA);
-		WWTree->id_eff_Weight2_Up = WWTree->id_eff_Weight2_Up*GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIsoMuA);
-		WWTree->id_eff_Weight2_Down = WWTree->id_eff_Weight2_Down*GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIsoMuA);
-		}
-	else{
-		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuB);
-		WWTree->id_eff_Weight_Up = WWTree->id_eff_Weight_Up*GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIsoMuB);
-		WWTree->id_eff_Weight_Down = WWTree->id_eff_Weight_Down*GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIsoMuB);
-
-		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuB);
-		WWTree->id_eff_Weight2_Up = WWTree->id_eff_Weight2_Up*GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIsoMuB);
-		WWTree->id_eff_Weight2_Down = WWTree->id_eff_Weight2_Down*GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIsoMuB);
-		}
-	
-	// apply Trigger SF's
-	if (WWTree->run<278820){
-		WWTree->trig_eff_Weight  = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuA);
-		WWTree->trig_eff_Weight_Up  = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1_Up), hTriggerMuA);
-		WWTree->trig_eff_Weight_Down  = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1_Down), hTriggerMuA);
-		if (WWTree->l_pt2>0) {
-			WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuA);
-			WWTree->trig_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hTriggerMuA);
-			WWTree->trig_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hTriggerMuA);
-		}
-	}
-	else{
-		WWTree->trig_eff_Weight  = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuB);
-		WWTree->trig_eff_Weight_Up  = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hTriggerMuB);
-		WWTree->trig_eff_Weight_Down  = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hTriggerMuB);
-		if (WWTree->l_pt2>0) {
-			WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuB);
-			WWTree->trig_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hTriggerMuB);
-			WWTree->trig_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hTriggerMuB);
-		}
-        }
-	}
+//    //ID & GSF efficiency SF for electrons (https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Electron_efficiencies_and_scale)
+//    if (strcmp(leptonName.c_str(),"el")==0 && isMC==1) {
+//	//  apply ID, ISO SF's
+//	WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
+//	
+//	// apply GSF/RECO SF's for electrons
+//	WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hGSFCorrEle);
+//	WWTree->trig_eff_Weight = 1.0/(GetSFs_Lepton(WWTree->l_pt1, WWTree->l_eta1, hTriggerEle));
+//    	
+//	if(WWTree->l_pt2>0){
+//	   //  apply ID, ISO SF's
+//	   WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, WWTree->l_eta2, hIDIsoEle);	// Get Scale factor corresponding to the pt and eta.
+//
+//	   // apply GSF/RECO SF's for electrons
+//	   WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, WWTree->l_eta2, hGSFCorrEle);
+//	   WWTree->trig_eff_Weight2 = 1.0/(GetSFs_Lepton(WWTree->l_pt2, WWTree->l_eta2, hTriggerEle));
+//	}
+//    }
+//
+//    //ID&ISO efficiency SF for muons (https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults)
+//    if (strcmp(leptonName.c_str(),"mu")==0 && isMC==1) {
+//	//  apply ID SF's
+//	if (WWTree->run<278820){
+//		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuA);
+//		WWTree->id_eff_Weight_Up = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIDMuA);
+//		WWTree->id_eff_Weight_Down = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIDMuA);
+//		if (WWTree->l_pt2>0) {
+//			WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuA);
+//			WWTree->id_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIDMuA);
+//			WWTree->id_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIDMuA);
+//		}
+//	}
+//	else{
+//		WWTree->id_eff_Weight = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIDMuB);
+//		WWTree->id_eff_Weight_Up = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIDMuB);
+//		WWTree->id_eff_Weight_Down = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIDMuB);
+//		if (WWTree->l_pt2>0) {
+//			WWTree->id_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIDMuB);
+//			WWTree->id_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIDMuB);
+//			WWTree->id_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIDMuB);
+//		}
+//	}
+//
+//	//  apply ISO SF's
+//	if (WWTree->run<278820){
+//		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuA);
+//		WWTree->id_eff_Weight_Up = WWTree->id_eff_Weight_Up*GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIsoMuA);
+//		WWTree->id_eff_Weight_Down = WWTree->id_eff_Weight_Down*GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIsoMuA);
+//
+//		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuA);
+//		WWTree->id_eff_Weight2_Up = WWTree->id_eff_Weight2_Up*GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIsoMuA);
+//		WWTree->id_eff_Weight2_Down = WWTree->id_eff_Weight2_Down*GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIsoMuA);
+//		}
+//	else{
+//		WWTree->id_eff_Weight = WWTree->id_eff_Weight*GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hIsoMuB);
+//		WWTree->id_eff_Weight_Up = WWTree->id_eff_Weight_Up*GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hIsoMuB);
+//		WWTree->id_eff_Weight_Down = WWTree->id_eff_Weight_Down*GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hIsoMuB);
+//
+//		WWTree->id_eff_Weight2 = WWTree->id_eff_Weight2*GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hIsoMuB);
+//		WWTree->id_eff_Weight2_Up = WWTree->id_eff_Weight2_Up*GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hIsoMuB);
+//		WWTree->id_eff_Weight2_Down = WWTree->id_eff_Weight2_Down*GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hIsoMuB);
+//		}
+//	
+//	// apply Trigger SF's
+//	if (WWTree->run<278820){
+//		WWTree->trig_eff_Weight  = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuA);
+//		WWTree->trig_eff_Weight_Up  = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1_Up), hTriggerMuA);
+//		WWTree->trig_eff_Weight_Down  = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1_Down), hTriggerMuA);
+//		if (WWTree->l_pt2>0) {
+//			WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuA);
+//			WWTree->trig_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hTriggerMuA);
+//			WWTree->trig_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hTriggerMuA);
+//		}
+//	}
+//	else{
+//		WWTree->trig_eff_Weight  = GetSFs_Lepton(WWTree->l_pt1, abs(WWTree->l_eta1), hTriggerMuB);
+//		WWTree->trig_eff_Weight_Up  = GetSFs_Lepton(WWTree->l_pt1_Up, abs(WWTree->l_eta1), hTriggerMuB);
+//		WWTree->trig_eff_Weight_Down  = GetSFs_Lepton(WWTree->l_pt1_Down, abs(WWTree->l_eta1), hTriggerMuB);
+//		if (WWTree->l_pt2>0) {
+//			WWTree->trig_eff_Weight2 = GetSFs_Lepton(WWTree->l_pt2, abs(WWTree->l_eta2), hTriggerMuB);
+//			WWTree->trig_eff_Weight2_Up = GetSFs_Lepton(WWTree->l_pt2_Up, abs(WWTree->l_eta2), hTriggerMuB);
+//			WWTree->trig_eff_Weight2_Down = GetSFs_Lepton(WWTree->l_pt2_Down, abs(WWTree->l_eta2), hTriggerMuB);
+//		}
+//        }
+//	}
 	
     //////////////THE MET
     
@@ -819,7 +799,8 @@ int main (int argc, char** argv)
       TLorentzVector AK4_LV_temp, AK4_LV_temp2;
 
       // Get uncertanity
-      double unc = func(jet->pt, jet->eta, fJetUnc_AK4chs); 
+      //double unc = func(jet->pt, jet->eta, fJetUnc_AK4chs); 
+      double unc = 0.0;
 
       // Get AK4 LorentzVector 
       AK4_LV_temp.SetPtEtaPhiM(jet->pt, jet->eta, jet->phi, jet->mass);
@@ -1113,7 +1094,7 @@ int main (int argc, char** argv)
 	WWTree->PuppiAK8_jet_mass  = jet->mass;
 	WWTree->PuppiAK8_jet_mass_pr  = addjet->mass_prun;
 	WWTree->PuppiAK8_jet_mass_so  = addjet->mass_sd0;
-	WWTree->PuppiAK8_jet_mass_so_corr  = addjet->mass_sd0*getPUPPIweight(puppisd_corrGEN, puppisd_corrRECO_cen, puppisd_corrRECO_for, jet->pt, jet->eta);
+	//WWTree->PuppiAK8_jet_mass_so_corr  = addjet->mass_sd0*getPUPPIweight(puppisd_corrGEN, puppisd_corrRECO_cen, puppisd_corrRECO_for, jet->pt, jet->eta);
 	WWTree->PuppiAK8_jet_mass_tr  = addjet->mass_trim;
 	WWTree->PuppiAK8_jet_tau2tau1 = addjet->tau2/addjet->tau1;
 	WWTree->ungroomed_PuppiAK8_jet_charge = jet->q;
@@ -1183,7 +1164,8 @@ int main (int argc, char** argv)
 	SJ1_PuppiAK8.SetPtEtaPhiM(WWTree->PuppiAK8_jet_sj1_pt, WWTree->PuppiAK8_jet_sj1_eta, WWTree->PuppiAK8_jet_sj1_phi, WWTree->PuppiAK8_jet_sj1_m);
 	SJ2_PuppiAK8.SetPtEtaPhiM(WWTree->PuppiAK8_jet_sj2_pt, WWTree->PuppiAK8_jet_sj2_eta, WWTree->PuppiAK8_jet_sj2_phi, WWTree->PuppiAK8_jet_sj2_m);
 	// calculate Up variation
-        double unc = func(JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), fJetUnc_AK8puppi); 
+        //double unc = func(JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), fJetUnc_AK8puppi); 
+	double unc = 0.0;
 	JET_PuppiAK8_jes_up.SetPtEtaPhiM((1.+unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.+unc)*WWTree->PuppiAK8_jet_mass_so_corr);	
 	// calculate Down variation
 	JET_PuppiAK8_jes_dn.SetPtEtaPhiM((1.-unc)*JET_PuppiAK8.Pt(), JET_PuppiAK8.Eta(), JET_PuppiAK8.Phi(), (1.-unc)*WWTree->PuppiAK8_jet_mass_so_corr);	
@@ -1301,38 +1283,39 @@ int main (int argc, char** argv)
       WWTree->ttb_deltaeta_lak8jet = deltaEta(WWTree->ttb_ungroomed_jet_eta,WWTree->l_eta1);
     }
     
-    // L1pre fire weight
-    // Ref: 1 : https://github.com/HephyAnalysisSW/StopsDilepton/blob/ff976f7855832a054c68bb45419a9ee9a70945ff/tools/python/L1PrefireWeight.py
-    // Ref: 2 : https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe#Introduction
-    double Prefweight = 1.0;
-    double PrefweightUp = 1.0;
-    double PrefweightDown = 1.0;
-    std::vector<int> overlapIndices;
-    double prefRatePh, prefRatePh_stat, prefRateJet, prefRateJet_stat, prefRate=0.0, prefRate_stat=0.0;
+    //// L1pre fire weight
+    //// Ref: 1 : https://github.com/HephyAnalysisSW/StopsDilepton/blob/ff976f7855832a054c68bb45419a9ee9a70945ff/tools/python/L1PrefireWeight.py
+    //// Ref: 2 : https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe#Introduction
+    //double Prefweight = 1.0;
+    //double PrefweightUp = 1.0;
+    //double PrefweightDown = 1.0;
+    //std::vector<int> overlapIndices;
+    ////double prefRatePh, prefRatePh_stat;
+    //double prefRateJet, prefRateJet_stat, prefRate=0.0, prefRate_stat=0.0;
 
-    jetArr->Clear();
-    jetBr->GetEntry(jentry);
+    //jetArr->Clear();
+    //jetBr->GetEntry(jentry);
 
-    for ( int nAK4jets=0; nAK4jets<jetArr->GetEntries(); nAK4jets++) //loop on AK4 jet
-    {
-       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[nAK4jets]);
-       if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && (jet->pt*(jet->chEmFrac + jet->neuEmFrac))>20 && (jet->pt*(jet->chEmFrac + jet->neuEmFrac))<500)
-       {
-	    prefRateJet		= hL1prefire_jetempt->GetBinContent(hL1prefire_jetempt->FindBin(jet->eta,(jet->pt*(jet->chEmFrac + jet->neuEmFrac))));
-	    prefRateJet_stat	= hL1prefire_jetempt->GetBinError(hL1prefire_jetempt->FindBin(jet->eta,(jet->pt*(jet->chEmFrac + jet->neuEmFrac))));
+    //for ( int nAK4jets=0; nAK4jets<jetArr->GetEntries(); nAK4jets++) //loop on AK4 jet
+    //{
+    //   const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[nAK4jets]);
+    //   if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && (jet->pt*(jet->chEmFrac + jet->neuEmFrac))>20 && (jet->pt*(jet->chEmFrac + jet->neuEmFrac))<500)
+    //   {
+    //        prefRateJet		= hL1prefire_jetempt->GetBinContent(hL1prefire_jetempt->FindBin(jet->eta,(jet->pt*(jet->chEmFrac + jet->neuEmFrac))));
+    //        prefRateJet_stat	= hL1prefire_jetempt->GetBinError(hL1prefire_jetempt->FindBin(jet->eta,(jet->pt*(jet->chEmFrac + jet->neuEmFrac))));
 
-	    prefRate		= prefRateJet;
-	    prefRate_stat	= prefRateJet_stat;
+    //        prefRate		= prefRateJet;
+    //        prefRate_stat	= prefRateJet_stat;
 
-       	    Prefweight      	*= (1 - prefRate);
-       	    PrefweightUp    	*= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
-       	    PrefweightDown    	*= (1.0 - TMath::Max(0.0, prefRate - sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
-       }
-    }
+    //   	    Prefweight      	*= (1 - prefRate);
+    //   	    PrefweightUp    	*= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+    //   	    PrefweightDown    	*= (1.0 - TMath::Max(0.0, prefRate - sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+    //   }
+    //}
 
-    WWTree->L1_Prefweight	= Prefweight;
-    WWTree->L1_PrefweightUp	= PrefweightUp;
-    WWTree->L1_PrefweightDown	= PrefweightDown;
+    //WWTree->L1_Prefweight	= Prefweight;
+    //WWTree->L1_PrefweightUp	= PrefweightUp;
+    //WWTree->L1_PrefweightDown	= PrefweightDown;
    
 
     /////////VBF and b-tag section
@@ -1359,7 +1342,8 @@ int main (int argc, char** argv)
       bool isCleaned = true;
       bool isCleanedFromFatJet = true;
 
-        double unc = func(jet->pt, jet->eta, fJetUnc_AK4chs); 
+        //double unc = func(jet->pt, jet->eta, fJetUnc_AK4chs); 
+	double unc = 0.0;
 	// calculate Up variation
 	VBF1_jes_up.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, (1.+unc)*jet->mass);	
 	// calculate Down variation
@@ -1375,7 +1359,7 @@ int main (int argc, char** argv)
       		if (jet->csv>0.8484)  WWTree->nBTagJet_medium++;
       		if (jet->csv>0.9535)  WWTree->nBTagJet_tight++;
 
-		goodJetsv.push_back(jet);
+		//goodJetsv.push_back(jet);
       }
       
       //CLEANING FROM FAT JET
@@ -1435,12 +1419,14 @@ int main (int argc, char** argv)
           TOT = VBF1 + VBF2;
 
 	  // calculate Up/Down variation for leading jet
-          double unc1 = func(jet1->pt, jet1->eta, fJetUnc_AK4chs); 
+          //double unc1 = func(jet1->pt, jet1->eta, fJetUnc_AK4chs); 
+	  double unc1 = 0.0;
 	  VBF1_jes_up.SetPtEtaPhiM((1.+unc1)*jet1->pt, jet1->eta, jet1->phi, (1.+unc1)*jet1->mass);	
 	  VBF1_jes_dn.SetPtEtaPhiM((1.-unc1)*jet1->pt, jet1->eta, jet1->phi, (1.-unc1)*jet1->mass);	
 
 	  // calculate Up/Down variation for sub-leading jet
-          double unc2 = func(jet2->pt, jet2->eta, fJetUnc_AK4chs); 
+          //double unc2 = func(jet2->pt, jet2->eta, fJetUnc_AK4chs); 
+	  double unc2 = 0.0;
 	  VBF2_jes_up.SetPtEtaPhiM((1.+unc2)*jet2->pt, jet2->eta, jet2->phi, (1.+unc2)*jet2->mass);	
 	  VBF2_jes_dn.SetPtEtaPhiM((1.-unc2)*jet2->pt, jet2->eta, jet2->phi, (1.-unc2)*jet2->mass);	
 
@@ -1503,12 +1489,14 @@ int main (int argc, char** argv)
 	WWTree->vbf_maxpt_j2_charge = jet2->q;
 
 	// calculate Up/Down variation for leading jet
-        double unc1 = func(jet1->pt, jet1->eta, fJetUnc_AK4chs); 
+        //double unc1 = func(jet1->pt, jet1->eta, fJetUnc_AK4chs); 
+	double unc1 = 0.0;
 	VBF1_jes_up.SetPtEtaPhiM((1.+unc1)*jet1->pt, jet1->eta, jet1->phi, (1.+unc1)*jet1->mass);	
 	VBF1_jes_dn.SetPtEtaPhiM((1.-unc1)*jet1->pt, jet1->eta, jet1->phi, (1.-unc1)*jet1->mass);	
 	
 	// calculate Up/Down variation for sub-leading jet
-        double unc2 = func(jet2->pt, jet2->eta, fJetUnc_AK4chs); 
+        //double unc2 = func(jet2->pt, jet2->eta, fJetUnc_AK4chs); 
+	double unc2 = 0.0;
 	VBF2_jes_up.SetPtEtaPhiM((1.+unc2)*jet2->pt, jet2->eta, jet2->phi, (1.+unc2)*jet2->mass);
 	VBF2_jes_dn.SetPtEtaPhiM((1.-unc2)*jet2->pt, jet2->eta, jet2->phi, (1.-unc2)*jet2->mass);	
 
@@ -1558,40 +1546,40 @@ int main (int argc, char** argv)
     if (OnlyTwoVBFTypeJets == 0 ) continue;
     if (WWTree->l_pt2<0)     cutEff[8]++;
     else cutEff[18]++;
-    /////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    ////
+    ////		Calculate b-tag weight
+    ////		
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    //vector<float> btagSFv       = getJetSFs(goodJetsv, bTagReader, "central", "central");
+    //vector<float> btagSFUpHFv   = getJetSFs(goodJetsv, bTagReader, "up",      "central");
+    //vector<float> btagSFDownHFv = getJetSFs(goodJetsv, bTagReader, "down",    "central");
+    //vector<float> btagSFUpLFv   = getJetSFs(goodJetsv, bTagReader, "central", "up");
+    //vector<float> btagSFDownLFv = getJetSFs(goodJetsv, bTagReader, "central", "down"); 
     //
-    //		Calculate b-tag weight
-    //		
-    /////////////////////////////////////////////////////////////////////////////////////////
+    //WWTree->btag0Wgt       = getBtagEventReweightEtaBin(0, goodJetsv, btagSFv);
+    //WWTree->btag1Wgt       = getBtagEventReweightEtaBin(1, goodJetsv, btagSFv);
+    //WWTree->btag2Wgt       = getBtagEventReweightEtaBin(2, goodJetsv, btagSFv);
+    //
+    //if (isnan(WWTree->btag0Wgt) == 1 || WWTree->btag0Wgt == 0) { 
+    //cout<<"********************* btag weight is nan"<<endl;
+    ////for (unsigned int i=0; i<btagSFv.size(); i++)
+    ////cout<<"Vector = "<<btagSFv[i]<<"\t";
+    ////cout<<endl;
+    //}
 
-    vector<float> btagSFv       = getJetSFs(goodJetsv, bTagReader, "central", "central");
-    vector<float> btagSFUpHFv   = getJetSFs(goodJetsv, bTagReader, "up",      "central");
-    vector<float> btagSFDownHFv = getJetSFs(goodJetsv, bTagReader, "down",    "central");
-    vector<float> btagSFUpLFv   = getJetSFs(goodJetsv, bTagReader, "central", "up");
-    vector<float> btagSFDownLFv = getJetSFs(goodJetsv, bTagReader, "central", "down"); 
-    
-    WWTree->btag0Wgt       = getBtagEventReweightEtaBin(0, goodJetsv, btagSFv);
-    WWTree->btag1Wgt       = getBtagEventReweightEtaBin(1, goodJetsv, btagSFv);
-    WWTree->btag2Wgt       = getBtagEventReweightEtaBin(2, goodJetsv, btagSFv);
-    
-    if (isnan(WWTree->btag0Wgt) == 1 || WWTree->btag0Wgt == 0) { 
-    cout<<"********************* btag weight is nan"<<endl;
-    //for (unsigned int i=0; i<btagSFv.size(); i++)
-    //cout<<"Vector = "<<btagSFv[i]<<"\t";
-    //cout<<endl;
-    }
-
-    WWTree->btag0WgtUpHF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpHFv);
-    WWTree->btag0WgtDownHF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownHFv);
-    WWTree->btag0WgtUpLF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpLFv);
-    WWTree->btag0WgtDownLF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownLFv);
-    WWTree->btag1WgtUpHF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpHFv);
-    WWTree->btag1WgtDownHF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownHFv);
-    WWTree->btag1WgtUpLF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpLFv);
-    WWTree->btag1WgtDownLF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownLFv);
+    //WWTree->btag0WgtUpHF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpHFv);
+    //WWTree->btag0WgtDownHF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownHFv);
+    //WWTree->btag0WgtUpLF   = getBtagEventReweightEtaBin(0, goodJetsv, btagSFUpLFv);
+    //WWTree->btag0WgtDownLF = getBtagEventReweightEtaBin(0, goodJetsv, btagSFDownLFv);
+    //WWTree->btag1WgtUpHF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpHFv);
+    //WWTree->btag1WgtDownHF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownHFv);
+    //WWTree->btag1WgtUpLF   = getBtagEventReweightEtaBin(1, goodJetsv, btagSFUpLFv);
+    //WWTree->btag1WgtDownLF = getBtagEventReweightEtaBin(1, goodJetsv, btagSFDownLFv);
    
-    btagSFv.clear();	btagSFUpHFv.clear();	btagSFDownHFv.clear();
-    btagSFUpLFv.clear();	btagSFDownLFv.clear();
+    //btagSFv.clear();	btagSFUpHFv.clear();	btagSFDownHFv.clear();
+    //btagSFUpLFv.clear();	btagSFDownLFv.clear();
     /////////////////////////////////////////////////////////////////////////////////////////	END btag weight calculation
     if (WWTree->l_pt2<0) 
     	WWTree->totalEventWeight = WWTree->genWeight*WWTree->pu_Weight*WWTree->top1_NNLO_Weight*WWTree->top2_NNLO_Weight*WWTree->trig_eff_Weight*WWTree->id_eff_Weight;
@@ -1612,21 +1600,6 @@ int main (int argc, char** argv)
 //////////////////////////////////////////////////
     if (WWTree->isVBF && nGoodPuppiAK8jets!=0){
       if (WWTree->l_pt2<0){
-       file1 << (LEP1 + NU2).Px() << "\t" << (LEP1 + NU2).Py() << "\t" << (LEP1 + NU2).Pz() << "\t" << (LEP1 + NU2).E() << "\t" 
-	     << JET_PuppiAK8.Px() << "\t" << JET_PuppiAK8.Py() << "\t" << JET_PuppiAK8.Pz() << "\t" << JET_PuppiAK8.E() << "\t"
-	     << WWTree->vbf_maxpt_j1_px << "\t" << WWTree->vbf_maxpt_j1_py << "\t" << WWTree->vbf_maxpt_j1_pz << "\t" << WWTree->vbf_maxpt_j1_e << "\t"
-	     << WWTree->vbf_maxpt_j2_px << "\t" << WWTree->vbf_maxpt_j2_py << "\t" << WWTree->vbf_maxpt_j2_pz << "\t" << WWTree->vbf_maxpt_j2_e << "\t"
-	     << (WWTree->LHEWeight[646]/WWTree->LHEWeight[0]) << "\t" << (WWTree->LHEWeight[797]/WWTree->LHEWeight[0]) << "\t"
-	     << (WWTree->LHEWeight[899]/WWTree->LHEWeight[0]) << "\t" << (WWTree->LHEWeight[994]/WWTree->LHEWeight[0]) << endl;
-//       file1 << (LEP1 + NU2).Px() << "\t" << (LEP1 + NU2).Py() << "\t" << (LEP1 + NU2).Pz() << "\t" << (LEP1 + NU2).E() << "\t" 
-//	     << JET_PuppiAK8.Px() << "\t" << JET_PuppiAK8.Py() << "\t" << JET_PuppiAK8.Pz() << "\t" << JET_PuppiAK8.E() << "\t"
-//	     << WWTree->vbf_maxpt_j1_px << "\t" << WWTree->vbf_maxpt_j1_py << "\t" << WWTree->vbf_maxpt_j1_pz << "\t" << WWTree->vbf_maxpt_j1_e << "\t"
-//	     << WWTree->vbf_maxpt_j2_px << "\t" << WWTree->vbf_maxpt_j2_py << "\t" << WWTree->vbf_maxpt_j2_pz << "\t" << WWTree->vbf_maxpt_j2_e << endl;
-	//cout << (LEP1 + NU2).Px() << "\t" << (LEP1 + NU2).Py() << "\t" << (LEP1 + NU2).Pz() << "\t" << (LEP1 + NU2).E() << "\t" 
-	//     << JET_PuppiAK8.Px() << "\t" << JET_PuppiAK8.Py() << "\t" << JET_PuppiAK8.Pz() << "\t" << JET_PuppiAK8.E() << "\t"
-	//     << WWTree->vbf_maxpt_j1_px << "\t" << WWTree->vbf_maxpt_j1_py << "\t" << WWTree->vbf_maxpt_j1_pz << "\t" << WWTree->vbf_maxpt_j1_e << "\t"
-	//     << WWTree->vbf_maxpt_j2_px << "\t" << WWTree->vbf_maxpt_j2_py << "\t" << WWTree->vbf_maxpt_j2_pz << "\t" << WWTree->vbf_maxpt_j2_e << endl;
-
     	WWTree->deltaphi_METvbfJ1 = deltaPhi(WWTree->vbf_maxpt_j1_phi,WWTree->pfMET_Corr_phi);
     	WWTree->deltaphi_METvbfJ2 = deltaPhi(WWTree->vbf_maxpt_j2_phi,WWTree->pfMET_Corr_phi);
     	WWTree->deltaphi_METmin = GetMin(WWTree->deltaphi_METPuppiak8jet, GetMin(WWTree->deltaphi_METvbfJ1, WWTree->deltaphi_METvbfJ2));
@@ -1771,19 +1744,19 @@ int main (int argc, char** argv)
 
     outTree->Fill();
 
-    goodJetsv.clear();
+    //goodJetsv.clear();
     }
     delete infile;
     infile=0, eventTree=0;
     /////////////////FILL THE TREE
   }
   //delete puWeight;	delete puWeight_up;	delete puWeight_down;
-  delete MCpu;	delete MCpu_up;	delete MCpu_down;
+  //delete MCpu;	delete MCpu_up;	delete MCpu_down;
   delete puWeightsDown;	delete puWeightsUp;	delete puWeights;
   //delete pileupHisto;
   //pileupFile->Close();
   pileupFileMC->Close();
-  file->Close();
+  //file->Close();
   std::cout << "---------end loop on events------------" << std::endl;
   std::cout << std::endl;
   std::cout << "GEN events = " << count_genEvents << std::endl;

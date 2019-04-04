@@ -31,7 +31,7 @@ git checkout Bacon_Run2017
 cd ../../
 scramv1 b -j 8
 cd WWAnalysis/WWAnalysisRun2/
-python python/produceWWNtuples.py -i /store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ -n WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8 -o WWTree_WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8 -w 0.9114 -no 1991227 -noNeg 0 -lumi 35900.0 --ismc 1 -trig 1 -c lpc -loc 1 
+python python/produceWWNtuples.py -i /store/user/lpcbacon/15/ -n WJetsToLNu_HT_600To800_TuneCP5_13TeV -o WWTree_WJetsToLNu_HT_600To800_TuneCP5_13TeV -w 0.9114 -no 1991227 -noNeg 0 -lumi 41460.0 --ismc 1 -trig 1 -c lpc -loc 1 
 ```
 
 * To submit the batch job (**LXPLUS**):
