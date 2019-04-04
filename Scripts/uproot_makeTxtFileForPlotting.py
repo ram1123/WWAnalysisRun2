@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import uproot
 import yaml
 import sys
 import datetime
@@ -49,32 +50,33 @@ for sample in ymload:
   for i,files in enumerate(Arrayfilepath):
     if files.find(sample) != -1:
     	print files
-    	file = ROOT.TFile(source+"/"+files)
-    	if not file:
-    		print '\n==>Failed to open %s' % Arrayfilepath[i]
-    		print '\n'
-    		exit(0)
-    	tree = file.Get('otree')
-    	if tree:
-    		temp.append(files)
-    		if files.find('Single') != -1:
-    			nEvents=1
-    			nNegEvents=0
-    		else:
-    			if ifhaddOnly != 1:
-    				h1 = ROOT.TH1F("h1","", 999999999, 0 , 999999999)
-    				h2 = ROOT.TH1F("h2","", 999999999, 0 , 999999999)
-    				tree.Draw("nEvents>>h1","","",10)
-    				tree.Draw("nNegEvents>>h2","","",10)
-    				nEvents+=h1.GetMean()
-    				nNegEvents+=h2.GetMean()
-    				h1.Delete()
-    				h2.Delete()
-    			else:
-    				print "skip..."
-    		print files,nEvents,nNegEvents
-		#print temp
-    	file.Delete()
+	#GetnEvents, nNegEvents = uproot.open(source+"/"+files)["otree"]["nEvents","nNegEvents"]
+	print "#"*51,"\nDEBUG: 1"
+	if not os.path.isfile(source+"/"+files): continue; 
+	print "#"*51,"\nDEBUG: 2"
+	if not (uproot.open(source+"/"+files).keys()):
+		#exit(0)
+		print "skip file: ",files
+		print "#"*51,"\nDEBUG: 3"
+	else:	
+	  print "#"*51,"\nDEBUG: 4"
+	  otree = uproot.open(source+"/"+files)["otree"]
+	  InputArrays = otree.arrays(["nEvents","nNegEvents"])
+	  #if GetnEvents and nNegEvents:
+	  if otree:
+    	  	temp.append(files)
+    	  	if files.find('Single') != -1:
+    	  		nEvents=1
+    	  		nNegEvents=0
+    	  	else:
+    	  		if ifhaddOnly != 1:
+    	  			#nEvents += int(GetnEvents.numentries)
+	  			nEvents += InputArrays["nEvents"][0]
+    	  			nNegEvents+= InputArrays["nNegEvents"][0] 
+    	  		else:
+    	  			print "skip..."
+    	  	print files,nEvents,nNegEvents
+	  #GetnEvents.close()
 
 if len(temp)>1:
 	List.append(temp)
@@ -108,7 +110,7 @@ if ifhaddOnly != 1:
 	pprint(sampleInfo)
 	
 	#OutPutFile = "DibosonBoostedElMuSamples13TeV_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+".txt";
-	OutPutFile = "DibosonBoostedElMuSamples13TeV_"+source.split("/")[-4]+"_"+source.split("/")[-3]+"_"+source.split("/")[-2]+".txt";
+	OutPutFile = "uproot_DibosonBoostedElMuSamples13TeV_"+source.split("/")[-4]+"_"+source.split("/")[-3]+"_"+source.split("/")[-2]+".txt";
 	outScript = open(OutPutFile,"w");
 	outScript.write("# name           file_location  xspb/lumipb  otherscale nMCevents       nMCNegEvents    colorcode       stackit\n")
 	for i,files in enumerate(sampleInfo):
@@ -121,7 +123,7 @@ if ifhaddOnly != 1:
 			if files.find(sample) != -1:
 				#print "===> ",files,sample
 				print ymload[sample]["name"],"\t",files,"\t",ymload[sample]["CrossSection"],"\t1\t",int(ListnEvents[i]),"\t",int(ListnNegEvents[i]),"\t",ymload[sample]["ColorCode"],"\t",ymload[sample]["StackIt"]
-				outScript.write(ymload[sample]["name"]+"\t"+files+"\t"+ymload[sample]["CrossSection"]+"\t1\t"+int(ListnEvents[i])+"\t"+int(ListnNegEvents[i])+"\t"+ymload[sample]["ColorCode"]+"\t"+ymload[sample]["StackIt"])
+				outScript.write(ymload[sample]["name"],"\t",files,"\t",ymload[sample]["CrossSection"],"\t1\t",int(ListnEvents[i]),"\t",int(ListnNegEvents[i]),"\t",ymload[sample]["ColorCode"],"\t",ymload[sample]["StackIt"])
 
 stop = timeit.default_timer()
 print('Time: ', stop - start)  

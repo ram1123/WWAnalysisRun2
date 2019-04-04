@@ -26,27 +26,6 @@ if __name__ == '__main__':
     parser.add_argument ('-exe', '--exe' , default = 'produceWWNtuples', help='location of the executable')
     args = parser.parse_args ()
 
-    #######################################################################
-    ##
-    ##		Text File Preparation	
-    ##
-    #######################################################################
-    #os.system("xrdfs root://cmseos.fnal.gov ls "+args.inputFolder+args.name+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
-    #tempFile = open('temp.txt','r')
-    #CountFiles = 0
-    #CountLines = 0
-    #breakline = 100
-    #for lines in tempFile:
-    #  if CountLines % 100 == 0:
-    #    newFile = open('listTemp_'+args.name+'_'+str(CountFiles)+'.txt','w')
-    #    CountFiles = CountFiles + 1
-    #  newFile.write(lines)
-    #  CountLines = CountLines + 1
-    ######################################################################
-    #
-    #		Main Part
-    #
-    ######################################################################
     command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.infile+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.numberOfNegEntries+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
     print "#"*51,"\n#\n#\tCommand to run\n#\n# \t",
     print command,
