@@ -213,9 +213,9 @@ if( doMC ):
       ######################################################################
       for counts in xrange(CountFiles):
 	#outJDL.write("Transfer_Input_Files = "+inputlist+" "+"listTemp_"+str(samples[i][1])+"_"+str(counts)+".txt  \n");
-        outJDL.write("Output = "+OutputLogPath+"/"+str(samples[i][1])+".stdout\n");
-        outJDL.write("Error  = "+OutputLogPath+"/"+str(samples[i][1])+".stdout\n");
-        outJDL.write("Log  = "+OutputLogPath+"/Logs/"+str(samples[i][1])+".log\n");
+        outJDL.write("Output = "+OutputLogPath+"/"+str(samples[i][1])+"_"+str(counts)+".stdout\n");
+        outJDL.write("Error  = "+OutputLogPath+"/"+str(samples[i][1])+"_"+str(counts)+".stdout\n");
+        outJDL.write("Log  = "+OutputLogPath+"/Logs/"+str(samples[i][1])+"_"+str(counts)+".log\n");
         outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+str(counts)+" -w "+str(samples[i][0])+" -no "+ str(samples[i][2]) + " -noNeg " + str(samples[i][3]) + " -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc -f "+ "listTemp_"+str(samples[i][1])+"_"+str(counts)+".txt " +" \n");
         outJDL.write("Queue\n");
     
@@ -246,9 +246,9 @@ if( doData ):
       	    #
       	    ######################################################################
       	    for counts in xrange(CountFiles):
-               outJDL.write("Output = "+OutputLogPath+"/"+(nameData[category[a]])[i]+".stdout\n");
-               outJDL.write("Error = "+OutputLogPath+"/"+(nameData[category[a]])[i]+".stdout\n");
-               outJDL.write("Log = "+OutputLogPath+"/Logs/"+(nameData[category[a]])[i]+".log\n");
+               outJDL.write("Output = "+OutputLogPath+"/"+(nameData[category[a]])[i]+"_"+str(counts)+".stdout\n");
+               outJDL.write("Error = "+OutputLogPath+"/"+(nameData[category[a]])[i]+"_"+str(counts)+".stdout\n");
+               outJDL.write("Log = "+OutputLogPath+"/Logs/"+(nameData[category[a]])[i]+"_"+str(counts)+".log\n");
                outJDL.write("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+"_"+str(counts)+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc -f "+ "listTemp_"+str(samples[i][1])+"_"+str(counts)+".txt " +" \n");
                print("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+"_"+str(counts)+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc -f "+ "listTemp_"+str(samples[i][1])+"_"+str(counts)+".txt " +" \n");
                outJDL.write("Queue\n");

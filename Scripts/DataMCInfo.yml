@@ -28,6 +28,12 @@ TTbar_powheg:
     name: top
     StackIt: 1
     ColorCode: 592
+TTToSemiLepton:
+    DASName: TTToSemiLepton_powheg
+    CrossSection: 364.3
+    name: top
+    StackIt: 1
+    ColorCode: 592
 TTToSemilepton:
     DASName: TTToSemilepton_powheg
     CrossSection: 364.3
@@ -286,6 +292,24 @@ ZTo2LZTo2JJJ_EWK_LO_aQGC:
     name: aQGC
     StackIt: 0
     ColorCode: 500
+WW_TuneCP5:
+    DASName: WW_TuneCP5_13TeV_pythia8
+    CrossSection: 63.21
+    name: VV
+    StackIt: 1
+    ColorCode: 868
+WZ_TuneCP5:
+    DASName: WZ_TuneCP5_13TeV_pythia8
+    CrossSection: 47.13
+    name: VV
+    StackIt: 1
+    ColorCode: 868
+ZZ_TuneCP5:
+    DASName: ZZ_TuneCP5_13TeV_pythia8
+    CrossSection: 16.523
+    name: VV
+    StackIt: 1
+    ColorCode: 868
 WWTo1L1Nu2Q_13TeV:
     DASName: WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8
     CrossSection: 49.997
@@ -307,6 +331,12 @@ ZZTo2L2Q_13TeV:
 DYJetsToLL_amcatnlo_ext1:
     DASName: DYJetsToLL_amcatnlo_ext1
     CrossSection: 5765.40
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_M_50:
+    DASName: DYJetsToLL_M_50
+    CrossSection: 5765.4
     name: Z+jets
     StackIt: 1
     ColorCode: 4

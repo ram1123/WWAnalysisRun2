@@ -22,3 +22,4 @@ runstep2condor.*
 *.png
 *.tgz
 OutPut_Logs/*
+__init__.py
