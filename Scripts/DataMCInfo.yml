@@ -1,18 +1,18 @@
 SingleElectron:
     DASName: SingleElectron
-    CrossSection: 35867.06
+    CrossSection: 41530.0
     name: data
     StackIt: 0
     ColorCode: 1
 SingleMuon:
     DASName: SingleMuonRun2016
-    CrossSection: 35867.06
+    CrossSection: 41530.0
     name: data
     StackIt: 0
     ColorCode: 1
 Data:
     DASName: Single
-    CrossSection: 35867.06
+    CrossSection: 41530.0
     name: data
     StackIt: 0
     ColorCode: 1

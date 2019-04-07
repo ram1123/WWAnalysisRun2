@@ -1,51 +1,59 @@
 #!/usr/bin/python
-import uproot
-import yaml
+import os
+import re
 import sys
-import datetime
-import os
-from pprint import pprint
-import os
-import ROOT as ROOT
+import yaml
 import timeit
+import datetime
+# use of uproot package. This improves the running time by more than factor of 10
+import uproot
 
-CRED = '\033[91m'
-CGREEN  = '\33[32m'
-CBOLD     = '\33[1m'
-CEND = '\033[0m'
-
+# print output color codes
+CRED   = '\033[91m'
+CGREEN = '\33[32m'
+CBOLD  = '\33[1m'
+CEND   = '\033[0m'
+# start timer
 start = timeit.default_timer()
 
-file = open("DataMCInfo.yml","r")
-ymload = yaml.load(file)
-file.close()
+ifhaddOnly = 0    # Only hadd not text file then put ifhaddOnly=1 else ifhaddOnly=0
+StoreArea = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_2019_04_05_07h46/"
+PlottingDirectoryPath = "/uscms_data/d3/rasharma/aQGC_analysis/PlottingMacros/CMSSW_9_0_1/src/PlottingCodes2017/ControlPlots/"
+searchString = ['# name', 'data', 'Data', 'WV_EWK', 'aQGC', 'Diboson', 'VV', 'W\+jets', 'Z\+jets', 'top', 'QCD']
 
-#print ymload
+StoreAreaHadd = StoreArea+'HaddedFiles/'
+source = "/eos/uscms"+StoreArea
+OutPutDir = source + 'HaddedFiles'
 
-#source = "/eos/uscms/store/user/rasharma/SecondStep/WWTree_MuonPtScale_L1PreFire_2019_02_25_00h57/"
-source = "/eos/uscms/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_2019_04_04_14h15/"
-os.system('xrdfs root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
+# Check if the Directory exists, if yes then delete and then create else create new one.
+if os.path.isdir(OutPutDir):
+  print(CRED+"Directory "+source+'HaddedFiles'+' found. Delete it...'+CEND)
+  #eos root://cmseos.fnal.gov rm
+  os.system('eos root://cmseos.fnal.gov/ rm -r '+source+'HaddedFiles')
+  os.system('eos root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
+else:
+  os.system('eos root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
 
-ifhaddOnly = 0
 
 Arrayfilepath = []
 for root, dirs, filenames in os.walk(source):
 	for f in filenames:
-		#filepath = root + os.sep + f
 		filepath = f
 		if filepath.endswith(".root"):
 			Arrayfilepath.append(filepath)
 
-pprint(Arrayfilepath)
-pprint("====================================================")
-
-#import difflib
-ROOT.gROOT.SetBatch(True)
+print(Arrayfilepath)
+print("====================================================")
 
 List = []
 ListnEvents = []
 ListnNegEvents = []
 print "#"*51
+
+file = open("DataMCInfo.yml","r")
+ymload = yaml.load(file)
+file.close()
+
 for sample in ymload:
   temp = []
   temp.append(sample+".root")
@@ -54,15 +62,10 @@ for sample in ymload:
   nNegEvents=0
   for i,files in enumerate(Arrayfilepath):
     if files.find(sample) != -1:
-      #print files
       if os.path.isfile(source+"/"+files): 
-        #print "File to run: ",files
         if (uproot.open(source+"/"+files).keys()) == []:
         	print (CGREEN+"\nskip file: "+files+"\n"+CEND)
-		#printline = "Skip file (No keys found): "+files
-		#cprint(printline,'green')
         else:	
-	  #print "Found keys: ",files
           otree = uproot.open(source+"/"+files)["otree"]
           InputArrays = otree.arrays(["nEvents","nNegEvents"])
 	  if len(InputArrays["nEvents"]):
@@ -77,7 +80,6 @@ for sample in ymload:
                 print "skip..."
             temp.append(files)
             print files,nEvents,nNegEvents
-	    #GetnEvents.close()
       else:
         print(CRED+"\nFile Not Found: "+files+"\n"+CEND)
 
@@ -105,20 +107,45 @@ for samples in List:
    sampleInfo.append(samples[0])
    print ""
 
-print "Ram Krishna Sharma"
 
 if ifhaddOnly != 1:
-	print "=============	MAKE SUMMARY	================"	
-	print(sampleInfo)
-	
-	OutPutFile = "uproot_DibosonBoostedElMuSamples13TeV_"+source.split("/")[-4]+"_"+source.split("/")[-3]+"_"+source.split("/")[-2]+".txt";
-	outScript = open(OutPutFile,"w");
-	outScript.write("# name           file_location  xspb/lumipb  otherscale nMCevents       nMCNegEvents    colorcode       stackit\n")
-	for i,files in enumerate(sampleInfo):
-	  for sample in ymload:
-	    if files.find(sample) != -1:
-	    	print ymload[sample]["name"],"\t",files,"\t",ymload[sample]["CrossSection"],"\t1\t",int(ListnEvents[i]),"\t",int(ListnNegEvents[i]),"\t",ymload[sample]["ColorCode"],"\t",ymload[sample]["StackIt"]
-	    	outScript.write(ymload[sample]["name"]+"\t"+files+"\t"+str(ymload[sample]["CrossSection"])+"\t1\t"+str(ListnEvents[i])+"\t"+str(ListnNegEvents[i])+"\t"+str(ymload[sample]["ColorCode"])+"\t"+str(ymload[sample]["StackIt"])+"\n")
+  print "=============	MAKE SUMMARY	================"	
+  print(sampleInfo)
+  
+  OutPutFile = "DibosonBoostedElMuSamples13TeV_"+source.split("/")[-4]+"_"+source.split("/")[-3]+"_"+source.split("/")[-2]+".txt";
+  outScript = open(OutPutFile,"w");
+  outScript.write("# name           file_location  xspb/lumipb  otherscale nMCevents       nMCNegEvents    colorcode       stackit\n")
+  for i,files in enumerate(sampleInfo):
+    for sample in ymload:
+      if files.find(sample) != -1:
+      	print ymload[sample]["name"],"\t",files,"\t",ymload[sample]["CrossSection"],"\t1\t",int(ListnEvents[i]),"\t",int(ListnNegEvents[i]),"\t",ymload[sample]["ColorCode"],"\t",ymload[sample]["StackIt"]
+      	outScript.write(ymload[sample]["name"]+"\t"+StoreAreaHadd+files+"\t"+str(ymload[sample]["CrossSection"])+"\t1\t"+str(ListnEvents[i])+"\t"+str(ListnNegEvents[i])+"\t"+str(ymload[sample]["ColorCode"])+"\t"+str(ymload[sample]["StackIt"])+"\n")
+  
+  ################################################
+  #
+  #	Sort the file manually
+  #
+  ################################################
+  outScript.close()
 
+  SortedOutPutFile = "Sorted_"+OutPutFile
+  outScript2 = open(SortedOutPutFile,'w')
+  
+  for strings in searchString:
+    infile = open(OutPutFile,"r")
+    for lines in infile:
+      if re.match(str(strings),lines): 
+        #print lines,
+	outScript2.write(lines)
+  outScript2.close()
+  
+################################################
+
+# copy the created text file to the respective directory
+os.system('xrdcp -f '+OutPutFile+'  root://cmseos.fnal.gov/'+ StoreAreaHadd)
+os.system('xrdcp -f '+SortedOutPutFile+'  root://cmseos.fnal.gov/'+ StoreAreaHadd)
+os.system('cp '+OutPutFile+' '+ SortedOutPutFile + ' ' +PlottingDirectoryPath)
+# Stop timer
 stop = timeit.default_timer()
-print('Time: ', stop - start)  
+# Print total time to run in minutes
+print 'Run Time: ',round((stop - start)/60.0,2),'min'  

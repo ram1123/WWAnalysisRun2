@@ -772,8 +772,6 @@ class setOutputTree {
   float LeptonProjection_2Lep;
 
   setOutputTree(TTree* outputTree);
-  //  setOutputTree(TTree *outputTree=0);
-  //  setOutputTree(TFile *outputFile=0, std::string outputTreeName="WWTree");
   ~setOutputTree();
 
   void initializeVariables();

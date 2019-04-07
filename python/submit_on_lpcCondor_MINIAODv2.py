@@ -62,7 +62,7 @@ os.system("sed -i '1s/^/Changes Summary : "+changes+"\\n/' mypatch.patch")
 os.system('echo -e "\n\n============\n== Latest commit number \n\n" >> mypatch.patch ')
 os.system('git log -1 --format="%H" >> mypatch.patch ')
 os.system('xrdcp -f mypatch.patch root://cmseos.fnal.gov/'+outputFolder+'/mypatch.patch')
-os.system('xrdcp -f mypatch.patch root://cmseos.fnal.gov/'+outputFolder+'/main.patch')
+os.system('xrdcp -f main.patch root://cmseos.fnal.gov/'+outputFolder+'/main.patch')
 
 samples = [
 	#	Doubly Charged Higgs sample
@@ -201,7 +201,7 @@ if( doMC ):
       CountFiles = 0
       CountLines = 0
       for lines in tempFile:
-        if CountLines % 100 == 0:
+        if CountLines % 50 == 0:
           newFile = open('listTemp_'+str(samples[i][1])+'_'+str(CountFiles)+'.txt','w')
           CountFiles = CountFiles + 1
         newFile.write(lines)
@@ -235,7 +235,7 @@ if( doData ):
       	    CountFiles = 0
       	    CountLines = 0
       	    for lines in tempFile:
-      	      if CountLines % 100 == 0:
+      	      if CountLines % 50 == 0:
       	        newFile = open('listTemp_'+str(samples[i][1])+'_'+str(CountFiles)+'.txt','w')
       	        CountFiles = CountFiles + 1
       	      newFile.write(lines)
