@@ -17,7 +17,7 @@ CEND   = '\033[0m'
 start = timeit.default_timer()
 
 ifhaddOnly = 0    # Only hadd not text file then put ifhaddOnly=1 else ifhaddOnly=0
-StoreArea = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_2019_04_05_07h46/"
+StoreArea = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_2019_04_08_03h50/"
 PlottingDirectoryPath = "/uscms_data/d3/rasharma/aQGC_analysis/PlottingMacros/CMSSW_9_0_1/src/PlottingCodes2017/ControlPlots/"
 searchString = ['# name', 'data', 'Data', 'WV_EWK', 'aQGC', 'Diboson', 'VV', 'W\+jets', 'Z\+jets', 'top', 'QCD']
 
@@ -29,6 +29,10 @@ OutPutDir = source + 'HaddedFiles'
 if os.path.isdir(OutPutDir):
   print(CRED+"Directory "+source+'HaddedFiles'+' found. Delete it...'+CEND)
   #eos root://cmseos.fnal.gov rm
+  print "#"*51
+  print "# list all file in main directory: Just to check if directory HaddedFiles does not exists"
+  os.system('ls /eos/uscms'+StoreArea)
+  print "#"*51
   os.system('eos root://cmseos.fnal.gov/ rm -r '+source+'HaddedFiles')
   os.system('eos root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
 else:

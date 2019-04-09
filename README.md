@@ -16,8 +16,8 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 ## Instructions
 
 ```bash
-cmsrel CMSSW_9_4_5
-cd CMSSW_9_4_5/src
+cmsrel CMSSW_10_2_0
+cd CMSSW_10_2_0/src
 cmsenv
 git clone git@github.com:ksung25/BaconAna.git
 cd BaconAna
@@ -37,14 +37,14 @@ python python/produceWWNtuples.py -i /store/user/lpcbacon/15/ -n WJetsToLNu_HT_6
 * To submit the batch job (**LXPLUS**):
 	* Go to directory:
 
-			CMSSW_9_4_5/src/WWAnalysis
+			CMSSW_10_2_0/src/WWAnalysis
 			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_MC.py
 			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_DataEle2.py
 			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_Data.py
 
 * To submit the condor job (**LPC FNAL**):
 
-		cd {...}/CMSSW_9_4_5/src/WWAnalysis/WWAnalysisRun2
+		cd {...}/CMSSW_10_2_0/src/WWAnalysis/WWAnalysisRun2
 		python python/submit_on_lpcCondor_MINIAODv2.py
 
 This will give you two files named `runstep2condor.jdl` and `runstep2condor.sh`. To submit the condor job do

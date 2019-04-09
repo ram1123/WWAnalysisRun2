@@ -19,7 +19,7 @@
 //=== FUNCTION DEFINITIONS ======================================================================================
 
 // JETS
-// https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
+// https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 
 //--------------------------------------------------------------------------------------------------
 bool passJetLooseSel(const baconhep::TJet *jet)
 {
@@ -79,15 +79,14 @@ bool passJetTightSel(const baconhep::TJet *jet)
   if(fabs(jet->eta)<= 2.4) {
     if(jet->chHadFrac == 0)     return false;
     if(jet->nCharged  == 0)     return false;
-    if(jet->chEmFrac  >= 0.90)  return false;
   }
   if(fabs(jet->eta) > 2.7 && fabs(jet->eta) <= 3.0) {
-    if(jet->neuEmFrac <= 0.01)  return false;
-    if(jet->neuHadFrac >= 0.98) return false;
+    if(jet->neuEmFrac <= 0.02 || jet->neuEmFrac >= 0.99)  return false;
     if(jet->nNeutrals <= 2)     return false;
   }
   if(fabs(jet->eta) > 3.0) {
     if(jet->neuEmFrac >= 0.90)  return false;
+    if(jet->neuHadFrac <= 0.02) return false;
     if(jet->nNeutrals <= 10)    return false;
   }
   return true;
@@ -104,7 +103,7 @@ bool passJetTightLepVetoSel(const baconhep::TJet *jet)
   if(fabs(jet->eta)<= 2.4) {
     if(jet->chHadFrac == 0)     return false;
     if(jet->nCharged  == 0)     return false;
-    if(jet->chEmFrac  >= 0.90)  return false;
+    if(jet->chEmFrac  >= 0.80)  return false;
   }
   return true;
 }
@@ -118,7 +117,7 @@ bool passEleVetoSel(const baconhep::TElectron *electron, const double rho)
   double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)) );
 
   if(fabs(electron->scEta)<=1.479) {
-    if(iso >= 0.198 + 0.506*(electron->pt)) return false;
+    if(iso >= 0.198 + 0.506/(electron->pt)) return false;
 
     if(electron->sieie              >= 0.01260)                        	return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00463)                        	return false;
@@ -128,7 +127,7 @@ bool passEleVetoSel(const baconhep::TElectron *electron, const double rho)
     if(electron->nMissingHits       >  2)                              	return false;
   } else {
     //if(iso < 0.159*(electron->pt) || iso > 0.16*(electron->pt)) return false;
-    if(iso >= 0.203 + 0.963*(electron->pt)  ) return false;
+    if(iso >= 0.203 + 0.963/(electron->pt)  ) return false;
 
     if(electron->sieie              >= 0.04570)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00814)                        return false;
@@ -148,7 +147,7 @@ bool passEleLooseSel(const baconhep::TElectron *electron, const double rho)
   double iso = electron->chHadIso + TMath::Max( 0.0,(electron->gammaIso + electron->neuHadIso - rho*eleEffArea(electron->eta)));
 
   if(fabs(electron->scEta)<=1.479) {
-    if(iso >= 0.112 + 0.506*(electron->pt)  ) return false;
+    if(iso >= 0.112 + 0.506/(electron->pt)  ) return false;
 
     if(electron->sieie              >= 0.01120)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00377)                        return false;
@@ -157,13 +156,13 @@ bool passEleLooseSel(const baconhep::TElectron *electron, const double rho)
     if(fabs(1.0 - electron->eoverp) >= 0.193*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   } else {
-    if(iso >= 0.108+0.963*(electron->pt)) return false;
+    if(iso >= 0.108+0.963/(electron->pt)) return false;
 
     if(electron->sieie              >= 0.04250)                        return false;
     if(fabs(electron->dEtaInSeed)   >= 0.00674)                        return false;
     if(fabs(electron->dPhiIn)       >= 0.16900)                        return false;
     if(electron->hovere             >= 0.0441+2.54/electron->scEt+(0.183*rho)/electron->scEt)                        return false;
-    if(fabs(1.0 - electron->eoverp) >= 0.14000*(electron->ecalEnergy)) return false;
+    if(fabs(1.0 - electron->eoverp) >= 0.11100*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   }
 
@@ -178,23 +177,23 @@ bool passEleMediumSel(const baconhep::TElectron *electron, const double rho)
 
   if(fabs(electron->scEta)<1.479) {
     //if(iso < 0.0695*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
-    if(iso >= 0.0695*(electron->pt)) return false;
+    if(iso >= 0.0478 + 0.506/(electron->pt)) return false;
 
-    if(electron->sieie              >= 0.00998)                        return false;
-    if(fabs(electron->dEtaInSeed)   >= 0.00311)                        return false;
-    if(fabs(electron->dPhiIn)       >= 0.10300)                        return false;
-    if(electron->hovere             >= 0.25300)                        return false;
-    if(fabs(1.0 - electron->eoverp) >= 0.13400*(electron->ecalEnergy)) return false;
+    if(electron->sieie              >= 0.01060)                        return false;
+    if(fabs(electron->dEtaInSeed)   >= 0.00320)                        return false;
+    if(fabs(electron->dPhiIn)       >= 0.05470)                        return false;
+    if(electron->hovere             >= 0.046+1.16/electron->scEt+(0.0324*rho)/electron->scEt)                        return false;
+    if(fabs(1.0 - electron->eoverp) >= 0.18400*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   } else {
     //if(iso < 0.0821*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
-    if(iso >= 0.0821*(electron->pt)) return false;
+    if(iso >= 0.0658+0.963/(electron->pt)) return false;
 
-    if(electron->sieie              >= 0.02980)                        return false;
-    if(fabs(electron->dEtaInSeed)   >= 0.00609)                        return false;
-    if(fabs(electron->dPhiIn)       >= 0.04500)                        return false;
-    if(electron->hovere             >= 0.08780)                        return false;
-    if(fabs(1.0 - electron->eoverp) >= 0.13000*(electron->ecalEnergy)) return false;
+    if(electron->sieie              >= 0.03870)                        return false;
+    if(fabs(electron->dEtaInSeed)   >= 0.00632)                        return false;
+    if(fabs(electron->dPhiIn)       >= 0.03940)                        return false;
+    if(electron->hovere             >= 0.0275+2.52/electron->scEt+(0.183*rho)/electron->scEt)                        return false;
+    if(fabs(1.0 - electron->eoverp) >= 0.0721*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   }
 
@@ -209,23 +208,23 @@ bool passEleTightSel(const baconhep::TElectron *electron, const double rho)
 
   if(fabs(electron->scEta)<1.479) {
     //if(iso < 0.0588*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
-    if(iso >= 0.0588*(electron->pt)  ) return false;
+    if(iso >= 0.0287 + 0.506/(electron->pt)  ) return false;
 
-    if(electron->sieie              >= 0.00998)                        return false;
-    if(fabs(electron->dEtaInSeed)   >= 0.00308)                        return false;
-    if(fabs(electron->dPhiIn)       >= 0.08160)                        return false;
-    if(electron->hovere             >= 0.04140)                        return false;
-    if(fabs(1.0 - electron->eoverp) >= 0.12900*(electron->ecalEnergy)) return false;
+    if(electron->sieie              >= 0.01040)                        return false;
+    if(fabs(electron->dEtaInSeed)   >= 0.00255)                        return false;
+    if(fabs(electron->dPhiIn)       >= 0.02200)                        return false;
+    if(electron->hovere             >= 0.026+1.15/electron->scEt+(0.0324*rho)/electron->scEt)                        return false;
+    if(fabs(1.0 - electron->eoverp) >= 0.15900*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   } else {
     //if(iso < 0.0571*(electron->pt)  || iso > 0.16*(electron->pt)) return false;
-    if(iso >= 0.0571*(electron->pt)) return false;
+    if(iso >= 0.0445 + 0.963/(electron->pt)) return false;
 
-    if(electron->sieie              >= 0.02920)                        return false;
-    if(fabs(electron->dEtaInSeed)   >= 0.00605)                        return false;
-    if(fabs(electron->dPhiIn)       >= 0.03940)                        return false;
-    if(electron->hovere             >= 0.06410)                        return false;
-    if(fabs(1.0 - electron->eoverp) >= 0.12900*(electron->ecalEnergy)) return false;
+    if(electron->sieie              >= 0.03530)                        return false;
+    if(fabs(electron->dEtaInSeed)   >= 0.00501)                        return false;
+    if(fabs(electron->dPhiIn)       >= 0.02360)                        return false;
+    if(electron->hovere             >= 0.0188+2.06/electron->scEt+(0.183*rho)/electron->scEt)                        return false;
+    if(fabs(1.0 - electron->eoverp) >= 0.01970*(electron->ecalEnergy)) return false;
     if(electron->nMissingHits       >  1)                              return false;
   }
 
@@ -427,7 +426,7 @@ bool passMuonMediumSel(const baconhep::TMuon *muon)
   // PF-isolation with Delta-beta correction
   double iso = muon->chHadIso + TMath::Max(muon->neuHadIso + muon->gammaIso - 0.5*(muon->puIso), double(0));
   // if(iso < 0.25*(muon->pt) || iso > 3.5*(muon->pt)) return false;
-  if(iso >= 0.25*(muon->pt)) return false;
+  if(iso >= 0.20*(muon->pt)) return false;
 
   return true;
 }

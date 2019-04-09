@@ -96,6 +96,8 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
     TLorentzVector p4V1_BV2 = p4M11_BV2 + p4M12_BV2;
     //// costheta2
     costheta2 = -p4V1_BV2.Vect().Dot( p4M21_BV2.Vect() )/p4V1_BV2.Vect().Mag()/p4M21_BV2.Vect().Mag();
+    if (isnan( (float) costheta2) == 1)
+	std::cout << "boostV2 = " << boostV2.Mag() << "\tp4M11_BV2 = " << p4M11_BV2.Mag() << "\tp4M11_BV2 = "<<p4M11_BV2.Mag() << "\tp4M12_BV2 = " << p4M12_BV2.Mag() << "\tp4M21_BV2 = " << p4M21_BV2.Mag() << "\tp4M22_BV2 = " << p4M22_BV2.Mag() << std::endl;
     
     //// --------------------------- Phi and Phi1
     //    TVector3 boostX = -(thep4H.BoostVector());
@@ -148,7 +150,7 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
 	if (pt < h1->GetYaxis()->GetXmin()) // Check if pt is not ouside lower limit; if so then to assign same SF as the first bin to low pt resacle tempPt to greater then minimum range of pt defined in histo.
 		pt = h1->GetYaxis()->GetXmin() + 1.0;
 
-	return h1->GetBinContent(h1->GetXaxis()->FindFixBin(eta), h1->GetYaxis()->FindFixBin(pt));
+	return h1->GetBinContent(h1->GetXaxis()->FindFixBin(pt), h1->GetYaxis()->FindFixBin(eta));
   }	
 
   double GetMin(double x, double y){
@@ -161,9 +163,6 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
   }
 
 float getPUPPIweight(TF1* puppisd_corrGEN, TF1* puppisd_corrRECO_cen, TF1* puppisd_corrRECO_for, float puppipt, float puppieta ){
-
-
-
   float genCorr  = 1.;
   float recoCorr = 1.;
   float totalWeight = 1.;

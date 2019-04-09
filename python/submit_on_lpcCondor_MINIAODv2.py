@@ -151,22 +151,22 @@ outScript.write("\n"+'xrdcp -s root://cmseos.fnal.gov/'+outputFolder + '/'+CMSSW
 outScript.write("\n"+'tar -xf '+ CMSSWRel +'.tgz' );
 outScript.write("\n"+'rm '+ CMSSWRel +'.tgz' );
 outScript.write("\n"+'cd ' + CMSSWRel + '/src/WWAnalysis/WWAnalysisRun2' );
-outScript.write("\n"+'echo "====> List files : " ');
-outScript.write("\n"+'ls -alh');
+#outScript.write("\n"+'echo "====> List files : " ');
+#outScript.write("\n"+'ls -alh');
 outScript.write("\n"+'echo "====> Remove any file with name similar to WWTree*.root... " ');
 outScript.write("\n"+'rm WWTree*.root');
 outScript.write("\n"+'scramv1 b ProjectRename');
 outScript.write("\n"+'eval `scram runtime -sh`');
-outScript.write("\n"+'echo "====> List files : " ');
-outScript.write("\n"+'ls -alh');
+#outScript.write("\n"+'echo "====> List files : " ');
+#outScript.write("\n"+'ls -alh');
 outScript.write("\n"+command);
-outScript.write("\n"+'echo "====> List files : " ');
-outScript.write("\n"+'ls -alh');
+#outScript.write("\n"+'echo "====> List files : " ');
+#outScript.write("\n"+'ls -alh');
 outScript.write("\n"+'echo "====> List root files : " ');
 outScript.write("\n"+'ls WWTree*.root');
 outScript.write("\n"+'echo "====> copying WWTree*.root file to stores area..." ');
 outScript.write("\n"+'xrdcp -f WWTree*.root root://cmseos.fnal.gov/' + outputFolder);
-outScript.write("\n"+'xrdcp -f WWTree*.txt root://cmseos.fnal.gov/' + outputFolder);
+#outScript.write("\n"+'xrdcp -f WWTree*.txt root://cmseos.fnal.gov/' + outputFolder);
 outScript.write("\n"+'rm WWTree*.root');
 outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
 outScript.write("\n"+'rm -rf ' + CMSSWRel);
@@ -256,14 +256,14 @@ if( doData ):
 outJDL.close();
 
 # create tarball of present working CMSSW base directory
-os.system('rm CMSSW*.tgz')
+os.system('rm -f CMSSW*.tgz')
 make_tarfile(CMSSWRel+".tgz", cmsswDirPath[1])
 
 # send the created tarball to eos
 os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolder+'/' + CMSSWRel+".tgz")
 
 print "===> Delete the input text files"
-os.system("rm listTemp*.txt temp.txt")
+os.system("rm -f listTemp*.txt temp.txt")
 print "===> Set Proxy Using:";
 print "\tvoms-proxy-init --voms cms --valid 168:00";
 print "\"condor_submit runstep2condor.jdl\" to submit";
