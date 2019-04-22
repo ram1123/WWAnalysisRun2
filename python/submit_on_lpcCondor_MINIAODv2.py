@@ -101,6 +101,7 @@ samples = [
 	( 1.0,		"ChargedHiggsToWZToLLQQ_M900_13TeV-madgraph-pythia8",	1.0,  0),
 	( 0.0232745,	"ChargedHiggsToWZToLLQQ_M1000_13TeV-madgraph-pythia8",		89354, 0),
 	( 0.0003318,	"ChargedHiggsToWZToLLQQ_M1500_13TeV-madgraph-pythia8",     	99968,	0),
+	( 0.0003318,	"ChargedHiggsToWZToLLQQ_M2000_13TeV-madgraph-pythia8",     	99968,	0),
 	#	Singly Charged Higgs sample: W -> Lv
 	( 0.6243295,	"ChargedHiggsToWZToLNuQQ_M200_13TeV-madgraph-pythia8",     	99999,	0),
 	( 0.5393799,	"ChargedHiggsToWZToLNuQQ_M300_13TeV-madgraph-pythia8",     	99998,	0),
