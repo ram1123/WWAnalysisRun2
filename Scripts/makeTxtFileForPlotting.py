@@ -17,26 +17,27 @@ CEND   = '\033[0m'
 start = timeit.default_timer()
 
 ifhaddOnly = 0    # Only hadd not text file then put ifhaddOnly=1 else ifhaddOnly=0
-StoreArea = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_2019_04_08_03h50/"
+#StoreArea = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_2019_04_23_05h21/"
+StoreArea = "/store/user/rasharma/SecondStep/WWTree_After_CWR/2019_03_28_16h05/"
 PlottingDirectoryPath = "/uscms_data/d3/rasharma/aQGC_analysis/PlottingMacros/CMSSW_9_0_1/src/PlottingCodes2017/ControlPlots/"
 searchString = ['# name', 'data', 'Data', 'WV_EWK', 'aQGC', 'Diboson', 'VV', 'W\+jets', 'Z\+jets', 'top', 'QCD']
 
-StoreAreaHadd = StoreArea+'HaddedFiles/'
+StoreAreaHadd = StoreArea+'HaddedFiles_Test/'
 source = "/eos/uscms"+StoreArea
-OutPutDir = source + 'HaddedFiles'
+OutPutDir = source + 'HaddedFiles_Test'
 
 # Check if the Directory exists, if yes then delete and then create else create new one.
 if os.path.isdir(OutPutDir):
-  print(CRED+"Directory "+source+'HaddedFiles'+' found. Delete it...'+CEND)
+  print(CRED+"Directory "+source+'HaddedFiles_Test'+' found. Delete it...'+CEND)
   #eos root://cmseos.fnal.gov rm
   print "#"*51
-  print "# list all file in main directory: Just to check if directory HaddedFiles does not exists"
+  print "# list all file in main directory: Just to check if directory HaddedFiles_Test does not exists"
   os.system('ls /eos/uscms'+StoreArea)
   print "#"*51
-  os.system('eos root://cmseos.fnal.gov/ rm -r '+source+'HaddedFiles')
-  os.system('eos root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
+  os.system('eos root://cmseos.fnal.gov/ rm -r '+source+'HaddedFiles_Test')
+  os.system('eos root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles_Test/')
 else:
-  os.system('eos root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles/')
+  os.system('eos root://cmseos.fnal.gov/ mkdir '+source+'HaddedFiles_Test/')
 
 
 Arrayfilepath = []
@@ -103,7 +104,7 @@ for samples in List:
    temp="hadd -f "
    for i in range(0,len(samples)):
    	if i == 0:
-   		temp+=source+'HaddedFiles/'+samples[i]+' '
+   		temp+=source+'HaddedFiles_Test/'+samples[i]+' '
    	else:
    		temp+=source+"/"+samples[i]+" "
    print temp
@@ -146,9 +147,9 @@ if ifhaddOnly != 1:
 ################################################
 
 # copy the created text file to the respective directory
-os.system('xrdcp -f '+OutPutFile+'  root://cmseos.fnal.gov/'+ StoreAreaHadd)
-os.system('xrdcp -f '+SortedOutPutFile+'  root://cmseos.fnal.gov/'+ StoreAreaHadd)
-os.system('cp '+OutPutFile+' '+ SortedOutPutFile + ' ' +PlottingDirectoryPath)
+#os.system('xrdcp -f '+OutPutFile+'  root://cmseos.fnal.gov/'+ StoreAreaHadd)
+#os.system('xrdcp -f '+SortedOutPutFile+'  root://cmseos.fnal.gov/'+ StoreAreaHadd)
+#os.system('cp '+OutPutFile+' '+ SortedOutPutFile + ' ' +PlottingDirectoryPath)
 # Stop timer
 stop = timeit.default_timer()
 # Print total time to run in minutes

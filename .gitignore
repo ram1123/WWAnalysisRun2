@@ -23,3 +23,4 @@ runstep2condor.*
 *.tgz
 OutPut_Logs/*
 __init__.py
+TEMP_listTemp_WJetsToLNu_HT_800To1200_TuneCP5_13TeV_0.txt.dat

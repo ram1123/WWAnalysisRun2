@@ -193,15 +193,15 @@ int main (int argc, char** argv)
 
   //---------------- Root file for L1 ECAL pre-firing -----------------------------------
   //	Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe
-  //
-  //TFile* L1prefire_jet = TFile::Open("L1prefiring_jetpt_2016BtoH.root", "READ");
-  //TH2F* hL1prefire_jet = (TH2F*) L1prefire_jet->Get("L1prefiring_jetpt_2016BtoH");
 
-  //TFile* L1prefire_jetempt = TFile::Open("L1prefiring_jetempt_2016BtoH.root", "READ");
-  //TH2F* hL1prefire_jetempt = (TH2F*) L1prefire_jetempt->Get("L1prefiring_jetempt_2016BtoH");
+  //TFile* L1prefire_jet = TFile::Open("inputfiles/L1prefiring_jetpt_2017BtoF.root", "READ");
+  //TH2F* hL1prefire_jet = (TH2F*) L1prefire_jet->Get("L1prefiring_jetpt_2017BtoF");
 
-  //TFile* L1prefire_ph = TFile::Open("L1prefiring_photonpt_2016BtoH.root", "READ");
-  //TH2F* hL1prefire_ph = (TH2F*) L1prefire_ph->Get("L1prefiring_photonpt_2016BtoH");
+  TFile* L1prefire_jetempt = TFile::Open("inputfiles/L1prefiring_jetempt_2017BtoF.root", "READ");
+  TH2F* hL1prefire_jetempt = (TH2F*) L1prefire_jetempt->Get("L1prefiring_jetempt_2017BtoF");
+
+  //TFile* L1prefire_ph = TFile::Open("inputfiles/L1prefiring_photonpt_2017BtoF.root", "READ");
+  //TH2F* hL1prefire_ph = (TH2F*) L1prefire_ph->Get("L1prefiring_photonpt_2017BtoF");
 
   //---------output tree----------------
   TFile* outROOT = TFile::Open((outputFile+(".root")).c_str(),"recreate");
@@ -1171,34 +1171,34 @@ int main (int argc, char** argv)
     	// L1pre fire weight
     	// Ref: 1 : https://github.com/HephyAnalysisSW/StopsDilepton/blob/ff976f7855832a054c68bb45419a9ee9a70945ff/tools/python/L1PrefireWeight.py
     	// Ref: 2 : https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe#Introduction
-    	//double Prefweight = 1.0;
-    	//double PrefweightUp = 1.0;
-    	//double PrefweightDown = 1.0;
-    	//std::vector<int> overlapIndices;
+    	double Prefweight = 1.0;
+    	double PrefweightUp = 1.0;
+    	double PrefweightDown = 1.0;
+    	std::vector<int> overlapIndices;
     	//double prefRatePh, prefRatePh_stat;
-    	//double prefRateJet, prefRateJet_stat, prefRate=0.0, prefRate_stat=0.0;
+    	double prefRateJet, prefRateJet_stat, prefRate=0.0, prefRate_stat=0.0;
 
-    	//jetArr->Clear();
-    	//jetBr->GetEntry(jentry);
+    	jetArr->Clear();
+    	jetBr->GetEntry(jentry);
 
-    	//for ( int nAK4jets=0; nAK4jets<jetArr->GetEntries(); nAK4jets++) //loop on AK4 jet
-    	//{
-    	//   const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[nAK4jets]);
-    	//   if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && (jet->pt*(jet->chEmFrac + jet->neuEmFrac))>20 && (jet->pt*(jet->chEmFrac + jet->neuEmFrac))<500)
-    	//   {
-    	//        prefRateJet		= hL1prefire_jetempt->GetBinContent(hL1prefire_jetempt->FindBin(jet->eta,(jet->pt*(jet->chEmFrac + jet->neuEmFrac))));
-    	//        prefRateJet_stat	= hL1prefire_jetempt->GetBinError(hL1prefire_jetempt->FindBin(jet->eta,(jet->pt*(jet->chEmFrac + jet->neuEmFrac))));
-    	//        prefRate		= prefRateJet;
-			//        prefRate_stat	= prefRateJet_stat;
-			//        Prefweight      	*= (1 - prefRate);
-			//        PrefweightUp    	*= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
-    	//   	    PrefweightDown    	*= (1.0 - TMath::Max(0.0, prefRate - sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
-    	//   }
-    	//}
+    	for ( int nAK4jets=0; nAK4jets<jetArr->GetEntries(); nAK4jets++) //loop on AK4 jet
+    	{
+				const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[nAK4jets]);
+				if (abs(jet->eta)>2.0 && abs(jet->eta)<3.0 && (jet->pt*(jet->chEmFrac + jet->neuEmFrac))>20 && (jet->pt*(jet->chEmFrac + jet->neuEmFrac))<500)
+				{
+					prefRateJet		= hL1prefire_jetempt->GetBinContent(hL1prefire_jetempt->FindBin(jet->eta,(jet->pt*(jet->chEmFrac + jet->neuEmFrac))));
+					prefRateJet_stat	= hL1prefire_jetempt->GetBinError(hL1prefire_jetempt->FindBin(jet->eta,(jet->pt*(jet->chEmFrac + jet->neuEmFrac))));
+					prefRate		= prefRateJet;
+					prefRate_stat	= prefRateJet_stat;
+					Prefweight      	*= (1 - prefRate);
+					PrefweightUp    	*= (1.0 - TMath::Min(1.0, prefRate + sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+					PrefweightDown    	*= (1.0 - TMath::Max(0.0, prefRate - sqrt(prefRate_stat*prefRate_stat + (0.2 * prefRate)*(0.2 * prefRate)) ) );
+				}
+			}
 
-    	//WWTree->L1_Prefweight	= Prefweight;
-    	//WWTree->L1_PrefweightUp	= PrefweightUp;
-    	//WWTree->L1_PrefweightDown	= PrefweightDown;
+    	WWTree->L1_Prefweight	= Prefweight;
+    	WWTree->L1_PrefweightUp	= PrefweightUp;
+    	WWTree->L1_PrefweightDown	= PrefweightDown;
 			
     	/////////VBF and b-tag section
     	WWTree->njets=0;

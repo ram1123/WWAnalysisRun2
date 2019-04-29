@@ -49,19 +49,22 @@ def make_tarfile(output_filename, source_dir):
             tar.add(source_dir, arcname=os.path.basename(source_dir))
 
 # Get CMSSW directory path and name
-cmsswDirPath = commands.getstatusoutput('echo ${CMSSW_BASE}')
-CMSSWRel = os.path.basename(cmsswDirPath[1])
+cmsswDirPath = os.environ['CMSSW_BASE']
+CMSSWRel = cmsswDirPath.split("/")[-1]
+#cmsswDirPath = commands.getstatusoutput('echo ${CMSSW_BASE}')
+#CMSSWRel = os.path.basename(cmsswDirPath[1])
 
 print "CMSSW release used : ",CMSSWRel
 
-
-os.system('echo "Add git diff to file logs." > mypatch.patch')
-os.system('git diff >> mypatch.patch')
+os.system('echo "CMSSW Version used: '+CMSSWRel+'" > summary.dat')
+os.system('echo "Current directory path: '+cmsswDirPath+'" >> summary.dat')
 os.system('git diff > main.patch')
-os.system("sed -i '1s/^/Changes Summary : "+changes+"\\n/' mypatch.patch")
-os.system('echo -e "\n\n============\n== Latest commit number \n\n" >> mypatch.patch ')
-os.system('git log -1 --format="%H" >> mypatch.patch ')
-os.system('xrdcp -f mypatch.patch root://cmseos.fnal.gov/'+outputFolder+'/mypatch.patch')
+os.system("sed -i '1s/^/Changes Summary : "+changes+"\\n/' summary.dat")
+os.system('echo -e "\n\n============\n== Latest commit summary \n\n" >> summary.dat ')
+os.system("git log -1 --pretty=tformat:' Commit: %h %n Date: %ad %n Relative time: %ar %n Commit Message: %s' >> summary.dat ")
+os.system('echo -e "\n\n============\n" >> summary.dat ')
+os.system('git log -1 --format="%H" >> summary.dat ')
+os.system('xrdcp -f summary.dat root://cmseos.fnal.gov/'+outputFolder+'/summary.dat')
 os.system('xrdcp -f main.patch root://cmseos.fnal.gov/'+outputFolder+'/main.patch')
 
 samples = [
@@ -257,7 +260,7 @@ outJDL.close();
 
 # create tarball of present working CMSSW base directory
 os.system('rm -f CMSSW*.tgz')
-make_tarfile(CMSSWRel+".tgz", cmsswDirPath[1])
+make_tarfile(CMSSWRel+".tgz", cmsswDirPath)
 
 # send the created tarball to eos
 os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolder+'/' + CMSSWRel+".tgz")

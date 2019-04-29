@@ -1,18 +1,24 @@
-SingleElectron:
-    DASName: SingleElectron
+SingleMuonRun2017:
+    DASName: SingleMuonRun2017
     CrossSection: 41530.0
     name: data
     StackIt: 0
     ColorCode: 1
-SingleMuon:
+SingleElectronRun2017:
+    DASName: SingleElectronRun2017
+    CrossSection: 41530.0
+    name: data
+    StackIt: 0
+    ColorCode: 1
+SingleElectronRun2016:
+    DASName: SingleElectronRun2016
+    CrossSection: 35867.06
+    name: data
+    StackIt: 0
+    ColorCode: 1
+SingleMuonRun2016:
     DASName: SingleMuonRun2016
-    CrossSection: 41530.0
-    name: data
-    StackIt: 0
-    ColorCode: 1
-Data:
-    DASName: Single
-    CrossSection: 41530.0
+    CrossSection: 35867.06
     name: data
     StackIt: 0
     ColorCode: 1
@@ -328,21 +334,9 @@ ZZTo2L2Q_13TeV:
     name: VV
     StackIt: 1
     ColorCode: 868
-DYJetsToLL_amcatnlo_ext1:
-    DASName: DYJetsToLL_amcatnlo_ext1
-    CrossSection: 5765.40
-    name: Z+jets
-    StackIt: 1
-    ColorCode: 4
 DYJetsToLL_M_50:
     DASName: DYJetsToLL_M_50
-    CrossSection: 5765.4
-    name: Z+jets
-    StackIt: 1
-    ColorCode: 4
-DYJetsToLL_M-50:
-    DASName: DYJetsToLL_M-50
-    CrossSection: 5765.4
+    CrossSection: 6225.42
     name: Z+jets
     StackIt: 1
     ColorCode: 4
