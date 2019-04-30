@@ -25,7 +25,8 @@ void computeAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector
 		  double& costheta1,  double& costheta2,  double& Phi,
 		  double& costhetastar, double& Phi1);
 
-double GetSFs_Lepton(double pt, double eta, TH1F* h1);
+double GetSFs_Lepton(double xAxis, double yAxis, TH1F *h1, TString posX="pt", TString posY="eta" );
+
 double GetMin(double x, double y);
 double GetMax(double x, double y);
 //float getPUPPIweight(float puppipt, float puppieta );
