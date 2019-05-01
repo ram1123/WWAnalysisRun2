@@ -1,0 +1,5 @@
+<use name="BaconAna/DataFormats"/>
+<use name="WWAnalysis/WWAnalysisRun2"/>
+<use name="root"/>
+<flags CXXFLAGS="-g -Wall"/>
+<bin file="produceWWNtuples.cpp" name="produceWWNtuples"> </bin>
