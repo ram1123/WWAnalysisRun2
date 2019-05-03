@@ -1,3 +1,13 @@
+mypatch.patch
+runstep2condor*.jdl
+runstep2condor*.sh
+mypatch.patch_1
+docker_stderror
+summary.dat
+*.patch
+TEMP*.dat
+*.txt
+!Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
 *.exe
 *.pyc
 ._*
@@ -7,3 +17,13 @@
 */*~
 LSF*
 *.stdout
+*.d
+*.so
+*.pcm
+screenlog.0
+runstep2condor.*
+*.pdf
+*.png
+*.tgz
+OutPut_Logs/*
+__init__.py

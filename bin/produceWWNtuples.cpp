@@ -155,6 +155,7 @@ int main (int argc, char** argv)
   TLorentzVector PuppiAK4_JET1_jes_up, PuppiAK4_JET1_jes_dn;
   TLorentzVector PuppiAK4_JET2_jes_up, PuppiAK4_JET2_jes_dn;
   TLorentzVector VBF1,VBF2,TOT;
+  TLorentzVector AK4_W1, AK4_W2;
   TLorentzVector VBF1_jes_up, VBF1_jes_dn, VBF2_jes_up, VBF2_jes_dn;
   TLorentzVector ELE,MU;
 
@@ -274,7 +275,7 @@ int main (int argc, char** argv)
 
   int nInputFiles = sampleName.size();
 
-  //  if (isLocal==1) nInputFiles = 21;
+  if (isLocal==1) nInputFiles = 1;
   cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
   TH1D *MCpu = new TH1D("MCpu","",75,0,75);
@@ -302,7 +303,7 @@ int main (int argc, char** argv)
      infile = TFile::Open(sampleName[i]);
      eventTree = (TTree*)infile->Get("Events");
      
-     TotalNumberOfEvents+=10000;//eventTree->GetEntries();
+     TotalNumberOfEvents+=eventTree->GetEntries();
      if(isMC)
      { 
         eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
@@ -342,6 +343,11 @@ int main (int argc, char** argv)
   JetCorrectionUncertainty *fJetUnc_AK8chs = new JetCorrectionUncertainty(paramAK8chs);
   JetCorrectionUncertainty *fJetUnc_AK8puppi = new JetCorrectionUncertainty(paramAK8puppi);
 
+  std::ofstream DanTxtFourVectorOut;
+  char TxtFileName[300];
+  sprintf(TxtFileName, "%s.txt",outputFile.c_str());
+  DanTxtFourVectorOut.open(TxtFileName);
+
   //---------start loop on events------------
   std::cout << "---------start loop on events------------" << std::endl;
   jentry2=0;
@@ -352,9 +358,9 @@ int main (int argc, char** argv)
   infile = TFile::Open(sampleName[i]);
   eventTree = (TTree*)infile->Get("Events");
   
-  totalEntries+=10000;//eventTree->GetEntries();
+  totalEntries+=eventTree->GetEntries();
 
-  nEvents=10000;//eventTree->GetEntries();
+  nEvents=eventTree->GetEntries();
 
   cout<<"\t==> Entries = "<<nEvents<<endl;
 
@@ -377,8 +383,8 @@ int main (int argc, char** argv)
        eventTree->SetBranchAddress("LHEWeight",&lheWgtArr); lhePartBr = eventTree->GetBranch("LHEWeight");	       }
      }
 
-  for (Long64_t jentry=0; jentry<10000; jentry++,jentry2++)
-  //for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
+  //for (Long64_t jentry=0; jentry<10000; jentry++,jentry2++)
+  for (Long64_t jentry=0; jentry<eventTree->GetEntries();jentry++,jentry2++)
   {
     //if (jentry2 != 87 && jentry2 != 113) continue;	// For debug
     infoBr->GetEntry(jentry);	    
@@ -1210,6 +1216,8 @@ int main (int argc, char** argv)
             WWTree->AK4_Vjet2_phi = goodAK4Jets.at(j).Phi();
             WWTree->AK4_Vjet1_e = goodAK4Jets.at(i).E();
             WWTree->AK4_Vjet2_e = goodAK4Jets.at(j).E();
+	    AK4_W1 = goodAK4Jets.at(i);
+	    AK4_W2 = goodAK4Jets.at(j);
 
 	    WWTree->ungroomed_PuppiAK8_jet_pt = tmpV.Pt();
             WWTree->ungroomed_PuppiAK8_jet_eta = tmpV.Eta();
@@ -1671,6 +1679,37 @@ int main (int argc, char** argv)
      	WWTree->LeptonProjection_type0 = (LEP1.Pt()*cos(LEP1.Theta()-(LEP1 + NU0).Theta()))/(LEP1 + NU0).Pt();
      	WWTree->LeptonProjection_type2 = (LEP1.Pt()*cos(LEP1.Theta()-(LEP1 + NU2).Theta()))/(LEP1 + NU2).Pt();
      	WWTree->LeptonProjection_run2  = (LEP1.Pt()*cos(LEP1.Theta()-(LEP1 + NU1).Theta()))/(LEP1 + NU1).Pt();
+
+	/*cout << LEP1.Px() << "\t" << LEP1.Py() << "\t" << LEP1.Pz() << "\t" 
+	   << LEP1.E() << "\t"
+	   << NU2.Px() << "\t" << NU2.Py() << "\t" << NU2.Pz() << "\t" 
+	   << NU2.E() << "\t"
+	   << AK4_W1.Px() << "\t" << AK4_W1.Py() << "\t" << AK4_W1.Pz() << "\t" 
+	   << AK4_W1.E() << "\t"
+	   << AK4_W2.Px() << "\t" << AK4_W2.Py() << "\t" << AK4_W2.Pz() << "\t" 
+	   << AK4_W2.E() << "\t"
+	   << VBF1.Px() << "\t" << VBF1.Py() << "\t" << VBF1.Pz() 
+	   << "\t" << VBF1.E() << "\t"
+	   << VBF2.Px() << "\t" << VBF2.Py() << "\t" << VBF2.Pz() 
+	   << "\t" << VBF2.E() << "\t" 
+	   << endl;
+	*/
+	
+	DanTxtFourVectorOut << LEP1.Px() << "\t" << LEP1.Py() << "\t" << LEP1.Pz() << "\t" 
+	   << LEP1.E() << "\t"
+	   << NU2.Px() << "\t" << NU2.Py() << "\t" << NU2.Pz() << "\t" 
+	   << NU2.E() << "\t"
+	   << AK4_W1.Px() << "\t" << AK4_W1.Py() << "\t" << AK4_W1.Pz() << "\t" 
+	   << AK4_W1.E() << "\t"
+	   << AK4_W2.Px() << "\t" << AK4_W2.Py() << "\t" << AK4_W2.Pz() << "\t" 
+	   << AK4_W2.E() << "\t"
+	   << VBF1.Px() << "\t" << VBF1.Py() << "\t" << VBF1.Pz() 
+	   << "\t" << VBF1.E() << "\t"
+	   << VBF2.Px() << "\t" << VBF2.Py() << "\t" << VBF2.Pz() 
+	   << "\t" << VBF2.E() << "\t" 
+	   << endl;
+
+
       } else	
       {	//	Fill variables for two lepton case
     	WWTree->PtBalance_2Lep = ((JET_PuppiAK8+LEP1 + LEP2).Pt())/(JET_PuppiAK8.Pt()+(LEP1 + LEP2).Pt());
@@ -1719,6 +1758,7 @@ int main (int argc, char** argv)
   //delete puWeight;	delete puWeight_up;	delete puWeight_down;
   delete MCpu;	delete MCpu_up;	delete MCpu_down;
   delete puWeightsDown;	delete puWeightsUp;	delete puWeights;
+  DanTxtFourVectorOut.close();
   //delete pileupHisto;
   //pileupFile->Close();
   pileupFileMC->Close();

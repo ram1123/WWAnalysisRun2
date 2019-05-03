@@ -18,10 +18,13 @@ TestRun = 0
 
 doMC = True;
 doData = True;
+#category = ["el"];
 category = ["el","mu"];
 
 lumi = 35900.0
 
+OutDirrr = "Resolved_Category"
+os.system('xrdfs root://cmseos.fnal.gov/ mkdir ' + '/store/user/rasharma/SecondStep/' + OutDirrr)
 changes = raw_input("\n\nWrite change summary: ")
 
 print "==> ",changes
@@ -32,8 +35,8 @@ if TestRun:
 	outputFolder = "/store/user/rasharma/SecondStep/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+"_TEST/";
 	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M') + "_TEST";
 else:
-	outputFolder = "/store/user/rasharma/SecondStep/WWTree_CommonNtuple_For1and2Lepton_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
-	OutputLogPath = "OutPut_Logs/Logs_CommonNtuple_For1and2Lepton_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	outputFolder = "/store/user/rasharma/SecondStep/"+OutDirrr+"/"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	OutputLogPath = "OutPut_Logs/Resolved_Category/" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
 
 print "Name of output dir: ",outputFolder
 # create a directory on eos
@@ -41,6 +44,11 @@ os.system('xrdfs root://cmseos.fnal.gov/ mkdir ' + outputFolder)
 # create directory in pwd for log files
 os.system('mkdir -p ' + OutputLogPath + "/Logs")
 
+def exclude_function(filename):
+    if filename.endswith('.log') or filename.endswith('.stdout'):
+            return True
+    else:
+            return False
 
 # Function to create a tar file
 def make_tarfile(output_filename, source_dir):
@@ -62,39 +70,55 @@ os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolde
 
 os.system('echo "Add git diff to file logs." > mypatch.patch')
 os.system('git diff >> mypatch.patch')
+os.system('git diff > mypatch.patch_1')
 os.system("sed -i '1s/^/Changes Summary : "+changes+"\\n/' mypatch.patch")
 os.system('echo -e "\n\n============\n== Latest commit number \n\n" >> mypatch.patch ')
 os.system('git log -1 --format="%H" >> mypatch.patch ')
 os.system('xrdcp -f mypatch.patch root://cmseos.fnal.gov/'+outputFolder+'/mypatch.patch')
-
-os.system('xrdcp -f ThingsUpdated.txt root://cmseos.fnal.gov/' + outputFolder)
-os.system('cp ThingsUpdated.txt ' + OutputLogPath)
+os.system('xrdcp -f mypatch.patch_1 root://cmseos.fnal.gov/'+outputFolder+'/mypatch.patch_1')
 
 samples = [
-	#	Charged Higgs sample
-	( 0.0232745,	"ChargedHiggsToWZToLLQQ_M1000_13TeV-madgraph-pythia8",		89354, 0),
-	( 0.5332947,	"ChargedHiggsToWZToLLQQ_M300_13TeV-madgraph-pythia8",     	99998,	0),
-	( 0.6404795,	"ChargedHiggsToWZToLLQQ_M200_13TeV-madgraph-pythia8",     	99997,	0),
-	( 0.2290123,	"ChargedHiggsToWZToLLQQ_M400_13TeV-madgraph-pythia8",     	99994,	0),
-	( 0.0841788,	"ChargedHiggsToWZToLLQQ_M600_13TeV-madgraph-pythia8",     	99996,	0),
-	( 0.0549078,	"ChargedHiggsToWZToLLQQ_M800_13TeV-madgraph-pythia8",     	99986,	0),
-	( 0.0601563,	"ChargedHiggsToWZToLLQQ_M700_13TeV-madgraph-pythia8",     	99994,	0),
-	( 0.1372523,	"ChargedHiggsToWZToLLQQ_M500_13TeV-madgraph-pythia8",     	98337,	0),
-	( 0.0003318,	"ChargedHiggsToWZToLLQQ_M1500_13TeV-madgraph-pythia8",     	99968,	0),
-	( 0.0400691,	"ChargedHiggsToWZToLNuQQ_M900_13TeV-madgraph-pythia8",		97295, 0),
-	( 0.0231972,	"ChargedHiggsToWZToLNuQQ_M1000_13TeV-madgraph-pythia8",		99241, 0),
-	( 0.5393799,	"ChargedHiggsToWZToLNuQQ_M300_13TeV-madgraph-pythia8",     	99998,	0),
-	( 0.1362330,	"ChargedHiggsToWZToLNuQQ_M500_13TeV-madgraph-pythia8",     	99996,	0),
-	( 0.0594338,	"ChargedHiggsToWZToLNuQQ_M700_13TeV-madgraph-pythia8",     	99626,	0),
-	( 0.6243295,	"ChargedHiggsToWZToLNuQQ_M200_13TeV-madgraph-pythia8",     	99999,	0),
-	( 0.0531052,	"ChargedHiggsToWZToLNuQQ_M800_13TeV-madgraph-pythia8",     	99993,	0),
-	( 0.2342963,	"ChargedHiggsToWZToLNuQQ_M400_13TeV-madgraph-pythia8",     	99997,	0),
-	( 0.0001099,	"ChargedHiggsToWZToLNuQQ_M2000_13TeV-madgraph-pythia8",     	99959,	0),
-	( 0.0003404,	"ChargedHiggsToWZToLNuQQ_M1500_13TeV-madgraph-pythia8",     	95776,	0),
-	( 0.0801379,	"ChargedHiggsToWZToLNuQQ_M600_13TeV-madgraph-pythia8",     	97780,	0),
-    	#	EWK SM Signal
-    	( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1991227,   0),
-    	( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1983847,   0),
+	##	Doubly Charged Higgs sample
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M200_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M300_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M400_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M500_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M600_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M700_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M800_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M900_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M1000_13TeV-madgraph-pythia8", 1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M1500_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 1.0,	"DoublyChargedHiggsGMmodel_HWW_WWToLNuQQ_M2000_13TeV-madgraph-pythia8", 1.0,  0),
+	##	Singly Charged Higgs sample: Z -> LL
+	#( 0.6404795,	"ChargedHiggsToWZToLLQQ_M200_13TeV-madgraph-pythia8",     	99997,	0),
+	#( 0.5332947,	"ChargedHiggsToWZToLLQQ_M300_13TeV-madgraph-pythia8",     	99998,	0),
+	#( 0.2290123,	"ChargedHiggsToWZToLLQQ_M400_13TeV-madgraph-pythia8",     	99994,	0),
+	#( 0.1372523,	"ChargedHiggsToWZToLLQQ_M500_13TeV-madgraph-pythia8",     	98337,	0),
+	#( 0.0841788,	"ChargedHiggsToWZToLLQQ_M600_13TeV-madgraph-pythia8",     	99996,	0),
+	#( 0.0601563,	"ChargedHiggsToWZToLLQQ_M700_13TeV-madgraph-pythia8",     	99994,	0),
+	#( 0.0549078,	"ChargedHiggsToWZToLLQQ_M800_13TeV-madgraph-pythia8",     	99986,	0),
+	#( 1.0,		"ChargedHiggsToWZToLLQQ_M900_13TeV-madgraph-pythia8",	1.0,  0),
+	#( 0.0232745,	"ChargedHiggsToWZToLLQQ_M1000_13TeV-madgraph-pythia8",		89354, 0),
+	#( 0.0003318,	"ChargedHiggsToWZToLLQQ_M1500_13TeV-madgraph-pythia8",     	99968,	0),
+	#( 0.0003318,	"ChargedHiggsToWZToLLQQ_M2000_13TeV-madgraph-pythia8",     	99968,	0),
+	##	Singly Charged Higgs sample: W -> Lv
+	#( 0.6243295,	"ChargedHiggsToWZToLNuQQ_M200_13TeV-madgraph-pythia8",     	99999,	0),
+	#( 0.5393799,	"ChargedHiggsToWZToLNuQQ_M300_13TeV-madgraph-pythia8",     	99998,	0),
+	#( 0.2342963,	"ChargedHiggsToWZToLNuQQ_M400_13TeV-madgraph-pythia8",     	99997,	0),
+	#( 0.1362330,	"ChargedHiggsToWZToLNuQQ_M500_13TeV-madgraph-pythia8",     	99996,	0),
+	#( 0.0801379,	"ChargedHiggsToWZToLNuQQ_M600_13TeV-madgraph-pythia8",     	97780,	0),
+	#( 0.0594338,	"ChargedHiggsToWZToLNuQQ_M700_13TeV-madgraph-pythia8",     	99626,	0),
+	#( 0.0531052,	"ChargedHiggsToWZToLNuQQ_M800_13TeV-madgraph-pythia8",     	99993,	0),
+	#( 0.0400691,	"ChargedHiggsToWZToLNuQQ_M900_13TeV-madgraph-pythia8",		97295, 0),
+	#( 0.0231972,	"ChargedHiggsToWZToLNuQQ_M1000_13TeV-madgraph-pythia8",		99241, 0),
+	#( 0.0003404,	"ChargedHiggsToWZToLNuQQ_M1500_13TeV-madgraph-pythia8",     	95776,	0),
+	#( 0.0001099,	"ChargedHiggsToWZToLNuQQ_M2000_13TeV-madgraph-pythia8",     	99959,	0),
+    	##	EWK SM Signal
+    	( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8_1",	1991227,   0),
+    	( 0.9114,	"WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8_2",	1991227,   0),
+    	( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8_1",	1983847,   0),
+    	( 0.9107,	"WplusTo2JWminusToLNuJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8_2",	1983847,   0),
     	( 0.0879,	"WplusToLNuWplusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	198848,   0),
     	( 0.0326,	"WminusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	189560,   0),
     	( 0.1825,	"WplusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		393171,   0),
@@ -102,16 +126,16 @@ samples = [
     	( 0.1000,	"WminusToLNuZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		199542,   0),
     	( 0.0298,	"WminusTo2JZTo2LJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		189086,   0),
     	( 0.0159,	"ZTo2LZTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		99997,   0),
-	#	aQGC Signal
-	( 17.94,	"WplusToLNuWminusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1640169,	0),
-	( 17.92,	"WplusTo2JWminusToLNuJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1706220,	0),
-	( 3.451,	"WplusToLNuWplusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	199858,	0),
-	( 0.5067,	"WminusToLNuWminusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	190106,	0),
-	( 1.895,	"WplusToLNuZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	349000,	0),
-	( 0.5686,	"WplusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		149363,	0),
-	( 0.7414,	"WminusToLNuZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	160194,	0),
-	( 0.2223,	"WminusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	168679,	0),
-	( 3.361,	"ZTo2LZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		99392,	0),
+	##	aQGC Signal
+	#( 17.94,	"WplusToLNuWminusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1640169,	0),
+	#( 17.92,	"WplusTo2JWminusToLNuJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	1706220,	0),
+	#( 3.451,	"WplusToLNuWplusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	199858,	0),
+	#( 0.5067,	"WminusToLNuWminusTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	190106,	0),
+	#( 1.895,	"WplusToLNuZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	349000,	0),
+	#( 0.5686,	"WplusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		149363,	0),
+	#( 0.7414,	"WminusToLNuZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	160194,	0),
+	#( 0.2223,	"WminusTo2JZTo2LJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	168679,	0),
+	#( 3.361,	"ZTo2LZTo2JJJ_EWK_LO_aQGC_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",		99392,	0),
     	#	QCD SM WWJJ
     	( 5.568,	"WplusTo2JWminusToLNuJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	3994663,   0),
     	( 5.546,	"WplusToLNuWminusTo2JJJ_QCD_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8",	3949170,   0),
@@ -194,17 +218,17 @@ samples = [
 	( 1.60809,	"WJetsToLNu_HT_1200To2500_13TeV_ext1",	6708656,	0),
 	( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV",	2520618,	0),
 	( 0.0389136,	"WJetsToLNu_HT_2500ToInf_13TeV_ext1",	2520618,	0),
-	#	VV/VVV
-	( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	5057358,	953706),
-	( 16.532,	"ZZ_13TeV_pythia8",	990051,	0),
-	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_1",	23766546,	4986275),
-	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_2",	23766546,	4986275),
-	( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_3",	23766546,	4986275),
-	( 3.22,		"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",		15345161,	2828391),
-	( 5.595,	"WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	26516586,	5318729),
-	( 0.1651,	"WWZ_13TeV_amcatnlo_pythia8",	269990,	15372),
-	( 0.01398,	"ZZZ_13TeV_amcatnlo_pythia8",	249232,	18020),
-	#	TTbar and single top
+	##	VV/VVV
+	#( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	5057358,	953706),
+	#( 16.532,	"ZZ_13TeV_pythia8",	990051,	0),
+	#( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_1",	23766546,	4986275),
+	#( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_2",	23766546,	4986275),
+	#( 10.71,	"WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8_3",	23766546,	4986275),
+	#( 3.22,		"ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",		15345161,	2828391),
+	#( 5.595,	"WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8",	26516586,	5318729),
+	#( 0.1651,	"WWZ_13TeV_amcatnlo_pythia8",	269990,	15372),
+	#( 0.01398,	"ZZZ_13TeV_amcatnlo_pythia8",	249232,	18020),
+	##	TTbar and single top
 	( 362.5764,	"TTToSemilepton_powheg_1",	91832423,	0),
 	( 362.5764,	"TTToSemilepton_powheg_2",	91832423,	0),
 	( 362.5764,	"TTToSemilepton_powheg_3",	91832423,	0),
@@ -222,30 +246,30 @@ samples = [
 	( 136.02,	"Summer16_ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4",	5993570,	0),
 	( 19.5741,	"ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV_powheg_TuneCUETP8M1",	5424956,	0),
 	( 80.95,	"Summer16_ST_t_channel_antitop_4f_inclusiveDecays_TuneCUETP8M2T4",	3927980,	0),
-	#	QCD
-	( 27990000.0,	"QCD_HT100to200_13TeV_1",	80614044,	0),
-	( 27990000.0,	"QCD_HT100to200_13TeV_2",	80614044,	0),
-	( 27990000.0,	"QCD_HT100to200_13TeV_3",	80614044,	0),
-	( 27990000.0,	"QCD_HT100to200_13TeV_4",	80614044,	0),
-	( 27990000.0,	"QCD_HT100to200_13TeV_5",	80614044,	0),
-	( 27990000.0,	"QCD_HT100to200_13TeV_6",	80614044,	0),
-	( 1712000.0,	"QCD_HT200to300_13TeV",	54280031,	0),
-	( 1712000.0,	"QCD_HT200to300_13TeV_ext_1",	54280031,	0),
-	( 1712000.0,	"QCD_HT200to300_13TeV_ext_2",	54280031,	0),
-	( 347700.0,	"QCD_HT300to500_13TeV",	26924854,	0),
-	( 347700.0,	"QCD_HT300to500_13TeV_ext",	26924854,	0),
-	( 32100.0,	"QCD_HT500to700_13TeV",	53744436,	0),
-	( 32100.0,	"QCD_HT500to700_13TeV_ext_1",	53744436,	0),
-	( 32100.0,	"QCD_HT500to700_13TeV_ext_2",	53744436,	0),
-	( 32100.0,	"QCD_HT500to700_13TeV_ext_3",	53744436,	0),
-	( 6831.0,	"QCD_HT700to1000_13TeV",	42658677,	0),
-	( 6831.0,	"QCD_HT700to1000_13TeV_ext",	42658677,	0),
-	( 1207.0,	"QCD_HT1000to1500_13TeV",	13080692,	0),
-	( 1207.0,	"QCD_HT1000to1500_13TeV_ext",	13080692,	0),
-	( 119.9,	"QCD_HT1500to2000_13TeV",	11624720,	0),
-	( 119.9,	"QCD_HT1500to2000_13TeV_ext",	11624720,	0),
-	( 25.24,	"QCD_HT2000toInf_13TeV",	5875869,	0),
-	( 25.24,	"QCD_HT2000toInf_13TeV_ext",	5875869,	0),
+	##	QCD
+	#( 27990000.0,	"QCD_HT100to200_13TeV_1",	80614044,	0),
+	#( 27990000.0,	"QCD_HT100to200_13TeV_2",	80614044,	0),
+	#( 27990000.0,	"QCD_HT100to200_13TeV_3",	80614044,	0),
+	#( 27990000.0,	"QCD_HT100to200_13TeV_4",	80614044,	0),
+	#( 27990000.0,	"QCD_HT100to200_13TeV_5",	80614044,	0),
+	#( 27990000.0,	"QCD_HT100to200_13TeV_6",	80614044,	0),
+	#( 1712000.0,	"QCD_HT200to300_13TeV",	54280031,	0),
+	#( 1712000.0,	"QCD_HT200to300_13TeV_ext_1",	54280031,	0),
+	#( 1712000.0,	"QCD_HT200to300_13TeV_ext_2",	54280031,	0),
+	#( 347700.0,	"QCD_HT300to500_13TeV",	26924854,	0),
+	#( 347700.0,	"QCD_HT300to500_13TeV_ext",	26924854,	0),
+	#( 32100.0,	"QCD_HT500to700_13TeV",	53744436,	0),
+	#( 32100.0,	"QCD_HT500to700_13TeV_ext_1",	53744436,	0),
+	#( 32100.0,	"QCD_HT500to700_13TeV_ext_2",	53744436,	0),
+	#( 32100.0,	"QCD_HT500to700_13TeV_ext_3",	53744436,	0),
+	#( 6831.0,	"QCD_HT700to1000_13TeV",	42658677,	0),
+	#( 6831.0,	"QCD_HT700to1000_13TeV_ext",	42658677,	0),
+	#( 1207.0,	"QCD_HT1000to1500_13TeV",	13080692,	0),
+	#( 1207.0,	"QCD_HT1000to1500_13TeV_ext",	13080692,	0),
+	#( 119.9,	"QCD_HT1500to2000_13TeV",	11624720,	0),
+	#( 119.9,	"QCD_HT1500to2000_13TeV_ext",	11624720,	0),
+	#( 25.24,	"QCD_HT2000toInf_13TeV",	5875869,	0),
+	#( 25.24,	"QCD_HT2000toInf_13TeV_ext",	5875869,	0),
     ]
 
 nameDataMu = [
@@ -324,6 +348,7 @@ outScript.write("\n"+'echo "====> List root files : " ');
 outScript.write("\n"+'ls WWTree*.root');
 outScript.write("\n"+'echo "====> copying WWTree*.root file to stores area..." ');
 outScript.write("\n"+'xrdcp -f WWTree*.root root://cmseos.fnal.gov/' + outputFolder);
+outScript.write("\n"+'xrdcp -f WWTree*.txt root://cmseos.fnal.gov/' + outputFolder);
 outScript.write("\n"+'rm WWTree*.root');
 outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
 outScript.write("\n"+'rm -rf ' + CMSSWRel);
