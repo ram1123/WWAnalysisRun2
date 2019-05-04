@@ -1,6 +1,6 @@
 mypatch.patch
-runstep2condor*.jdl
-runstep2condor*.sh
+*.jdl
+*.sh
 mypatch.patch_1
 docker_stderror
 summary.dat

@@ -78,17 +78,11 @@ int main (int argc, char** argv)
   int applyTrigger = atoi(argv[10]);
   std::string jsonFileName = argv[11];
   int isLocal = atoi(argv[12]);
-  int VBFSel  = atoi(argv[13]);
+  //int VBFSel  = atoi(argv[13]);
   
   std::string leptonName;
 
-  if ( VBFSel==1)	cout<<"==> VBF selection method : Select two highest pT jets"<<endl;
-  else if ( VBFSel==2)	cout<<"==> VBF selection method : Select pair with highest mjj..."<<endl;
-  else if ( VBFSel==3)	cout<<"==> VBF selection method : Select pair with highest DeltaEta..."<<endl;
-  else {	cout<<"\n\nERROR:	Enter valid vbf selection criteria....\n\n"<<endl;
-  		exit(0);  
-	}
-  
+ 
   std::string iHLTFile="${CMSSW_BASE}/src/BaconAna/DataFormats/data/HLTFile_25ns";
   const std::string cmssw_base = getenv("CMSSW_BASE");
   std::string cmssw_base_env = "${CMSSW_BASE}";
@@ -100,22 +94,7 @@ int main (int argc, char** argv)
   const baconhep::TTrigger triggerMenu(iHLTFile);  
   std::cout<<"Apply trigger: "<<applyTrigger<<std::endl;
 
-  TLorentzVector W_type0,W_type0_jes_up, W_type0_jes_dn, W_type0_jer_up, W_type0_jer_dn, W_type2, W_run2,W_puppi_type2, W_puppi_type0, W_puppi_run2, W_type0_LEP_Up, W_type0_LEP_Down;
-  TLorentzVector LEP1, LEP2, LEP1_Up, LEP1_Down, LEP2_Up, LEP2_Down, SJ1_PuppiAK8, SJ2_PuppiAK8, SJ1, SJ2;
-  TLorentzVector NU0,NU1,NU2,NU0_puppi,NU1_puppi,NU2_puppi;
-  TLorentzVector NU0_jes_up, NU0_jes_dn;
-  TLorentzVector NU0_puppi_jes_up, NU0_puppi_jes_dn;
-  TLorentzVector NU0_jer_up, NU0_jer_dn;
-  TLorentzVector JET, JET_PuppiAK8, AK4;
-  TLorentzVector JET_jes_up, JET_jes_dn, JET_PuppiAK8_jes_up, JET_PuppiAK8_jes_dn;
-  TLorentzVector AK4_JET1,AK4_JET2;
-  TLorentzVector AK4_JET1_jes_up, AK4_JET1_jes_dn;
-  TLorentzVector AK4_JET2_jes_up, AK4_JET2_jes_dn;
-  TLorentzVector PuppiAK4_JET1,PuppiAK4_JET2;
-  TLorentzVector PuppiAK4_JET1_jes_up, PuppiAK4_JET1_jes_dn;
-  TLorentzVector PuppiAK4_JET2_jes_up, PuppiAK4_JET2_jes_dn;
-  TLorentzVector VBF1,VBF2,TOT;
-  TLorentzVector VBF1_jes_up, VBF1_jes_dn, VBF2_jes_up, VBF2_jes_dn;
+  TLorentzVector LEP1, LEP2, LEP1_Up, LEP1_Down, LEP2_Up, LEP2_Down;
   TLorentzVector ELE,MU;
 
   
@@ -142,7 +121,6 @@ int main (int argc, char** argv)
   	sprintf(command1, "eos find -f %s  | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://eoscms.cern.ch/\"$1}' > listTemp_%s.txt", (inputFolder).c_str(), outputFile.c_str());	// NF in awk command skips the blank line
   else 
 	sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
-	//sprintf(command1,"eos root://cmseos.fnal.gov find -f %s | awk '!/log|fail/ {print $1}' | awk 'NF {print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());	// WORKS ONLY WITH INTERACTIVE NODE
 
   std::cout<<command1<<std::endl;
   sprintf(command2,"sed -i '/failed$/d' listTemp_%s.txt", outputFile.c_str());
@@ -171,10 +149,6 @@ int main (int argc, char** argv)
   TFile *infile=0;
   TTree *eventTree=0;
 
-  std::ofstream file1;
-  char TxtFileName[300];
-  sprintf(TxtFileName, "%s.txt",outputFile.c_str());
-  file1.open(TxtFileName);
   int cutEff[21]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
   // Read and add pileup in histogram
@@ -238,19 +212,6 @@ int main (int argc, char** argv)
   
   Long64_t TotalNumberOfEvents = 0, nNegEvents = 0; 
 
-
-  // Set up b-tag scale factor readers
-  BTagCalibration calib("csvv2", "CSVv2_Moriond17_B_H.csv");
-  BTagCalibrationReader bTagReader(BTagEntry::OP_LOOSE,  // working point: can be OP_LOOSE, OP_MEDIUM, OP_TIGHT 
-                                   "central",             // label for the central value (see the scale factor file)
-                                   {"up","down"});        // vector of labels for systematics
-  bTagReader.load(calib, BTagEntry::FLAV_B, "comb");      // use the "comb" measurements for b-jets
-  bTagReader.load(calib, BTagEntry::FLAV_C, "comb");      // use the "comb" measurements for c-jets
-  bTagReader.load(calib, BTagEntry::FLAV_UDSG, "incl");   // use the "incl" measurements for light jets
-  
-
-  vector<const baconhep::TJet*> goodJetsv;
-  
   // Loop on input files
   for(int i=0;i<nInputFiles;i++)
   {
@@ -289,8 +250,6 @@ int main (int argc, char** argv)
   cout<<"Weight of cross-sec/events = "<<weight<<endl;
   int totalEntries=0;
 
-
-
   //---------start loop on events------------
   std::cout << "---------start loop on events------------" << std::endl;
   jentry2=0;
@@ -306,8 +265,6 @@ int main (int argc, char** argv)
   nEvents=eventTree->GetEntries();
 
   cout<<"\t==> Entries = "<<nEvents<<endl;
-
-
 
   eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
   eventTree->SetBranchAddress("Muon", &muonArr); TBranch *muonBr = eventTree->GetBranch("Muon");
@@ -358,14 +315,9 @@ int main (int argc, char** argv)
       genPartArr->Clear();
       genBr->GetEntry(jentry);
       genPartBr->GetEntry(jentry);
-      TLorentzVector hadW, lepW, VBFJ1, VBFJ2, VBFJ, temp;
-      TLorentzVector genLep, genNeutrino, genWquarks, genVBFquarks;
-      std::vector<TLorentzVector> v_GEN_hadW, v_GEN_lepW, v_GEN_VBFJ1, v_GEN_VBFJ2, v_GEN_VBFJ, v_GEN_temp;
-      std::vector<TLorentzVector> v_genLep, v_genNeutrino, v_genWquarks, v_genVBFquarks;
+      TLorentzVector genLep, genNeutrino;
+      std::vector<TLorentzVector> v_genLep, v_genNeutrino;
 
-      v_GEN_hadW.clear();	v_GEN_lepW.clear();	v_GEN_VBFJ1.clear();	v_GEN_VBFJ2.clear();
-      v_GEN_VBFJ.clear();	v_GEN_temp.clear();	v_genLep.clear();	v_genNeutrino.clear();
-      v_genWquarks.clear();	v_genVBFquarks.clear();
       
       for (int i = 0; i<genPartArr->GetEntries();i++)
 	{
@@ -381,18 +333,8 @@ int main (int argc, char** argv)
 	      genNeutrino.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
 	      v_genNeutrino.push_back(genNeutrino);
 	    }
-	  if( (abs(genloop->pdgId) == 1 || abs(genloop->pdgId) == 3 || abs(genloop->pdgId) == 5 || abs(genloop->pdgId) == 2 || abs(genloop->pdgId) == 4 || abs(genloop->pdgId) == 6) && abs(parentPdg) == 24)
-	    {
-	      genWquarks.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
-	      v_genWquarks.push_back(genWquarks);
-	    }
-	  if( (abs(genloop->pdgId) == 1 || abs(genloop->pdgId) == 3 || abs(genloop->pdgId) == 5 || abs(genloop->pdgId) == 2 || abs(genloop->pdgId) == 4 || abs(genloop->pdgId) == 6) && genloop->status == 23 && abs(parentPdg) != 24)
-	    {
-	      genVBFquarks.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
-	      v_genVBFquarks.push_back(genVBFquarks);
-	    }
 	}
-      if (v_genLep.size()==1 && v_genNeutrino.size()==1 && v_genWquarks.size()==2 && v_genVBFquarks.size()==2)
+      if ((v_genLep.size()==1 || v_genLep.size()==2) && v_genNeutrino.size()==1 )
 	{
 	  WWTree->isGen           = 1;
 	  WWTree->lep_pt_gen      = v_genLep[0].Pt();
@@ -400,40 +342,10 @@ int main (int argc, char** argv)
 	  WWTree->nu_pz_gen	  = v_genNeutrino[0].Pz();
 	  WWTree->nu_pt_gen	  = v_genNeutrino[0].Pt();
 	  WWTree->nu_eta_gen	  = v_genNeutrino[0].Eta();
-	  WWTree->hadW_pt_gen     = (v_genWquarks[0]+v_genWquarks[1]).Pt();
-	  WWTree->hadW_eta_gen    = (v_genWquarks[0]+v_genWquarks[1]).Eta();
-	  WWTree->hadW_phi_gen    = (v_genWquarks[0]+v_genWquarks[1]).Phi();
-	  WWTree->hadW_e_gen      = (v_genWquarks[0]+v_genWquarks[1]).E();
-	  WWTree->hadW_m_gen      = (v_genWquarks[0]+v_genWquarks[1]).M();
-	  
-	  WWTree->lepW_pt_gen     = (v_genLep[0]+v_genNeutrino[0]).Pt();
-	  WWTree->lepW_eta_gen    = (v_genLep[0]+v_genNeutrino[0]).Eta();
-	  WWTree->lepW_phi_gen    = (v_genLep[0]+v_genNeutrino[0]).Phi();
-	  WWTree->lepW_e_gen      = (v_genLep[0]+v_genNeutrino[0]).E();
-	  WWTree->lepW_m_gen      = (v_genLep[0]+v_genNeutrino[0]).M();
-
-	  WWTree->WW_mass_gen	= (v_genLep[0] + v_genNeutrino[0] + v_genWquarks[0] + v_genWquarks[1]).M();
-	  WWTree->WW_mT_gen	= (v_genLep[0] + v_genNeutrino[0] + v_genWquarks[0] + v_genWquarks[1]).Mt();
-	  WWTree->WW_pT_gen	= (v_genLep[0] + v_genNeutrino[0] + v_genWquarks[0] + v_genWquarks[1]).Pt();
-
-	  WWTree->AK4_1_pt_gen	= v_genVBFquarks[0].Pt();
-	  WWTree->AK4_1_eta_gen	= v_genVBFquarks[0].Eta();
-	  WWTree->AK4_1_phi_gen	= v_genVBFquarks[0].Phi();
-	  WWTree->AK4_1_e_gen	= v_genVBFquarks[0].E();
-	  WWTree->AK4_1_mass_gen	= v_genVBFquarks[0].M();
-	  
-	  WWTree->AK4_2_pt_gen	= v_genVBFquarks[1].Pt();
-	  WWTree->AK4_2_eta_gen	= v_genVBFquarks[1].Eta();
-	  WWTree->AK4_2_phi_gen	= v_genVBFquarks[1].Phi();
-	  WWTree->AK4_2_e_gen	= v_genVBFquarks[1].E();
-	  WWTree->AK4_2_mass_gen	= v_genVBFquarks[1].M();
-	  
-	  WWTree->AK4_jj_DeltaEta_gen = abs(v_genVBFquarks[0].Eta() - v_genVBFquarks[1].Eta());
-	  WWTree->AK4_jj_mass_gen = (v_genVBFquarks[0] + v_genVBFquarks[1]).M();
 	  
 	  count_genEvents++;
 	}
-	if ( WWTree->lep_pt_gen > 30 && abs(WWTree->lep_eta_gen) < 2.5 && WWTree->AK4_jj_DeltaEta_gen>2 && WWTree->hadW_pt_gen>200 && WWTree->AK4_1_pt_gen >30 && WWTree->AK4_2_pt_gen>30 && WWTree->AK4_jj_mass_gen > 500 ){
+	if ( WWTree->lep_pt_gen > 30 && abs(WWTree->lep_eta_gen) < 2.5  ){
 	        GenPassCut = 1;
 	 }
     	for (int i = 0; i<lheWgtArr->GetEntries();i++)     // Note that i is starting from 446.
@@ -764,7 +676,6 @@ int main (int argc, char** argv)
 
     outTree->Fill();
 
-    goodJetsv.clear();
     }
     delete infile;
     infile=0, eventTree=0;
