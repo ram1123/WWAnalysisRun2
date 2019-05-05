@@ -30,11 +30,11 @@ print "==> ",changes
 # Get date and time for output directory
 ## ADD "test" IN OUTPUT FOLDER IF YOU ARE TESTING SO THAT LATER YOU REMEMBER TO WHICH DIRECTORY YOU HAVE TO REMOVE FROM EOS
 if TestRun:
-	outputFolder = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+"_TEST/";
+	outputFolder = "/store/user/rasharma/SecondStep/Zmumu_2017_BugIssue_9X/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M')+"_TEST/";
 	OutputLogPath = "OutPut_Logs/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M') + "_TEST";
 else:
-	outputFolder = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
-	OutputLogPath = "OutPut_Logs/Run_2017/Frameworkupdate/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	outputFolder = "/store/user/rasharma/SecondStep/Zmumu_2017_BugIssue_9X/WWTree_"+datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
+	OutputLogPath = "OutPut_Logs/Zmumu_2017_BugIssue_9X/Logs_" + datetime.datetime.now().strftime('%Y_%m_%d_%Hh%M');
 
 print "Name of output dir: ",outputFolder
 # create a directory on eos
@@ -137,13 +137,13 @@ nameDataEl = [
 ];
 
 
-inputlist = "runstep2condor.sh, python/produceWWNtuples.py"
+inputlist = "Bug_Run2017_9X.sh, python/produceWWNtuples.py"
 
 nameData = {"el": nameDataEl, "mu":nameDataMu};
 
 command = "python python/produceWWNtuples.py -i "+inputFolder+" $*";
 
-outScript = open("runstep2condor.sh","w");
+outScript = open("Bug_Run2017_9X.sh","w");
 outScript.write('#!/bin/bash');
 outScript.write("\n"+'echo "Starting job on " `date`');
 outScript.write("\n"+'echo "Running on: `uname -a`"');
@@ -175,10 +175,10 @@ outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
 outScript.write("\n"+'rm -rf ' + CMSSWRel);
 outScript.write("\n");
 outScript.close();
-os.system("chmod 777 runstep2condor.sh");
+os.system("chmod 777 Bug_Run2017_9X.sh");
 
-outJDL = open("runstep2condor.jdl","w");
-outJDL.write("Executable = runstep2condor.sh\n");
+outJDL = open("Bug_Run2017_9X.jdl","w");
+outJDL.write("Executable = Bug_Run2017_9X.sh\n");
 outJDL.write("Universe = vanilla\n");
 #outJDL.write("Requirements =FileSystemDomain==\"fnal.gov\" && Arch==\"X86_64\"");
 outJDL.write("Notification = ERROR\n");
@@ -269,4 +269,4 @@ print "===> Delete the input text files"
 os.system("rm -f listTemp*.txt temp.txt")
 print "===> Set Proxy Using:";
 print "\tvoms-proxy-init --voms cms --valid 168:00";
-print "\"condor_submit runstep2condor.jdl\" to submit";
+print "\"condor_submit Bug_Run2017_9X.jdl\" to submit";

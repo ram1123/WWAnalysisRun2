@@ -1,7 +1,7 @@
 *.patch
 summary.dat
-runstep2condor*.jdl
-runstep2condor*.sh
+*.jdl
+*.sh
 docker_stderror
 *.txt
 !Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
@@ -18,7 +18,6 @@ LSF*
 *.so
 *.pcm
 screenlog.0
-runstep2condor.*
 *.pdf
 *.png
 *.tgz

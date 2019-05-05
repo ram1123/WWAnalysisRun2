@@ -18,9 +18,7 @@ start = timeit.default_timer() # start timer
 ###################################################
 ifhaddOnly = 0    # Only hadd not text file then put ifhaddOnly=1 else ifhaddOnly=0
 
-StoreArea = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_2019_04_30_07h52/"
-#StoreArea = "/store/user/rasharma/SecondStep/Run_2017/Frameworkupdate/WWTree_2019_04_30_15h46/"
-#StoreArea = "/store/user/rasharma/SecondStep/WWTree_After_CWR/2019_03_28_16h05/"   # To cross-check this code
+StoreArea = "/store/user/rasharma/SecondStep/Zmumu_2017_BugIssue_9X/WWTree_2019_05_04_03h33/"
 
 PlottingDirectoryPath = "/uscms_data/d3/rasharma/aQGC_analysis/PlottingMacros/CMSSW_9_0_1/src/PlottingCodes2017/ControlPlots/SampleFiles/"
 

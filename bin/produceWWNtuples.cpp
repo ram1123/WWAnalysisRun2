@@ -77,7 +77,7 @@ int main (int argc, char** argv)
    int applyTrigger = atoi(argv[10]);
    std::string jsonFileName = argv[11];
    int isLocal = atoi(argv[12]);
-   int VBFSel  = atoi(argv[13]);
+   //int VBFSel  = atoi(argv[13]);
 
    std::string leptonName;
 
@@ -92,12 +92,7 @@ int main (int argc, char** argv)
    const baconhep::TTrigger triggerMenu(iHLTFile);  
    std::cout<<"Apply trigger: "<<applyTrigger<<std::endl;
 
-   TLorentzVector W_type0,W_type0_jes_up, W_type0_jes_dn, W_type0_jer_up, W_type0_jer_dn, W_type2, W_run2,W_puppi_type2, W_puppi_type0, W_puppi_run2, W_type0_LEP_Up, W_type0_LEP_Down;
    TLorentzVector LEP1, LEP2, LEP1_Up, LEP1_Down, LEP2_Up, LEP2_Down;
-   TLorentzVector NU0,NU1,NU2,NU0_puppi,NU1_puppi,NU2_puppi;
-   TLorentzVector NU0_jes_up, NU0_jes_dn;
-   TLorentzVector NU0_puppi_jes_up, NU0_puppi_jes_dn;
-   TLorentzVector NU0_jer_up, NU0_jer_dn;
    TLorentzVector ELE,MU;
 
    std::vector<TLorentzVector> tightMuon;
@@ -114,7 +109,6 @@ int main (int argc, char** argv)
    TClonesArray *muonArr    	= new TClonesArray("baconhep::TMuon");
    TClonesArray *electronArr	= new TClonesArray("baconhep::TElectron");
    TClonesArray *vertexArr	= new TClonesArray("baconhep::TVertex");
-   TClonesArray *jetArr		= new TClonesArray("baconhep::TJet");
    TClonesArray *lheWgtArr	= new TClonesArray("baconhep::TLHEWeight");
 
    char list1[2000];
@@ -179,7 +173,7 @@ int main (int argc, char** argv)
 
    int nInputFiles = sampleName.size();
 
-   if (isLocal==1) nInputFiles = 2;
+   if (isLocal==1) nInputFiles = 11;
    cout<<"==> Total number of input files : "<<nInputFiles<<endl;
 
    Long64_t TotalNumberOfEvents = 0, nNegEvents = 0; 
@@ -247,9 +241,7 @@ int main (int argc, char** argv)
       eventTree->SetBranchAddress("Info", &info);    TBranch *infoBr = eventTree->GetBranch("Info");
       eventTree->SetBranchAddress("Muon", &muonArr); TBranch *muonBr = eventTree->GetBranch("Muon");
       eventTree->SetBranchAddress("Electron", &electronArr); TBranch *electronBr = eventTree->GetBranch("Electron");
-      //eventTree->SetBranchAddress("Photon", &photonArr); TBranch *photonBr = eventTree->GetBranch("Photon");
       eventTree->SetBranchAddress("PV",   &vertexArr); TBranch *vertexBr = eventTree->GetBranch("PV");
-      eventTree->SetBranchAddress("AK4CHS",   &jetArr); TBranch *jetBr = eventTree->GetBranch("AK4CHS");    
       TBranch *genBr=0, *genPartBr=0, *lhePartBr=0;
       if(isMC)
       {
@@ -290,13 +282,14 @@ int main (int argc, char** argv)
 	    genBr->GetEntry(jentry);
 	    genPartBr->GetEntry(jentry);
 
-	    TLorentzVector lepW, temp;
-	    TLorentzVector genLep, genNeutrino;
-	    std::vector<TLorentzVector> v_GEN_lepW, v_GEN_temp;
-	    std::vector<TLorentzVector> v_genLep, v_genNeutrino;
+	    //TLorentzVector lepW, temp;
+	    TLorentzVector genLep;//, genNeutrino;
+	    //std::vector<TLorentzVector> v_GEN_lepW, v_GEN_temp;
+	    std::vector<TLorentzVector> v_genLep;	//,v_genNeutrino;
 
-	    v_GEN_lepW.clear();	
-	    v_GEN_temp.clear();	v_genLep.clear();	v_genNeutrino.clear();
+	    //v_GEN_lepW.clear();	
+	    //v_GEN_temp.clear();	
+	    v_genLep.clear();	
 
 	    for (int i = 0; i<genPartArr->GetEntries();i++)
 	    {
@@ -307,26 +300,13 @@ int main (int argc, char** argv)
 		  genLep.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
 		  v_genLep.push_back(genLep);
 	       }
-	       if( (abs(genloop->pdgId) == 12 || abs(genloop->pdgId) == 14 ) && abs(parentPdg) == 24)
-	       {
-		  genNeutrino.SetPtEtaPhiM(genloop->pt, genloop->eta, genloop->phi, genloop->mass);
-		  v_genNeutrino.push_back(genNeutrino);
-	       }
 	    }
 
-	    if ((v_genLep.size()==1 || v_genLep.size()==2) && v_genNeutrino.size()==1)
+	    if ((v_genLep.size()==1 || v_genLep.size()==2) )
 	    {
 	       WWTree->isGen           = 1;
 	       WWTree->lep_pt_gen      = v_genLep[0].Pt();
 	       WWTree->lep_eta_gen     = v_genLep[0].Eta();
-	       WWTree->nu_pz_gen	  = v_genNeutrino[0].Pz();
-	       WWTree->nu_pt_gen	  = v_genNeutrino[0].Pt();
-	       WWTree->nu_eta_gen	  = v_genNeutrino[0].Eta();
-	       WWTree->lepW_pt_gen     = (v_genLep[0]+v_genNeutrino[0]).Pt();
-	       WWTree->lepW_eta_gen    = (v_genLep[0]+v_genNeutrino[0]).Eta();
-	       WWTree->lepW_phi_gen    = (v_genLep[0]+v_genNeutrino[0]).Phi();
-	       WWTree->lepW_e_gen      = (v_genLep[0]+v_genNeutrino[0]).E();
-	       WWTree->lepW_m_gen      = (v_genLep[0]+v_genNeutrino[0]).M();
 
 	       count_genEvents++;
 	    }
@@ -614,255 +594,6 @@ int main (int argc, char** argv)
 	    }
 	 }
 
-	 //////////////THE MET
-	 //preselection on met
-	 if (info->puppETC < 0) continue;
-	 if (WWTree->l_pt2<0) cutEff[3]++;
-	 else cutEff[13]++;
-
-	 // Calculate Neutrino Pz using all the possible choices : 
-	 // type0 -> if real roots, pick the one nearest to the lepton Pz except when the Pz so chosen
-	 //               is greater than 300 GeV in which case pick the most central root.
-	 // type1 -> type = 1: if real roots, choose the one closest to the lepton Pz if complex roots, use only the real part.
-	 //          type = 2: if real roots, choose the most central solution. if complex roots, use only the real part. 
-	 //          type = 3: if real roots, pick the largest value of the cosine*
-
-	 TLorentzVector W_Met;
-	 WWTree->pfMET_Corr = info->puppETC;
-	 WWTree->pfMET_Corr_phi = info->puppETCphi;
-	 if (WWTree->l_pt2<0) {
-	    float Wmass = 80.385;
-
-	    TLorentzVector W_Met_jes_up, W_Met_jes_dn, W_Met_jer_up, W_Met_jer_dn, AK4Up, AK4Down, AK4Up_Puppi, AK4Down_Puppi;
-
-	    W_Met.SetPxPyPzE(info->puppETC * TMath::Cos(info->puppETCphi), info->puppETC * TMath::Sin(info->puppETCphi), 0., sqrt(info->puppETC*info->puppETC));
-	    W_Met_jer_up.SetPxPyPzE(info->pfMETCjerup * TMath::Cos(info->pfMETCphijerup), info->pfMETCjerup * TMath::Sin(info->pfMETCphijerup), 0., sqrt(info->pfMETCjerup*info->pfMETCjerup) );
-	    W_Met_jer_dn.SetPxPyPzE(info->pfMETCjerdn * TMath::Cos(info->pfMETCphijerdn), info->pfMETCjerdn * TMath::Sin(info->pfMETCphijerdn), 0., sqrt(info->pfMETCjerdn*info->pfMETCjerdn) );
-
-	    ////////////////////////////////////////////////////////////////
-	    //		
-	    //		MET JES Calculate
-	    //
-	    ////////////////////////////////////////////////////////////////
-	    jetArr->Clear();
-	    jetBr->GetEntry(jentry);
-	    for ( int i=0; i<jetArr->GetEntries(); i++) //loop on AK4 jet
-	    {
-	       const baconhep::TJet *jet = (baconhep::TJet*)((*jetArr)[i]);
-	       TLorentzVector AK4_LV_temp, AK4_LV_temp2;
-
-	       // Get uncertanity
-	       //double unc = func(jet->pt, jet->eta, fJetUnc_AK4chs); 
-	       double unc = 0.0;
-
-	       // Get AK4 LorentzVector 
-	       AK4_LV_temp.SetPtEtaPhiM(jet->pt, jet->eta, jet->phi, jet->mass);
-
-	       // calculate Up variation
-	       AK4_LV_temp2.SetPtEtaPhiM((1.+unc)*jet->pt, jet->eta, jet->phi, (1.+unc)*jet->mass);
-	       AK4Up += AK4_LV_temp2 - AK4_LV_temp;
-
-	       // calculate Down variation
-	       AK4_LV_temp2.SetPtEtaPhiM((1.-unc)*jet->pt, jet->eta, jet->phi, (1.-unc)*jet->mass);
-	       AK4Down += AK4_LV_temp2 - AK4_LV_temp;
-	    }
-	    W_Met_jes_up = W_Met + AK4Up;
-	    W_Met_jes_dn = W_Met + AK4Down;
-	    //////////////////////////////////////// END: MET JES Calculate
-
-	    if(LEP1.Pt()<=0 || W_Met.Pt() <= 0 ){ std::cerr<<" Negative Lepton - Neutrino Pt "<<std::endl; continue ; }
-	    if (WWTree->l_pt2<0) cutEff[4]++;	// There is no MET in two lepton case. So, cutEff[14] will not increase. So, added cutEff[14] after this met loop
-
-	    // type0 calculation of neutrino pZ
-	    METzCalculator NeutrinoPz_type0;
-	    METzCalculator NeutrinoPz_type0_jes_up;
-	    METzCalculator NeutrinoPz_type0_jes_dn;
-	    METzCalculator NeutrinoPz_type0_jer_up;
-	    METzCalculator NeutrinoPz_type0_jer_dn;
-
-	    METzCalculator_Run2 NeutrinoPz_run2;
-	    NeutrinoPz_type0.SetMET(W_Met);
-	    NeutrinoPz_type0.SetLepton(LEP1);
-	    NeutrinoPz_type0.SetLeptonType(leptonName.c_str());
-
-	    NeutrinoPz_type0_jes_up.SetMET(W_Met_jes_up);
-	    NeutrinoPz_type0_jes_up.SetLepton(LEP1);
-	    NeutrinoPz_type0_jes_up.SetLeptonType(leptonName.c_str());
-
-	    NeutrinoPz_type0_jes_dn.SetMET(W_Met_jes_dn);
-	    NeutrinoPz_type0_jes_dn.SetLepton(LEP1);
-	    NeutrinoPz_type0_jes_dn.SetLeptonType(leptonName.c_str());
-
-	    NeutrinoPz_type0_jer_up.SetMET(W_Met_jer_up);
-	    NeutrinoPz_type0_jer_up.SetLepton(LEP1);
-	    NeutrinoPz_type0_jer_up.SetLeptonType(leptonName.c_str());
-
-	    NeutrinoPz_type0_jer_dn.SetMET(W_Met_jer_dn);
-	    NeutrinoPz_type0_jer_dn.SetLepton(LEP1);
-	    NeutrinoPz_type0_jer_dn.SetLeptonType(leptonName.c_str());
-
-	    NeutrinoPz_run2.SetMET(W_Met);
-	    NeutrinoPz_run2.SetLepton(LEP1);
-	    NeutrinoPz_run2.SetLeptonType(leptonName.c_str());
-
-	    double pz1_type0 = NeutrinoPz_type0.Calculate(); // Default one -> according to type0
-	    //double pz2_type0 = NeutrinoPz_type0.getOther();  // Default one
-
-	    double pz1_run2 = NeutrinoPz_run2.Calculate();
-
-	    double pz1_type0_jes_up = NeutrinoPz_type0_jes_up.Calculate(); // Default one -> according to type0
-	    double pz1_type0_jes_dn = NeutrinoPz_type0_jes_dn.Calculate(); // Default one -> according to type0
-
-	    double pz1_type0_jer_up = NeutrinoPz_type0_jer_up.Calculate();
-	    double pz1_type0_jer_dn = NeutrinoPz_type0_jer_dn.Calculate();
-
-	    // don't touch the neutrino pT
-	    TLorentzVector W_neutrino_type0_met; 
-	    W_neutrino_type0_met.SetPxPyPzE(W_Met.Px(),W_Met.Py(),pz1_type0,sqrt(W_Met.Pt()*W_Met.Pt()+pz1_type0*pz1_type0));
-
-	    // change the neutrino pT in case of complex solution in order to make it real
-	    TLorentzVector W_neutrino_type0; 
-	    W_neutrino_type0.SetPxPyPzE(W_Met.Px(),W_Met.Py(),pz1_type0,sqrt(W_Met.Pt()*W_Met.Pt()+pz1_type0*pz1_type0));
-
-	    if(NeutrinoPz_type0.IsComplex()) {// if this is a complex, change MET
-	       double nu_pt1 = NeutrinoPz_type0.getPtneutrino(1);
-	       double nu_pt2 = NeutrinoPz_type0.getPtneutrino(2);
-	       TLorentzVector W_neutrino_1;
-	       W_neutrino_1.SetPxPyPzE(nu_pt1 * TMath::Cos(info->puppETCphi), nu_pt1 * TMath::Sin(info->puppETCphi), pz1_type0, sqrt(nu_pt1*nu_pt1 + pz1_type0*pz1_type0) );
-	       TLorentzVector W_neutrino_2;
-	       W_neutrino_2.SetPxPyPzE(nu_pt2 * TMath::Cos(info->puppETCphi), nu_pt2 * TMath::Sin(info->puppETCphi), pz1_type0, sqrt(nu_pt2*nu_pt2 + pz1_type0*pz1_type0) );
-
-	       if ( fabs((LEP1+W_neutrino_1).M()-Wmass) < fabs((LEP1+W_neutrino_2).M()-Wmass) ) W_neutrino_type0 = W_neutrino_1;
-	       else W_neutrino_type0 = W_neutrino_2;
-	    }
-
-	    // type2 calculation of neutrino pZ
-	    METzCalculator NeutrinoPz_type2;
-	    NeutrinoPz_type2.SetMET(W_Met);
-	    NeutrinoPz_type2.SetLepton(LEP1);
-	    NeutrinoPz_type2.SetLeptonType(leptonName.c_str());
-
-	    double pz1_type2 = NeutrinoPz_type2.Calculate(2); // Default one -> according to type2
-	    //double pz2_type2 = NeutrinoPz_type2.getOther();   // Default one
-
-	    // don't touch the neutrino pT
-	    TLorentzVector W_neutrino_type2_met; 
-	    W_neutrino_type2_met.SetPxPyPzE(W_Met.Px(),W_Met.Py(),pz1_type2,sqrt(W_Met.Pt()*W_Met.Pt()+pz1_type2*pz1_type2));
-
-	    // change the neutrino pT in case of complex solution in order to make it real
-	    TLorentzVector W_neutrino_type2; 
-	    W_neutrino_type2.SetPxPyPzE(W_Met.Px(),W_Met.Py(),pz1_type2,sqrt(W_Met.Pt()*W_Met.Pt()+pz1_type2*pz1_type2));
-
-	    if (NeutrinoPz_type2.IsComplex()) {// if this is a complex, change MET
-	       double nu_pt1 = NeutrinoPz_type2.getPtneutrino(1);
-	       double nu_pt2 = NeutrinoPz_type2.getPtneutrino(2);
-	       TLorentzVector W_neutrino_1;
-	       W_neutrino_1.SetPxPyPzE(nu_pt1 * TMath::Cos(info->puppETCphi), nu_pt1 * TMath::Sin(info->puppETCphi), pz1_type2, sqrt(nu_pt1*nu_pt1 + pz1_type2*pz1_type2) );
-	       TLorentzVector W_neutrino_2;
-	       W_neutrino_2.SetPxPyPzE(nu_pt2 * TMath::Cos(info->puppETCphi), nu_pt2 * TMath::Sin(info->puppETCphi), pz1_type2, sqrt(nu_pt2*nu_pt2 + pz1_type2*pz1_type2) );
-
-	       if ( fabs((LEP1+W_neutrino_1).M()-Wmass) < fabs((LEP1+W_neutrino_2).M()-Wmass) ) W_neutrino_type2 = W_neutrino_1;
-	       else W_neutrino_type2 = W_neutrino_2;
-	    }	
-
-	    WWTree->pfMET = sqrt(info->pfMET*info->pfMET);
-	    WWTree->pfMET_jes_up = W_Met_jes_up.Pt();		// Calculated with corrected pfMET
-	    WWTree->pfMET_jes_dn = W_Met_jes_dn.Pt();		// Calculated with corrected pfMET
-	    WWTree->pfMET_Phi = info->pfMETphi;
-	    WWTree->pfMET_Corr = info->puppETC;
-	    WWTree->pfMET_Corr_phi = info->puppETCphi;
-	    WWTree->pfMET_Corr_Cov00 = info->puppETCCov00;
-	    WWTree->pfMET_Corr_Cov01 = info->puppETCCov01;
-	    WWTree->pfMET_Corr_Cov11 = info->puppETCCov11;
-	    WWTree->pfMET_Corr_jerup = info->pfMETCjerup;
-	    WWTree->pfMET_Corr_jerdn = info->pfMETCjerdn;
-	    WWTree->pfMET_Corr_jenup = info->pfMETCjenup;
-	    WWTree->pfMET_Corr_jendn = info->pfMETCjendn;
-	    WWTree->pfMET_Corr_uncup = info->pfMETCuncup;
-	    WWTree->pfMET_Corr_uncdn = info->pfMETCuncdn;
-	    WWTree->pfMET_Corr_jrsup = info->pfMETCjrsup;
-	    WWTree->pfMET_Corr_jrsdn = info->pfMETCjrsdn;
-	    WWTree->pfMET_Corr_phijerup = info->pfMETCphijerup;
-	    WWTree->pfMET_Corr_phijerdn = info->pfMETCphijerdn;
-	    WWTree->pfMET_Corr_phijenup = info->pfMETCphijenup;
-	    WWTree->pfMET_Corr_phijendn = info->pfMETCphijendn;
-	    WWTree->pfMET_Corr_phiuncup = info->pfMETCphiuncup;
-	    WWTree->pfMET_Corr_phiuncdn = info->pfMETCphiuncdn;
-	    WWTree->pfMET_Corr_phijrsup = info->pfMETCphijrsup;
-	    WWTree->pfMET_Corr_phijrsdn = info->pfMETCphijrsdn;
-
-	    WWTree->nu_pz_type0 = pz1_type0;
-	    WWTree->nu_pz_type2 = pz1_type2;
-	    WWTree->nu_pz_run2 = pz1_run2;
-	    WWTree->nu_pz_isre = 1-NeutrinoPz_run2.IsComplex();
-	    WWTree->nu_pz_run2_oth = NeutrinoPz_run2.getOther();
-	    WWTree->nu_pz_run2_type = NeutrinoPz_run2.getType();
-
-	    /////////////////THE LEPTONIC W
-	    NU0.SetPtEtaPhiM( GetPt_MET(info->puppETC, info->puppETCphi, WWTree->nu_pz_type0) , GetEta_MET(info->puppETC, info->puppETCphi, WWTree->nu_pz_type0), info->puppETCphi , 0.0 );
-
-	    NU0_jes_up.SetPtEtaPhiM( GetPt_MET(W_Met_jes_up.Pt(), W_Met_jes_up.Phi(), pz1_type0_jes_up), GetEta_MET(W_Met_jes_up.Pt(), W_Met_jes_up.Phi(), pz1_type0_jes_up), W_Met_jes_up.Phi() , 0.0 );
-	    NU0_jes_dn.SetPtEtaPhiM( GetPt_MET(W_Met_jes_dn.Pt(), W_Met_jes_dn.Phi(), pz1_type0_jes_dn), GetEta_MET(W_Met_jes_dn.Pt(), W_Met_jes_dn.Phi(), pz1_type0_jes_dn), W_Met_jes_dn.Phi() , 0.0 );
-
-	    NU0_jer_up.SetPtEtaPhiM( GetPt_MET(W_Met_jer_up.Pt(), W_Met_jer_up.Phi(), pz1_type0_jer_up), GetEta_MET(W_Met_jer_up.Pt(), W_Met_jer_up.Phi(), pz1_type0_jer_up), W_Met_jer_up.Phi() , 0.0);
-	    NU0_jer_dn.SetPtEtaPhiM( GetPt_MET(W_Met_jer_dn.Pt(), W_Met_jer_dn.Phi(), pz1_type0_jer_dn), GetEta_MET(W_Met_jer_dn.Pt(), W_Met_jer_dn.Phi(), pz1_type0_jer_dn), W_Met_jer_dn.Phi() , 0.0);
-
-	    NU2.SetPtEtaPhiM(GetPt_MET( info->puppETC, info->puppETCphi, WWTree->nu_pz_type2 ), GetEta_MET( info->puppETC, info->puppETCphi, WWTree->nu_pz_type2 ), info->puppETCphi, 0.0);
-
-	    NU1.SetPtEtaPhiM(GetPt_MET( info->puppETC, info->puppETCphi, WWTree->nu_pz_run2  ), GetEta_MET( info->puppETC, info->puppETCphi, WWTree->nu_pz_run2  ), info->puppETCphi, 0.0);
-
-	    W_type0 = LEP1 + NU0;
-	    W_type0_jes_up = LEP1 + NU0_jes_up;
-	    W_type0_jes_dn = LEP1 + NU0_jes_dn;
-
-	    W_type0_jer_up = LEP1 + NU0_jer_up;
-	    W_type0_jer_dn = LEP1 + NU0_jer_dn;
-
-	    W_type2 = LEP1 + NU2;
-	    W_run2 = LEP1 + NU1;
-
-	    W_type0_LEP_Up = LEP1_Up +NU0;
-	    W_type0_LEP_Down = LEP1_Down +NU0;
-
-	    WWTree->v_pt_type0 = W_type0.Pt();
-	    WWTree->v_pt_type0_LEP_Up = W_type0_LEP_Up.Pt();
-	    WWTree->v_pt_type0_LEP_Down = W_type0_LEP_Down.Pt();
-
-	    WWTree->v_eta_type0 = W_type0.Eta();
-	    WWTree->v_mt_type0 = TMath::Sqrt(2*LEP1.Et()*NU0.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0))));
-
-	    WWTree->v_mass_type0 = W_type0.M();
-	    WWTree->v_mass_type0_LEP_Up = W_type0_LEP_Up.M();
-	    WWTree->v_mass_type0_LEP_Down = W_type0_LEP_Down.M();
-
-	    WWTree->v_pt_type0_jes_up = W_type0_jes_up.Pt();
-	    WWTree->v_eta_type0_jes_up = W_type0_jes_up.Eta();
-	    WWTree->v_mt_type0_jes_up = TMath::Sqrt(2*LEP1.Et()*NU0_jes_up.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jes_up))));
-	    WWTree->v_mass_type0_jes_up = W_type0_jes_up.M();
-	    WWTree->v_pt_type0_jes_dn = W_type0_jes_dn.Pt();
-	    WWTree->v_eta_type0_jes_dn = W_type0_jes_dn.Eta();
-	    WWTree->v_mt_type0_jes_dn = TMath::Sqrt(2*LEP1.Et()*NU0_jes_dn.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jes_dn))));
-	    WWTree->v_mass_type0_jes_dn = W_type0_jes_dn.M();
-	    WWTree->v_pt_type0_jer_up = W_type0_jer_up.Pt();
-	    WWTree->v_eta_type0_jer_up = W_type0_jer_up.Eta();
-	    WWTree->v_mt_type0_jer_up = TMath::Sqrt(2*LEP1.Et()*NU0_jer_up.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jer_up))));
-	    WWTree->v_mass_type0_jer_up = W_type0_jer_up.M();
-	    WWTree->v_pt_type0_jer_dn = W_type0_jer_dn.Pt();
-	    WWTree->v_eta_type0_jer_dn = W_type0_jer_dn.Eta();
-	    WWTree->v_mt_type0_jer_dn = TMath::Sqrt(2*LEP1.Et()*NU0_jer_dn.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU0_jer_dn))));
-	    WWTree->v_mass_type0_jer_dn = W_type0_jer_dn.M();
-
-	    WWTree->v_pt_type2 = W_type2.Pt();
-	    WWTree->v_pt_run2 = W_run2.Pt();
-	    WWTree->v_eta_type2 = W_type2.Eta();
-	    WWTree->v_eta_run2 = W_run2.Eta();
-	    WWTree->v_phi = W_type2.Phi();
-	    WWTree->v_mt_type2 = TMath::Sqrt(2*LEP1.Et()*NU2.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU2))));
-	    WWTree->v_mt_run2 = TMath::Sqrt(2*LEP1.Et()*NU1.Et()*(1-TMath::Cos(LEP1.DeltaPhi(NU1))));
-	    WWTree->v_mass_type2 = W_type2.M();
-	    WWTree->v_mass_run2 = W_run2.M();
-	 }
-
 	 //if(LEP1.Pt()<=0 || LEP2.Pt() <= 0 ){ std::cerr<<" Negative Lepton - Neutrino Pt "<<std::endl; continue ; }
 	 if (WWTree->l_pt2>0) cutEff[14]++;  // There is no MET in two lepton case. So, cutEff[4] is placed in previous if condition.
  /////////////////////////////////////////////////////////////////////////////////////////	END btag weight calculation
@@ -883,13 +614,8 @@ int main (int argc, char** argv)
       infile=0, eventTree=0;
       /////////////////FILL THE TREE
    }
-   //delete puWeight;	delete puWeight_up;	delete puWeight_down;
-   //delete MCpu;	delete MCpu_up;	delete MCpu_down;
    delete puWeightsDown;	delete puWeightsUp;	delete puWeights;
-   //delete pileupHisto;
-   //pileupFile->Close();
    pileupFileMC->Close();
-   //file->Close();
    std::cout << "---------end loop on events------------" << std::endl;
    std::cout << std::endl;
    std::cout << "GEN events = " << count_genEvents << std::endl;
@@ -928,7 +654,7 @@ int main (int argc, char** argv)
    //--------close everything-------------
    delete info; delete gen;
    delete genPartArr; delete muonArr; delete electronArr; delete vertexArr;
-   delete jetArr;  delete lheWgtArr;
+   delete lheWgtArr;
    outROOT->Write();
    outROOT->Close();
    int t1 = time(NULL);
