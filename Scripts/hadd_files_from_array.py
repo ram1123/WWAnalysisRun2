@@ -3,50 +3,6 @@ import commands
 import argparse
 import timeit
 
-PARENT_PARSER = argparse.ArgumentParser(add_help=False, formatter_class=argparse.RawTextHelpFormatter)
-
-PARENT_PARSER.add_argument('-p', '--path',
-		    action='store', 
-		    required=True,
-		    help='Path of store are where it will find the input root file'
-		   ) # StoreArea
-PARENT_PARSER.add_argument('-o', '--output_path',
-		    action='store', 
-		    required=True,
-		    help='Path of store are where it will find the input root file'
-		   ) # StoreAre
-PARENT_PARSER.add_argument('-n', '--nRootfiles',
-                    action='store',
-		    default=108,
-		    help='number of root files to hadd at a time'
-		   )
-
-PARSER = argparse.ArgumentParser(description='User inputs')
-
-SUBPARSER = PARSER.add_subparsers(help="Available subcommands and their descriptions.")
-
-PARSE_HADD_FILES = SUBPARSER.add_parser("hadd_files", help='', parents=[PARENT_PARSER])
-
-PARSE_HADD_DIR = SUBPARSER.add_parser("hadd_dir", help='', parents=[PARENT_PARSER], formatter_class=argparse.RawTextHelpFormatter)
-
-PARSE_HADD_FILES.add_argument('-i', '--input_array',
-		    action='store', 
-		    required=True,
-		    nargs='+',
-		    #type=str,
-		    #dest='list',
-		    default=[],
-		    help="Input array should be of type:['out.root', 'in_1.root', 'in_2.root', 'in_3.root']"
-		   ) # ifhaddOnly
-PARSE_HADD_DIR.add_argument('-s', '--string_to_search',
-                    action='store',
-		    required=True,
-		    default="test",
-		    help="string to search"
-		   )
-
-ARGS = PARSER.parse_args()
-
 def hadd_files_from_dir(input_path, output_path, search_string):
     print input_path
     print output_path
@@ -81,7 +37,7 @@ def simple_hadd(input_root_files, input_path, output_path):
 def hadd_many_files(input_root_files, input_path, output_path):
     hadd_command = ""
     tempCount = 0
-    #os.system("rm -r /uscmst1b_scratch/lpc1/3DayLifetime/"+commands.getstatusoutput('echo ${USER}')[1]+"/tmp")
+    os.system("rm -r /uscmst1b_scratch/lpc1/3DayLifetime/"+commands.getstatusoutput('echo ${USER}')[1]+"/tmp")
     os.system("mkdir -p /uscmst1b_scratch/lpc1/3DayLifetime/"+commands.getstatusoutput('echo ${USER}')[1]+"/tmp/haddfiles")
     temp_directory = "/uscmst1b_scratch/lpc1/3DayLifetime/"+commands.getstatusoutput('echo ${USER}')[1]+"/tmp/haddfiles"
     print "Temporary directory for placing root files: ",temp_directory
@@ -94,7 +50,7 @@ def hadd_many_files(input_root_files, input_path, output_path):
 	        print "\n\n","#"*51
 		if tempCount != 0:
 		    print "Hadd command:\n\t",hadd_command
-		    #os.system(hadd_command)
+		    os.system(hadd_command)
 		else:
 		    print "Don't print; Reading first file\n"
 		hadd_command = "hadd -f "+temp_directory+os.sep+"temp_"+str(tempCount)+"_temp.root "+"/eos/uscms"+input_path+os.sep+root_file
@@ -103,7 +59,7 @@ def hadd_many_files(input_root_files, input_path, output_path):
 	        hadd_command = hadd_command + " " + "/eos/uscms"+input_path+os.sep+root_file
     print "\n\n","#"*51
     print "Hadd command:\n\t",hadd_command
-    #os.system(hadd_command)
+    os.system(hadd_command)
     
     hadd_command=""
     for root, dirs, filenames in os.walk(temp_directory):
@@ -133,6 +89,50 @@ def main():
 if __name__ == "__main__":
     """Hadd files
     """
+    PARENT_PARSER = argparse.ArgumentParser(add_help=False, formatter_class=argparse.RawTextHelpFormatter)
+    
+    PARENT_PARSER.add_argument('-p', '--path',
+    		    action='store', 
+    		    required=True,
+    		    help='Path of store are where it will find the input root file'
+    		   ) # StoreArea
+    PARENT_PARSER.add_argument('-o', '--output_path',
+    		    action='store', 
+    		    required=True,
+    		    help='Path of store are where it will find the input root file'
+    		   ) # StoreAre
+    PARENT_PARSER.add_argument('-n', '--nRootfiles',
+                        action='store',
+    		    default=108,
+    		    help='number of root files to hadd at a time'
+    		   )
+    
+    PARSER = argparse.ArgumentParser(description='User inputs')
+    
+    SUBPARSER = PARSER.add_subparsers(help="Available subcommands and their descriptions.")
+    
+    PARSE_HADD_FILES = SUBPARSER.add_parser("hadd_files", help='', parents=[PARENT_PARSER])
+    
+    PARSE_HADD_DIR = SUBPARSER.add_parser("hadd_dir", help='', parents=[PARENT_PARSER], formatter_class=argparse.RawTextHelpFormatter)
+    
+    PARSE_HADD_FILES.add_argument('-i', '--input_array',
+    		    action='store', 
+    		    required=True,
+    		    nargs='+',
+    		    #type=str,
+    		    #dest='list',
+    		    default=[],
+    		    help="Input array should be of type:['out.root', 'in_1.root', 'in_2.root', 'in_3.root']"
+    		   ) # ifhaddOnly
+    PARSE_HADD_DIR.add_argument('-s', '--string_to_search',
+                        action='store',
+    		    required=True,
+    		    default="test",
+    		    help="string to search"
+    		   )
+    
+    ARGS = PARSER.parse_args()
+
     print "#"*51
     START_CLOCK = timeit.default_timer() # start timer
     main()

@@ -5,6 +5,7 @@ import yaml
 import timeit
 import uproot 
 from colorpicker import * 
+from hadd_files_from_array import hadd_root_files
 
 
 import argparse
@@ -113,6 +114,7 @@ def getfiles_attributes(yamlfilecontent, filename_withpath_array, path):
                 #print i, files
                 if os.path.isfile(ARGS.eosstring+path+os.sep+files):
                     print CRED, i, files, CEND
+		    #if files.find('Single') != -1:
                     #FIXME: change the reading method to follow eos guideline
                     if (uproot.open(ARGS.eosstring+path+os.sep+files).keys()) == []:
                         print (CGREEN+"\nskip file: "+files+"\n"+CEND)
@@ -211,7 +213,8 @@ def main():
 
     if ARGS.hadd:
         print CBOLD+CGREEN+"\n\nStep: 6: Do the hadd for each clubbed list."+CEND+CEND
-        haddfiles_listoflists(ARGS.eosstring+ARGS.path, ARGS.eosstring+ARGS.path+os.sep+ARGS.outdir, root_file_lists_array)
+        #haddfiles_listoflists(ARGS.eosstring+ARGS.path, ARGS.eosstring+ARGS.path+os.sep+ARGS.outdir, root_file_lists_array)
+	hadd_root_files(root_file_lists_array, ARGS.eosstring+ARGS.path, ARGS.eosstring+ARGS.path+os.sep+ARGS.outdir)
     else:
         print CBOLD+CRED+"\n\nDon't perform the hadd step."+CEND+CEND
 
