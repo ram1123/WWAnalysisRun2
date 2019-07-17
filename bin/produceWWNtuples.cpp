@@ -78,6 +78,24 @@ int main (int argc, char** argv)
   int applyTrigger = atoi(argv[10]);
   std::string jsonFileName = argv[11];
   int isLocal = atoi(argv[12]);
+  std::cout << "======================================================" << std::endl;
+  std::cout << "===	START:: Print input parameters		======" << std::endl;
+  std::cout << "======================================================" << std::endl;
+  std::cout << "Input folder	= " << inputFolder   << std::endl;
+  std::cout << "output file 	= " << outputFile    << std::endl;
+  std::cout << "isMC 		= " << isMC	     << std::endl;
+  std::cout << "cluster 	= " << cluster	     << std::endl;
+  std::cout << "inputTreeName	= " << inputTreeName << std::endl;
+  std::cout << "inputFile	= " << inputFile     << std::endl;
+  std::cout << "xSecWeight	= " << xSecWeight    << std::endl;
+  std::cout << "TotalNumberOfEntries = " << TotalNumberOfEntries << std::endl;
+  std::cout << "TotalNumberOfNegativeEntries = " << TotalNumberOfNegativeEntries << std::endl;
+  std::cout << "applyTrigger	= " << applyTrigger  << std::endl;
+  std::cout << "jsonFileName	= " << jsonFileName  << std::endl;
+  std::cout << "isLocal		= " << isLocal       << std::endl;
+  std::cout << "======================================================" << std::endl;
+  std::cout << "===	END:: Print input parameters		======" << std::endl;
+  std::cout << "======================================================" << std::endl;
   //int VBFSel  = atoi(argv[13]);
   
   std::string leptonName;
@@ -122,9 +140,10 @@ int main (int argc, char** argv)
   else 
 	sprintf(command1,"xrdfs root://cmseos.fnal.gov ls %s | awk '{print \"root://cmseos.fnal.gov/\"$1}' > listTemp_%s.txt",(inputFolder).c_str(),  outputFile.c_str());
 
-  std::cout<<command1<<std::endl;
+  //listTemp_SingleMuonRun2017B_17Nov2017_v1_0.txt
+  //std::cout<<command1<<std::endl;
   sprintf(command2,"sed -i '/failed$/d' listTemp_%s.txt", outputFile.c_str());
-  system(command1);
+  //system(command1);
   system(command2);
   char list1[2000];
   sprintf (list1, "listTemp_%s.txt", outputFile.c_str());
@@ -389,7 +408,7 @@ int main (int argc, char** argv)
   
     //PILE-UP WEIGHT
     if (isMC==1) {
-       if(int(info->nPUmean)<75){
+       if(int(info->nPUmean)<100){
            WWTree->pu_Weight = puWeights->GetBinContent(info->nPUmean); //our pu recipe
            WWTree->pu_Weight_up = puWeightsUp->GetBinContent(info->nPUmean); //our pu recipe
            WWTree->pu_Weight_down = puWeightsDown->GetBinContent(info->nPUmean); //our pu recipe

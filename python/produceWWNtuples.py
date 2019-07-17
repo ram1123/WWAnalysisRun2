@@ -15,6 +15,7 @@ if __name__ == '__main__':
     parser.add_argument ('-c', '--cluster' , default = 'lxplus', help='cluster can be lxplus or lpc')
     parser.add_argument ('-t', '--tree' , default = 'Events', help='name of the input tree')
     parser.add_argument ('-n', '--name' , default = 'WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8' , help='input file')
+    parser.add_argument ('-f', '--infile' , default = 'ttHTobb_M125_TuneCP5_13TeV_powheg_pythia8_0.txt' , help='input text file having path of root files to run over')
     parser.add_argument ('-w', '--xsecWeight' , default = '0.0002739' , help='xsec (pb)')
     parser.add_argument ('-no', '--numberOfEntries' , default = '28687' , help='number of initial entries of the dataset')
     parser.add_argument ('-noNeg', '--numberOfNegEntries' , default = '0' , help='number of initial entries of the negative events in dataset')
@@ -25,19 +26,8 @@ if __name__ == '__main__':
     parser.add_argument ('-exe', '--exe' , default = 'produceWWNtuples', help='location of the executable')
     args = parser.parse_args ()
 
-
-    amcatnloFolder = (args.inputFolder).find("amcatnlo")
-    amcatnloFile = (args.name).find("amcatnlo")
-    if (amcatnloFolder>0) or (amcatnloFile>0):
-    	amcatnlo = 1
-	print "==> aMC@NLO sample"
-    else:
-    	amcatnlo = 0
-	print "==> Not a aMC@NLO sample"
-    if len(args.name) != 2:
-    	command = args.exe+' '+args.inputFolder+'/'+args.name+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.numberOfNegEntries+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
-    else:
-    	command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.name+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.numberOfNegEntries+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
-    print "==> Name = ",len(args.name)
-    print "==> ",command
+    command = args.exe+' '+args.inputFolder+' '+args.output+' '+args.ismc+' '+args.cluster+' '+args.tree+' '+args.infile+' '+args.xsecWeight+' '+args.numberOfEntries+' '+args.numberOfNegEntries+' '+args.applyTrigger+' '+args.json+' '+args.isLocal+' '+args.vbfsel
+    print "#"*51,"\n#\n#\tCommand to run\n#\n# \t",
+    print command,
+    print "\n#\n","#"*51
     os.system(command)
