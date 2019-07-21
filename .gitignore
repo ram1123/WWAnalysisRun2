@@ -1,4 +1,5 @@
 *.patch
+summary.dat
 runstep2condor*.jdl
 runstep2condor*.sh
 docker_stderror

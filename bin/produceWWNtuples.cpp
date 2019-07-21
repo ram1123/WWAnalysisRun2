@@ -79,12 +79,40 @@ int main (int argc, char** argv)
    int isLocal = atoi(argv[12]);
    int VBFSel  = atoi(argv[13]);
 
+  std::cout << "======================================================" << std::endl;
+  std::cout << "===	START:: Print input parameters		======" << std::endl;
+  std::cout << "======================================================" << std::endl;
+  std::cout << "Input folder	= " << inputFolder   << std::endl;
+  std::cout << "output file 	= " << outputFile    << std::endl;
+  std::cout << "isMC 		= " << isMC	     << std::endl;
+  std::cout << "cluster 	= " << cluster	     << std::endl;
+  std::cout << "inputTreeName	= " << inputTreeName << std::endl;
+  std::cout << "inputFile	= " << inputFile     << std::endl;
+  std::cout << "xSecWeight	= " << xSecWeight    << std::endl;
+  std::cout << "TotalNumberOfEntries = " << TotalNumberOfEntries << std::endl;
+  std::cout << "TotalNumberOfNegativeEntries = " << TotalNumberOfNegativeEntries << std::endl;
+  std::cout << "applyTrigger	= " << applyTrigger  << std::endl;
+  std::cout << "jsonFileName	= " << jsonFileName  << std::endl;
+  std::cout << "isLocal		= " << isLocal       << std::endl;
+  std::cout << "======================================================" << std::endl;
+  std::cout << "===	END:: Print input parameters		======" << std::endl;
+  std::cout << "======================================================" << std::endl;
+
    std::string leptonName;
 
-   if ( VBFSel==1)	cout<<"==> VBF selection method : Select two highest pT jets"<<endl;
-   else if ( VBFSel==2)	cout<<"==> VBF selection method : Select pair with highest mjj..."<<endl;
-   else if ( VBFSel==3)	cout<<"==> VBF selection method : Select pair with highest DeltaEta..."<<endl;
-   else {	throw invalid_argument("Enter valid vbf selection criteria");	}
+   switch ( VBFSel ) {
+      case 2:
+	std::cout << "==> VBF selection method : Select pair with highest mjj..." << std::endl;
+	break;
+      case 3:
+	std::cout << "==> VBF selection method : Select pair with highest DeltaEta..." << std::endl;
+	break;
+      case 1:
+      	std::cout << "==> VBF selection method : Select two highest pT jets" << std::endl;
+	break;
+      default:
+      	throw std::invalid_argument("Enter valid vbf selection criteria");
+   }
 
    std::string iHLTFile="${CMSSW_BASE}/src/BaconAna/DataFormats/data/HLTFile_25ns";
    const std::string cmssw_base = getenv("CMSSW_BASE");
@@ -97,23 +125,36 @@ int main (int argc, char** argv)
    const baconhep::TTrigger triggerMenu(iHLTFile);  
    std::cout<<"Apply trigger: "<<applyTrigger<<std::endl;
 
-   TLorentzVector W_type0,W_type0_jes_up, W_type0_jes_dn, W_type0_jer_up, W_type0_jer_dn, W_type2, W_run2,W_puppi_type2, W_puppi_type0, W_puppi_run2, W_type0_LEP_Up, W_type0_LEP_Down;
-   TLorentzVector LEP1, LEP2, LEP1_Up, LEP1_Down, LEP2_Up, LEP2_Down, SJ1_PuppiAK8, SJ2_PuppiAK8, SJ1, SJ2;
-   TLorentzVector NU0,NU1,NU2,NU0_puppi,NU1_puppi,NU2_puppi;
+   // Define TLorentzVector for leptons
+   TLorentzVector LEP1, LEP1_Up, LEP1_Down;
+   TLorentzVector LEP2, LEP2_Up, LEP2_Down;
+   TLorentzVector ELE,MU;
+   // Define TLorentzVector for MET
+   TLorentzVector NU0, NU1, NU2;
    TLorentzVector NU0_jes_up, NU0_jes_dn;
-   TLorentzVector NU0_puppi_jes_up, NU0_puppi_jes_dn;
    TLorentzVector NU0_jer_up, NU0_jer_dn;
-   TLorentzVector JET, JET_PuppiAK8, AK4;
-   TLorentzVector JET_jes_up, JET_jes_dn, JET_PuppiAK8_jes_up, JET_PuppiAK8_jes_dn;
-   TLorentzVector AK4_JET1,AK4_JET2;
+   TLorentzVector NU0_puppi, NU1_puppi, NU2_puppi;
+   TLorentzVector NU0_puppi_jes_up, NU0_puppi_jes_dn;
+   // Define TLorentzVector for leptonic W-bosons
+   TLorentzVector W_type0, W_type0_jes_up, W_type0_jes_dn, W_type0_jer_up, W_type0_jer_dn, W_type0_LEP_Up, W_type0_LEP_Down;
+   TLorentzVector W_type2;
+   TLorentzVector W_run2;
+   TLorentzVector W_puppi_type2, W_puppi_type0, W_puppi_run2;
+   // Define TLorentzVector for hadronic W-bosons
+   TLorentzVector SJ1_PuppiAK8, SJ2_PuppiAK8, SJ1, SJ2;
+   TLorentzVector JET, JET_PuppiAK8;
+   TLorentzVector JET_jes_up, JET_jes_dn;
+   TLorentzVector JET_PuppiAK8_jes_up, JET_PuppiAK8_jes_dn;
+   TLorentzVector AK4;
+   TLorentzVector AK4_JET1, AK4_JET2;
    TLorentzVector AK4_JET1_jes_up, AK4_JET1_jes_dn;
    TLorentzVector AK4_JET2_jes_up, AK4_JET2_jes_dn;
-   TLorentzVector PuppiAK4_JET1,PuppiAK4_JET2;
+   TLorentzVector PuppiAK4_JET1, PuppiAK4_JET2;
    TLorentzVector PuppiAK4_JET1_jes_up, PuppiAK4_JET1_jes_dn;
    TLorentzVector PuppiAK4_JET2_jes_up, PuppiAK4_JET2_jes_dn;
-   TLorentzVector VBF1,VBF2,TOT;
+   // Define TLorentzVector for VBF jets
+   TLorentzVector VBF1, VBF2, TOT;
    TLorentzVector VBF1_jes_up, VBF1_jes_dn, VBF2_jes_up, VBF2_jes_dn;
-   TLorentzVector ELE,MU;
 
    std::vector<TLorentzVector> tightMuon;
    std::vector<TLorentzVector> looseMuon;

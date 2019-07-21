@@ -18,8 +18,7 @@ TestRun = 0
 
 doMC = True;
 doData = True;
-category = ["mu"];
-#category = ["el","mu"];
+category = ["el","mu"];
 
 lumi = 35900.0
 
@@ -134,6 +133,11 @@ nameDataMu = [
    ];
 
 nameDataEl = [
+	"SingleElectronRun2017B_31Mar2018_v1",
+	"SingleElectronRun2017C_31Mar2018_v1",
+	"SingleElectronRun2017D_31Mar2018_v1",
+	"SingleElectronRun2017E_31Mar2018_v1",
+	"SingleElectronRun2017F_31Mar2018_v1",
 ];
 
 
@@ -197,15 +201,17 @@ if( doMC ):
       ##		Text File Preparation	
       ##
       #######################################################################
-      print("xrdfs root://cmseos.fnal.gov ls "+inputFolder+str(samples[i][1])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
+      #print("xrdfs root://cmseos.fnal.gov ls "+inputFolder+str(samples[i][1])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
+      print("eos root://cmseos.fnal.gov find "+inputFolder+str(samples[i][1])+" | grep root | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
       print "\n\n"
-      os.system("xrdfs root://cmseos.fnal.gov ls "+inputFolder+str(samples[i][1])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
+      #os.system("xrdfs root://cmseos.fnal.gov ls "+inputFolder+str(samples[i][1])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
+      os.system("eos root://cmseos.fnal.gov find "+inputFolder+str(samples[i][1])+" | grep root | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
       tempFile = open('temp.txt','r')
       CountFiles = 0
       CountLines = 0
       for lines in tempFile:
-        if CountLines % 50 == 0:
-          newFile = open('listTemp_'+str(samples[i][1])+'_'+str(CountFiles)+'.txt','w')
+        if CountLines % 100 == 0:
+          newFile = open('listTemp_WWTree_'+str(samples[i][1])+'_'+str(CountFiles)+'.txt','w')
           CountFiles = CountFiles + 1
         newFile.write(lines)
         CountLines = CountLines + 1
@@ -215,11 +221,11 @@ if( doMC ):
       #
       ######################################################################
       for counts in xrange(CountFiles):
-	#outJDL.write("Transfer_Input_Files = "+inputlist+" "+"listTemp_"+str(samples[i][1])+"_"+str(counts)+".txt  \n");
+	#outJDL.write("Transfer_Input_Files = "+inputlist+" "+"listTemp_"+str(nameData[category[a]][i])+"_"+str(counts)+".txt  \n");
         outJDL.write("Output = "+OutputLogPath+"/"+str(samples[i][1])+"_"+str(counts)+".stdout\n");
         outJDL.write("Error  = "+OutputLogPath+"/"+str(samples[i][1])+"_"+str(counts)+".stdout\n");
         outJDL.write("Log  = "+OutputLogPath+"/Logs/"+str(samples[i][1])+"_"+str(counts)+".log\n");
-        outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+str(counts)+" -w "+str(samples[i][0])+" -no "+ str(samples[i][2]) + " -noNeg " + str(samples[i][3]) + " -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc -f "+ "listTemp_"+str(samples[i][1])+"_"+str(counts)+".txt " +" \n");
+        outJDL.write("Arguments = -n "+str(samples[i][1])+" -o WWTree_"+str(samples[i][1])+"_"+str(counts)+" -w "+str(samples[i][0])+" -no "+ str(samples[i][2]) + " -noNeg " + str(samples[i][3]) + " -lumi "+str(lumi)+" --ismc 1 -trig 1 -c lpc -f "+ "listTemp_WWTree_"+str(samples[i][1])+"_"+str(counts)+".txt " +" \n");
         outJDL.write("Queue\n");
     
 #data
@@ -231,18 +237,22 @@ if( doData ):
       	    ##		Text File Preparation	
       	    ##
       	    #######################################################################
-      	    print("xrdfs root://cmseos.fnal.gov ls "+inputFolder+str(samples[i][1])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
+     	    #print("xrdfs root://cmseos.fnal.gov ls "+inputFolder+str(nameData[category[a]][i])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
+      	    print("eos root://cmseos.fnal.gov find "+inputFolder+str(nameData[category[a]][i])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
       	    print "\n\n"
-      	    os.system("xrdfs root://cmseos.fnal.gov ls "+inputFolder+str(samples[i][1])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
+      	    #os.system("xrdfs root://cmseos.fnal.gov ls "+inputFolder+str(nameData[category[a]][i])+" | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
+      	    os.system("eos root://cmseos.fnal.gov find "+inputFolder+str(nameData[category[a]][i])+" | grep root | awk '{print \"root://cmseos.fnal.gov/\"$1}' > temp.txt")
       	    tempFile = open('temp.txt','r')
       	    CountFiles = 0
       	    CountLines = 0
       	    for lines in tempFile:
-      	      if CountLines % 50 == 0:
-      	        newFile = open('listTemp_'+str(samples[i][1])+'_'+str(CountFiles)+'.txt','w')
+      	      if CountLines % 100 == 0:
+		if CountFiles != 0: newFile.close()
+      	        newFile = open('listTemp_WWTree_'+str(nameData[category[a]][i])+'_'+str(CountFiles)+'.txt','w')
       	        CountFiles = CountFiles + 1
       	      newFile.write(lines)
       	      CountLines = CountLines + 1
+	    newFile.close()
       	    ######################################################################
       	    #
       	    #		Main Part
@@ -252,8 +262,8 @@ if( doData ):
                outJDL.write("Output = "+OutputLogPath+"/"+(nameData[category[a]])[i]+"_"+str(counts)+".stdout\n");
                outJDL.write("Error = "+OutputLogPath+"/"+(nameData[category[a]])[i]+"_"+str(counts)+".stdout\n");
                outJDL.write("Log = "+OutputLogPath+"/Logs/"+(nameData[category[a]])[i]+"_"+str(counts)+".log\n");
-               outJDL.write("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+"_"+str(counts)+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc -f "+ "listTemp_"+str(samples[i][1])+"_"+str(counts)+".txt " +" \n");
-               print("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+"_"+str(counts)+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc -f "+ "listTemp_"+str(samples[i][1])+"_"+str(counts)+".txt " +" \n");
+               outJDL.write("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+"_"+str(counts)+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc -f "+ "listTemp_WWTree_"+str(nameData[category[a]][i])+"_"+str(counts)+".txt " +" \n");
+               print("Arguments = -n "+(nameData[category[a]])[i]+" -o WWTree_"+(nameData[category[a]])[i]+"_"+category[a]+"_"+str(counts)+" -w 1. -no 1. --ismc 0 -trig 1 -c lpc -f "+ "listTemp_WWTree_"+str(nameData[category[a]][i])+"_"+str(counts)+".txt " +" \n");
                outJDL.write("Queue\n");
 
 outJDL.close();
@@ -266,7 +276,7 @@ make_tarfile(CMSSWRel+".tgz", cmsswDirPath)
 os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolder+'/' + CMSSWRel+".tgz")
 
 print "===> Delete the input text files"
-os.system("rm -f listTemp*.txt temp.txt")
+#os.system("rm -f listTemp*.txt temp.txt")
 print "===> Set Proxy Using:";
 print "\tvoms-proxy-init --voms cms --valid 168:00";
 print "\"condor_submit runstep2condor.jdl\" to submit";
