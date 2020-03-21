@@ -17,7 +17,7 @@ inputFolder = "/store/user/lpcbacon/15/";
 TestRun = 0
 
 doMC = True;
-doData = True;
+doData = False;
 category = ["el","mu"];
 
 lumi = 35900.0
@@ -82,46 +82,50 @@ samples = [
 
     	#	DY jets
     	#( 4435.5258,	"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",	0),
-	(0.0,	"DYJetsToLL_M_50_HT_100to200_TuneCP5_13TeV",	1,	0),
-	(0.0,	"DYJetsToLL_M_50_HT_200to400_TuneCP5_13TeV",	1,	0),
-	(0.0,	"DYJetsToLL_M_50_HT_400to600_TuneCP5_13TeV",	1,	0),
-	(0.0,	"DYJetsToLL_M_50_HT_600to800_TuneCP5_13TeV",	1,	0),
-	(0.0,	"DYJetsToLL_M_50_HT_800to1200_TuneCP5_13TeV",	1,	0),
-	(0.0,	"DYJetsToLL_M_50_HT_1200to2500_TuneCP5_13TeV",	1,	0),
-	(0.0,	"DYJetsToLL_M_50_HT_2500toInf_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"DYJetsToLL_M_50_HT_100to200_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"DYJetsToLL_M_50_HT_200to400_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"DYJetsToLL_M_50_HT_400to600_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"DYJetsToLL_M_50_HT_600to800_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"DYJetsToLL_M_50_HT_800to1200_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"DYJetsToLL_M_50_HT_1200to2500_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"DYJetsToLL_M_50_HT_2500toInf_TuneCP5_13TeV",	1,	0),
+
+    (0.0,   "DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8", 1, 0),
+    (0.0,   "DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8", 1, 0),
+    (0.0,   "DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8", 1, 0),
 
     	#	Wjets
-	(0.0,	"WJetsToLNu_HT_100To200_TuneCP5_13TeV",		1,	0),
-	(0.0,	"WJetsToLNu_HT_200To400_TuneCP5_13TeV",		1,	0),
-	(0.0,	"WJetsToLNu_HT_400To600_TuneCP5_13TeV",		1,	0),
-	(0.0,	"WJetsToLNu_HT_600To800_TuneCP5_13TeV",		1,	0),
-	(0.0,	"WJetsToLNu_HT_800To1200_TuneCP5_13TeV",	1,	0),
-	(0.0,	"WJetsToLNu_HT_1200To2500_TuneCP5_13TeV",	1,	0),
-	(0.0,	"WJetsToLNu_HT_2500ToInf_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"WJetsToLNu_HT_100To200_TuneCP5_13TeV",		1,	0),
+	#(0.0,	"WJetsToLNu_HT_200To400_TuneCP5_13TeV",		1,	0),
+	#(0.0,	"WJetsToLNu_HT_400To600_TuneCP5_13TeV",		1,	0),
+	#(0.0,	"WJetsToLNu_HT_600To800_TuneCP5_13TeV",		1,	0),
+	#(0.0,	"WJetsToLNu_HT_800To1200_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"WJetsToLNu_HT_1200To2500_TuneCP5_13TeV",	1,	0),
+	#(0.0,	"WJetsToLNu_HT_2500ToInf_TuneCP5_13TeV",	1,	0),
 
-	#	VV/VVV
-	#( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	5057358,	953706),
-	(0.0,	"WW_TuneCP5_13TeV_pythia8",	1,	0),
-	(0.0,	"WZ_TuneCP5_13TeV_pythia8",	1,	0),
-	(0.0,	"ZZ_TuneCP5_13TeV_pythia8",	1,	0),
+	##	VV/VVV
+	##( 49.997,	"WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8",	5057358,	953706),
+	#(0.0,	"WW_TuneCP5_13TeV_pythia8",	1,	0),
+	#(0.0,	"WZ_TuneCP5_13TeV_pythia8",	1,	0),
+	#(0.0,	"ZZ_TuneCP5_13TeV_pythia8",	1,	0),
 
-	#	TTbar and single top
-	(0.0,	"ST_s_channel_4f_leptonDecays_TuneCP5_13TeV_amcatnlo_pythia8",				1,	0),
-	(0.0,	"ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV_powheg_pythia8",			1,	0),
-	(0.0,	"ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV_powheg_pythia8",				1,	0),
-	(0.0,	"ST_t_channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV_powhegV2_madspin_pythia8",	1,	0),
-	(0.0,	"ST_t_channel_top_4f_inclusiveDecays_TuneCP5_13TeV_powhegV2_madspin_pythia8",		1,	0),
-	(0.0,	"TTTo2L2Nu_TuneCP5_13TeV_powheg_pythia8",						1,	0),
-	(0.0,	"TTToHadronic_TuneCP5_13TeV_powheg_pythia8",						1,	0),
-	(0.0,	"TTToSemiLeptonic_TuneCP5_13TeV_powheg_pythia8",					1,	0),
+	##	TTbar and single top
+	#(0.0,	"ST_s_channel_4f_leptonDecays_TuneCP5_13TeV_amcatnlo_pythia8",				1,	0),
+	#(0.0,	"ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV_powheg_pythia8",			1,	0),
+	#(0.0,	"ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV_powheg_pythia8",				1,	0),
+	#(0.0,	"ST_t_channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV_powhegV2_madspin_pythia8",	1,	0),
+	#(0.0,	"ST_t_channel_top_4f_inclusiveDecays_TuneCP5_13TeV_powhegV2_madspin_pythia8",		1,	0),
+	#(0.0,	"TTTo2L2Nu_TuneCP5_13TeV_powheg_pythia8",						1,	0),
+	#(0.0,	"TTToHadronic_TuneCP5_13TeV_powheg_pythia8",						1,	0),
+	#(0.0,	"TTToSemiLeptonic_TuneCP5_13TeV_powheg_pythia8",					1,	0),
 
-	##	QCD
-	#( 27990000.0,	"QCD_HT100to200_13TeV_1",	80614044,	1,	0),
-	(0.0,	"QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
-	(0.0,	"QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
-	(0.0,	"QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
-	(0.0,	"QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
-	(0.0,	"QCD_HT700to1000_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
+	###	QCD
+	##( 27990000.0,	"QCD_HT100to200_13TeV_1",	80614044,	1,	0),
+	#(0.0,	"QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
+	#(0.0,	"QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
+	#(0.0,	"QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
+	#(0.0,	"QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
+	#(0.0,	"QCD_HT700to1000_TuneCP5_13TeV-madgraphMLM-pythia8",	1,	0),
     ]
 
 nameDataMu = [
@@ -129,7 +133,11 @@ nameDataMu = [
 	"SingleMuonRun2017C_17Nov2017_v1",
 	"SingleMuonRun2017D_17Nov2017_v1",
 	"SingleMuonRun2017E_17Nov2017_v1",
-	"SingleMuonRun2017F_17Nov2017_v1"
+	"SingleMuonRun2017F_17Nov2017_v1",
+	"SingleMuonRun2018A_17Sep2018_v2_v2",
+	"SingleMuonRun2018B_17Sep2018_v1",
+	"SingleMuonRun2018C_17Sep2018_v1",
+	"SingleMuonRun2018D_PromptReco_v2_v3"
    ];
 
 nameDataEl = [
@@ -188,6 +196,7 @@ outJDL.write("Universe = vanilla\n");
 outJDL.write("Notification = ERROR\n");
 outJDL.write("Should_Transfer_Files = YES\n");
 outJDL.write("WhenToTransferOutput = ON_EXIT\n");
+outJDL.write("request_memory = 5001\n")
 #outJDL.write("include : list-infiles.sh |\n");
 outJDL.write("Transfer_Input_Files = "+inputlist+"\n");
 outJDL.write("x509userproxy = $ENV(X509_USER_PROXY)\n");
@@ -274,9 +283,14 @@ make_tarfile(CMSSWRel+".tgz", cmsswDirPath)
 
 # send the created tarball to eos
 os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+outputFolder+'/' + CMSSWRel+".tgz")
+# remove the tarball after sending it to eos
+os.system('rm -f CMSSW*.tgz')
 
-print "===> Delete the input text files"
+print "===> Move the input text files to old_txtFiles directory"
+os.system("mkdir old_txtFiles")
+os.system("mv listTemp*.txt temp.txt old_txtFiles/")
 #os.system("rm -f listTemp*.txt temp.txt")
 print "===> Set Proxy Using:";
 print "\tvoms-proxy-init --voms cms --valid 168:00";
 print "\"condor_submit runstep2condor.jdl\" to submit";
+os.system("condor_submit runstep2condor.jdl")

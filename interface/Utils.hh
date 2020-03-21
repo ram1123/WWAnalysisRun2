@@ -1,110 +1,41 @@
-#ifndef MONOXUTILS_HH
-#define MONOXUTILS_HH
+#ifndef UTILS_HH
+#define UTILS_HH
 
-#include "BaconAna/DataFormats/interface/TElectron.hh"
-#include "BaconAna/DataFormats/interface/TMuon.hh"
-#include "BaconAna/DataFormats/interface/TTau.hh"
-#include "BaconAna/DataFormats/interface/TJet.hh"
-#include "BaconAna/DataFormats/interface/TPhoton.hh"
-#include "BaconAna/DataFormats/interface/TGenParticle.hh"
+#include <TH1F.h>
+#include "WWAnalysis/WWAnalysisRun2/interface/WVJJData.hh"
+#include "WWAnalysis/WWAnalysisRun2/interface/ElectronID.hh"
+#include "WWAnalysis/WWAnalysisRun2/interface/MuonID.hh"
+#include "WWAnalysis/WWAnalysisRun2/interface/JetID.hh"
 
-#include "TLorentzVector.h"
-#include "TTree.h"
-#include "TMath.h"
-#include <TH1D.h>
-#include <TH2D.h>
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
-#include <vector>
-#include <cassert>
-#include <iostream>
+float deltaR(float eta1, float phi1, float eta2, float phi2) {
 
-bool   passJetLooseSel        (const baconhep::TJet *jet);
-bool   passPuppiJetLooseSel   (const baconhep::TJet *jet);
-bool   passJetTightSel        (const baconhep::TJet *jet);
-bool   passJetTightLepVetoSel (const baconhep::TJet *jet);
-bool   passEleVetoSel         (const baconhep::TElectron *electron, const double rho);
-bool   passEleLooseSel        (const baconhep::TElectron *electron, const double rho);
-bool   passEleMediumSel       (const baconhep::TElectron *electron, const double rho);
-bool   passEleTightSel        (const baconhep::TElectron *electron, const double rho);
-bool   passEleHEEPSel         (const baconhep::TElectron *electron, const double rho, const double met);
-bool   passPhoLooseSel        (const baconhep::TPhoton *photon, const double rho);
-bool   passPhoMediumSel       (const baconhep::TPhoton *photon, const double rho);
-bool   passPhoTightSel        (const baconhep::TPhoton *photon, const double rho);
-double eleEffArea             (const double eta);
-double phoEffArea             (const double eta, const int type);
-bool   passMuonLooseSel       (const baconhep::TMuon *muon);
-bool   passMuonMediumSel      (const baconhep::TMuon *muon);
-bool   passMuonTightSel       (const baconhep::TMuon *muon);
-bool   passMuonSoftSel        (const baconhep::TMuon *muon);
-bool   passMuonHighPtSel      (const baconhep::TMuon *muon);
-bool   passTauSel             (const baconhep::TTau *tau);
+  float dPhi = fabs(phi1-phi2);
+  if (dPhi>6.283185308) dPhi -= 6.283185308;
+  if (dPhi>3.141592654) dPhi = 3.141592654 - dPhi;
 
-double getVal                 (TH1D*h,double val);
-double getVal2D               (TH2D*h,double val1, double val2);
-bool   passVeto               (double iEta,double iPhi,double idR,std::vector<TLorentzVector> &iVetoes);
-double deltaR2                (double iEta, double iPhi, double jEta, double jPhi);
-void   setupNtuple            (std::string iHeader,TTree *iTree,int iN,std::vector<double> &iVals);
-void   setupNtuple            (std::string iHeader,TTree *iTree,int iN,std::vector<double> &iVals,int iHead,std::vector<std::string> &iLabels);
-void   setupNtuple            (std::string iHeader,TTree *iTree,int iN,std::vector<float> &iVals,std::vector<std::string> &iLabels);
-void   setupNtupleVector      (std::string iHeader,TTree *iTree,std::vector<double> &pt, std::vector<double> &eta, std::vector<double> &phi);
-void   setupNtupleVector      (std::string iHeader,TTree *iTree,std::vector< std::vector<double> > &iValVectors,std::vector<std::string> &iLabels);
-void   setupNtupleVector      (std::string iHeader,TTree *iTree,std::vector< std::vector<float> > &iValVectors,std::vector<std::string> &iLabels);
-int    EqualTo		      (double a, double b);
-int    GreaterThan	      (double a, double b);
-int    LessThan		      (double a, double b);
-int    GreaterThanEqual	      (double a, double b);
-int    LessThanEqual	      (double a, double b);
+  float dEta = fabs(eta1-eta2);
 
-template<class T> void addObject(T *iObject,std::vector<T*> &iObjects) {
-  bool lFill = false;
-  for(typename std::vector<T*>::iterator pIter = iObjects.begin(); pIter != iObjects.end(); pIter++) {
-    if((*pIter)->pt > iObject->pt) continue;
-    iObjects.insert(pIter,iObject);
-    lFill = true;
-    break;
-  }
-  if(!lFill)  iObjects.push_back(iObject);
-}
-template<class T> void fillObject(int iN,std::vector<T*> &iObjects,std::vector<double> &iVals) { 
-  int lMin = iObjects.size();
-  if(iN < lMin) lMin = iN;
-  for(int i0 = 0; i0 < lMin; i0++) { 
-    iVals[i0*3+0] = iObjects[i0]->pt;
-    iVals[i0*3+1] = iObjects[i0]->eta;
-    iVals[i0*3+2] = iObjects[i0]->phi;
-  }
-}
-template<class T> void addVeto(std::vector<T*> &iObjects,std::vector<TLorentzVector> &iVetoes,double iMass) { 
-  for(typename std::vector<T*>::iterator pIter = iObjects.begin(); pIter != iObjects.end(); pIter++) {
-    TLorentzVector lVec; lVec.SetPtEtaPhiM((*pIter)->pt,(*pIter)->eta,(*pIter)->phi,iMass);
-    iVetoes.push_back(lVec);
-  }
-}
-template<class T> void addVetoV(std::vector<T*> &iObjects,std::vector<TLorentzVector> &iVetoes) {
-  for(typename std::vector<T*>::iterator pIter = iObjects.begin(); pIter != iObjects.end(); pIter++) {
-    TLorentzVector lVec; lVec.SetPtEtaPhiM((*pIter)->pt,(*pIter)->eta,(*pIter)->phi,(*pIter)->mass);
-    iVetoes.push_back(lVec);
-  }
+  return sqrt( dPhi*dPhi + dEta*dEta );
+
 }
 
+float GetSFs_Lepton(double pt, double eta, TH1F *h1){
+  if (pt > h1->GetYaxis()->GetXmax())
+    pt = h1->GetYaxis()->GetXmax() - 1.0;
+  if (pt < h1->GetYaxis()->GetXmin())
+    pt = h1->GetYaxis()->GetXmin() + 1.0;
+  
+  return h1->GetBinContent(h1->GetXaxis()->FindFixBin(eta), h1->GetYaxis()->FindFixBin(pt));
+}
 
-
-#define addElectron  addObject<baconhep::TElectron>
-#define addMuon      addObject<baconhep::TMuon>
-#define addTau       addObject<baconhep::TTau>
-#define addJet       addObject<baconhep::TJet>
-#define addPhoton    addObject<baconhep::TPhoton>
-
-#define fillElectron  fillObject<baconhep::TElectron>
-#define fillMuon      fillObject<baconhep::TMuon>
-#define fillTau       fillObject<baconhep::TTau>
-#define fillJet       fillObject<baconhep::TJet>
-#define fillPhoton    fillObject<baconhep::TPhoton>
-
-#define addVElectron   addVeto<baconhep::TElectron>
-#define addVMuon       addVeto<baconhep::TMuon>
-#define addVTau        addVeto<baconhep::TTau>
-#define addVJet        addVetoV<baconhep::TJet>
-#define addVPhoton     addVeto<baconhep::TPhoton>
+double GetJECunc( double pt, double eta, JetCorrectionUncertainty *fJetUnc) { 
+  fJetUnc->setJetPt ( pt  );
+  fJetUnc->setJetEta( eta );
+  return fJetUnc->getUncertainty(true);
+}
 
 #endif

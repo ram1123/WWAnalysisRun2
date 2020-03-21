@@ -40,7 +40,8 @@ def simple_hadd(input_root_files, input_path, output_path):
     print "="*51
     print "output_path = ",output_path
     print "="*51
-    command = "hadd -f root://cmsxrootd.fnal.gov/"+output_path.replace("/eos/uscms","")+os.sep+input_root_files[0]
+    #command = "hadd -f root://cmsxrootd.fnal.gov/"+output_path.replace("/eos/uscms","")+os.sep+input_root_files[0]
+    command = "hadd -f "+output_path+os.sep+input_root_files[0]
     for root_file in range(1,len(input_root_files)):
         command += " "+input_path+os.sep+input_root_files[root_file]
         #command += " "+"/eos/uscms/"+input_path+os.sep+input_root_files[root_file]

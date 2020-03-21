@@ -52,6 +52,10 @@ def check_directory(path, directory_name):
        - If the output directory does not exists, create it.
        - If it exists then remove the output directory, then
          create the new one.
+
+    Parameters:
+       path (string): Location of the directory.
+       directory_name (string): Name of directory to check.
     """
     print "path = ", path
     print "directory name = ", directory_name
@@ -69,7 +73,11 @@ def check_directory(path, directory_name):
 
 def getfilename_array(path, fileextension):
     """Get an array containing all root files
-    from the "path"
+    from the location given by parameter named "path"
+
+    Parameters:
+       path (string): Location of the directory.
+       fileextension (string): extension of the file for which one need to fill information.
     """
     arrayfile_path = []
     count = 0
@@ -95,6 +103,16 @@ def getfiles_attributes(yamlfilecontent, filename_withpath_array, path):
     search corresponding sample name in the path
     then count number of total events present in the 
     path and the number of negative events
+
+    Parameters:
+       yamlfilecontent (string):
+       filename_withpath_array (string):
+       path (string):
+    
+    Return:
+       root_file_lists_array (array of string):
+       event_count_list (array of int):
+       count_negative_events_list (array of int):
     """
     #TODO: Reverse the looping condition and if any root file
     #	    present at path is not found in the Yaml file then
@@ -113,13 +131,20 @@ def getfiles_attributes(yamlfilecontent, filename_withpath_array, path):
             if files.find(sample) != -1:
                 #print i, files
                 if os.path.isfile(ARGS.eosstring+path+os.sep+files):
-                    #print CRED, i, files, CEND
-		    #if files.find('Single') != -1:
+                    print CRED, i, files, CEND
+                    #if files.find('Single') != -1:
                     #FIXME: change the reading method to follow eos guideline
-                    if (uproot.open(ARGS.eosstring+path+os.sep+files).keys()) == []:
-                        print (CGREEN+"\nskip file: "+files+"\n"+CEND)
+                    #if (uproot.open(ARGS.eosstring+path+os.sep+files).IsZombie()) or ((uproot.open(ARGS.eosstring+path+os.sep+files).keys()) == []):
+                    print "TEST output: ",uproot.open(ARGS.eosstring+path+os.sep+files)
+                    print "Ram..."
+                    if ((uproot.open(ARGS.eosstring+path+os.sep+files).keys()) == []):
+                        #Check if the keys() found for the corresponding root file.
+                        #If there is no keys skip the file else go to the else condition.
+                        print (CGREEN+"\nNo kyes found. Skipping the file: "+files+"\n"+CEND)
                     else:
                         #FIXME: change the reading method from eos area
+                        #If "keys()" found then read the variables
+                        #"nEvents" and "nNegEvents" and save them.
                         otree = uproot.open(ARGS.eosstring+path+os.sep+files)["otree"]
                         inputarrays = otree.arrays(["nEvents", "nNegEvents"])
                         if len(inputarrays["nEvents"]):
@@ -128,18 +153,22 @@ def getfiles_attributes(yamlfilecontent, filename_withpath_array, path):
                                 count_events = 1
                                 count_negative_events = 0
                             else:
-                                if ARGS.hadd != 1:
-				    print "DEBUG: Entring into counting events..."
-                                    count_events += inputarrays["nEvents"][0]
-                                    count_negative_events += inputarrays["nNegEvents"][0] 
-				    print inputarrays["nEvents"]
-				    print "#"*25
-				    print inputarrays["nEvents"][0]
-				    print count_events
-                                else:
-                                    print "skip..."
-                            temp.append(files)
-                            print files, count_events, count_negative_events
+                                count_events += inputarrays["nEvents"][0]
+                                count_negative_events += inputarrays["nNegEvents"][0] 
+                            # Below if else is added for the purpose of hadd.
+                            # If we want hadd action to be performed then else loop will exectue.
+                            # else if loop will exectue.
+                            if ARGS.hadd != 1:
+                                print "DEBUG: Entring into counting events..."
+                                print inputarrays["nEvents"]
+                                print "#"*25
+                                print inputarrays["nEvents"][0]
+                                print count_events
+                            else:
+                                # This else will perform every time either data/MC found.
+                                # print "DEBUG: Store file name to array and print event information"
+                                temp.append(files)
+                                print files, count_events, count_negative_events
                 else:
                     print(CRED+"\nFile Not Found: "+files+"\n"+CEND)
         if len(temp)>1:

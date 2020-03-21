@@ -334,9 +334,45 @@ ZZTo2L2Q_13TeV:
     name: VV
     StackIt: 1
     ColorCode: 868
-DYJetsToLL_M_50:
-    DASName: DYJetsToLL_M_50
-    CrossSection: 6225.42
+DYJetsToLL_M_50_HT_100to200:
+    DASName: DYJetsToLL_M_50_HT_100to200 
+    CrossSection: 147.40
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_M_50_HT_200to400:
+    DASName: DYJetsToLL_M_50_HT_200to400 
+    CrossSection: 40.99
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_M_50_HT_400to600:
+    DASName: DYJetsToLL_M_50_HT_400to600 
+    CrossSection: 5.678
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_M_50_HT_600to800:
+    DASName: DYJetsToLL_M_50_HT_600to800 
+    CrossSection: 1.367
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_M_50_HT_800to1200:
+    DASName: DYJetsToLL_M_50_HT_800to1200 
+    CrossSection: 0.6304
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_M_50_HT_1200to2500:
+    DASName: DYJetsToLL_M_50_HT_1200to2500 
+    CrossSection: 0.1514
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_M_50_HT_2500toInf:
+    DASName: DYJetsToLL_M_50_HT_2500toInf 
+    CrossSection: 0.003565
     name: Z+jets
     StackIt: 1
     ColorCode: 4
@@ -379,6 +415,24 @@ DY3JetsToLL:
 DY4JetsToLL:
     DASName: DY4JetsToLL_M
     CrossSection: 54.481360
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_0J:
+    DASName: DYJetsToLL_0J
+    CrossSection: 4274.1645
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_1J:
+    DASName: DYJetsToLL_1J
+    CrossSection: 1012.296845
+    name: Z+jets
+    StackIt: 1
+    ColorCode: 4
+DYJetsToLL_2J:
+    DASName: DYJetsToLL_2J
+    CrossSection: 334.717838
     name: Z+jets
     StackIt: 1
     ColorCode: 4
