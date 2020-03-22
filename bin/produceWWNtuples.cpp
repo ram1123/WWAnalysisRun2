@@ -229,9 +229,15 @@ int main (int ac, char** av) {
     std::stringstream ss(line);
     std::string filetoopen;
     ss >> filetoopen;
+    std::cout << "=====> " << filetoopen << std::endl;
 
-    f = TFile::Open(TString("root://cmseos.fnal.gov/")+TString(filetoopen),"read");
+    //f = TFile::Open(TString("root://cmseos.fnal.gov/")+TString(filetoopen),"read");
+    f = TFile::Open(TString("root://cmsxrootd.fnal.gov/")+TString(filetoopen),"read");
+    std::cout << "\t\t" << TString("root://cmsxrootd.fnal.gov/")+TString(filetoopen) << std::endl;
+    //f = TFile::Open(TString("root://cms-xrd-global.cern.ch//")+TString(filetoopen),"read");
+    //f = TFile::Open(TString(filetoopen),"read");
     t = (TTree *)f->Get("Events");
+    std::cout << "\t\t Entries = " << t->GetEntries() << std::endl;
 
     if (t==NULL) continue;
     
@@ -277,6 +283,7 @@ int main (int ac, char** av) {
       tightMuon.clear();
       tightEle.clear();
       
+      //std::cout << "info->runNum = " << info->runNum << std::endl;
       WVJJTree->run = info->runNum;
       WVJJTree->evt = info->evtNum;
       WVJJTree->ls = info->lumiSec;

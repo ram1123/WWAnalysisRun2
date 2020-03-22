@@ -30,4 +30,4 @@ if __name__ == '__main__':
     print "#"*51,"\n#\n#\tCommand to run\n#\n# \t",
     print command,
     print "\n#\n","#"*51
-    os.system(command)
+    #os.system(command)
