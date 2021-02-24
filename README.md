@@ -14,8 +14,8 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 
 ## Instructions
 
-	cmsrel CMSSW_8_0_26_patch1
-	cd CMSSW_8_0_26_patch1/src
+	cmsrel CMSSW_10_6_8
+	cd CMSSW_10_6_8/src
 	cmsenv
 	git clone git@github.com:ksung25/BaconAna.git
 	cd BaconAna
@@ -23,25 +23,25 @@ It takes in input ntuples produced from miniAOD with the Bacon (https://github.c
 	cd ..
 	mkdir WWAnalysis
 	cd WWAnalysis
-	git clone git@github.com:osWW-VBS/WWAnalysisRun2.git
+	git clone -b UnitarityStudy git@github.com:ram1123/WWAnalysisRun2.git
 	cd WWAnalysisRun2
-	git checkout bacon_80x
+	#git checkout UnitarityStudy
 	cd ../../
 	scramv1 b -j 8
 	cd WWAnalysis/WWAnalysisRun2/
-	python python/produceWWNtuples.py -i /store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ -n WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8 -o WWTree_WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8 -w 0.9114 -no 1991227 -noNeg 0 -lumi 35900.0 --ismc 1 -trig 1 -c lpc -loc 1 
+	python python/produceWWNtuples.py -i /store/user/lnujj/WpWm_aQGC_Ntuples_Ram/FirstStepOutput/BaconNtuples/ -n WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8 -o WWTree_WplusToLNuWminusTo2JJJ_EWK_LO_SM_MJJ100PTJ10_TuneCUETP8M1_13TeV-madgraph-pythia8 -w 0.9114 -no 1991227 -noNeg 0 -lumi 35900.0 --ismc 1 -trig 1 -c lpc -loc 1
 
 * To submit the batch job (**LXPLUS**):
 	* Go to directory:
 
-			CMSSW_8_0_26_patch1/src/WWAnalysis
+			CMSSW_10_6_8/src/WWAnalysis
 			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_MC.py
 			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_DataEle2.py
 			python WWAnalysisRun2/python/submit_on_lxbatch_MINIAODv2_Data.py
 
 * To submit the condor job (**LPC FNAL**):
 
-		cd {...}/CMSSW_8_0_26_patch1/src/WWAnalysis/WWAnalysisRun2
+		cd {...}/CMSSW_10_6_8/src/WWAnalysis/WWAnalysisRun2
 		python python/submit_on_lpcCondor_MINIAODv2.py
 
 This will give you two files named `runstep2condor.jdl` and `runstep2condor.sh`. To submit the condor job do
@@ -98,7 +98,7 @@ There is a script to check many samples at once. Script name is `DasGoClientSumm
 1. Check if it runs fine:
 
 		grep "Job Nubmer" <LogFileName>
-   
+
    Lets say you are checking this for N samples. Then it should have all numbers from 1 to N.
 
 2. Grab dataset name using this command:
